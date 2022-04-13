@@ -1,12 +1,36 @@
-import React from 'react';
-import './App.css';
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useAppSelector } from "../../state/storeHooks";
+import { Header } from "../Header/Header";
+import { Login } from "../Pages/Login/Login";
+import { Register } from "../Pages/Register/Register";
+import { selectLoggedInUser } from "./App.slice";
+import { Dashboard } from "../Pages/Dashboard/Dashboard";
+import Clients from "../Pages/Clients/Clients";
+import HomeScreen from "../Pages/Home/Home";
+import NutritionScreen from "../Pages/Nutrition/Nutrition";
+import Workouts from "../Pages/Workouts/Workouts";
 
 function App() {
+  const user = useAppSelector(selectLoggedInUser);
+
   return (
-    <div className="App">
-      <h1>naniiiiii</h1>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas laudantium recusandae nihil ratione veniam amet optio error rerum autem velit ut, dolores fugiat consequuntur temporibus sint, beatae commodi voluptatum sapiente.</p>
-    </div>
+    <>
+      <Header />
+      <Routes>
+        <Route
+          path="/"
+          element={<Navigate to={user ? "/dashboard" : "/register"} />}
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route path="" element={<HomeScreen />} />
+          <Route path="clients" element={<Clients />} />
+          <Route path="workouts" element={<Workouts />} />
+          <Route path="nutrition" element={<NutritionScreen />} />
+        </Route>
+      </Routes>
+    </>
   );
 }
 
