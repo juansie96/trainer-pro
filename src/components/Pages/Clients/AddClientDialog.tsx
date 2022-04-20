@@ -1,53 +1,54 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Input } from "../../Form/Input";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import FormContainer from "../../Form/FormContainer";
 import TextFieldElement from "../../Form/TextFieldElement";
 import { Stack } from "@mui/material";
+import { Box } from "@mui/system";
+import { selectLoggedInUser } from "../../App/App.slice";
+import { useAppSelector } from "../../../state/storeHooks";
+import { UserData } from "../../../types/user";
+import { useSaveClientMutation } from "./Clients.api";
 
-interface AddClientFormData {
+export interface AddClientFormData {
   name: string;
   lastname: string;
   email: string;
   age: number;
 }
 
-export function AddClientDialog() {
-  const [open, setOpen] = React.useState(true);
+interface AddClientDialogProps {
+  onClose(): void;
+  open: boolean;
+}
+
+export function AddClientDialog({ open, onClose }: AddClientDialogProps) {
+
+  const loggedInUser = useAppSelector(selectLoggedInUser) as UserData;  
+  const [addClient, othershit] = useSaveClientMutation()
+
   const formContext = useForm<AddClientFormData>();
-  const [addingClient, setAddingClient] = React.useState(false);
-
+  
   const onSubmit = async (newClient: AddClientFormData) => {
-    console.log(newClient);
-  };
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
+    addClient({newClient, loggedInUser})
   };
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open form dialog
-      </Button>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={onClose}>
         <FormContainer
           formContext={formContext}
           handleSubmit={formContext.handleSubmit(onSubmit)}
         >
-          <DialogTitle>Agregar Cliente</DialogTitle>
-          <DialogContent>
+          <Box borderBottom="1px solid #e3e3e3">
+            <DialogTitle>Agregar Cliente</DialogTitle>
+          </Box>
+          <DialogContent sx={{ pt: 3, pb: 4 }}>
             <DialogContentText>
               Completa los datos de tu nuevo cliente
             </DialogContentText>
@@ -57,40 +58,47 @@ export function AddClientDialog() {
               direction="row"
               justifyContent="space-between"
               flexWrap="wrap"
-              mt={1}
+              mt={2}
             >
               <TextFieldElement
                 name="name"
                 label="Nombre"
                 validation={{ required: "El nombre es requerido" }}
                 sx={{ width: 0.475 }}
+                size="small"
               />
               <TextFieldElement
                 name="lastname"
                 label="Apellido"
                 validation={{ required: "El apellido es requerido" }}
                 sx={{ width: 0.475 }}
+                size="small"
               />
               <TextFieldElement
                 name="email"
                 label="Email"
                 type="email"
+                sx={{ width: 0.475, mt: 2 }}
                 validation={{ required: "El email es requerido" }}
-                sx={{ width: 0.475, mt: 1 }}
+                size="small"
               />
               <TextFieldElement
                 name="age"
                 label="Edad"
                 type="number"
                 validation={{ required: "La edad es requerida" }}
-                sx={{ width: 0.475, mt: 1 }}
+                sx={{ width: 0.475, mt: 2 }}
+                size="small"
+                customOnChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  formContext.setValue("age", parseInt(e.target.value))
+                }
               />
             </Stack>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit" onClick={handleClose}>
-              Subscribe
+          <DialogActions sx={{ px: 3, py: 2, borderTop: "1px solid #e3e3e3" }}>
+            <Button onClick={onClose}>Cancelar</Button>
+            <Button type="submit" variant="contained">
+              Agregar Cliente
             </Button>
           </DialogActions>
         </FormContainer>

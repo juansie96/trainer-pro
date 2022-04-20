@@ -5,9 +5,19 @@ import ClientsTable from "./ClientsTable";
 
 const Clients = () => {
   let content;
+
   const [clients, setClients] = useState(null); // Replace later with useSelector
 
-  const openAddClientDialog = () => {}
+  const [addClientDialogOpen, setAddClientDialogOpen] =
+    useState<boolean>(false);
+
+  const handleClickOpen = () => {
+    setAddClientDialogOpen(true);
+  };
+
+  const handleClose = () => {
+    setAddClientDialogOpen(false);
+  };
 
   if (clients) {
     content = <ClientsTable />;
@@ -21,15 +31,25 @@ const Clients = () => {
         justifyContent="center"
       >
         <Typography variant="h5">Todavía no tienes ningún cliente</Typography>
-        <Typography fontSize={20} variant="subtitle1" color="primary" sx={{cursor: 'pointer'}} onClick={openAddClientDialog}>Crea uno nuevo</Typography>
+        <Typography
+          fontSize={20}
+          variant="subtitle1"
+          color="primary"
+          sx={{ cursor: "pointer" }}
+          onClick={handleClickOpen}
+        >
+          Crea uno nuevo
+        </Typography>
       </Box>
     );
   }
 
-  return <Box height={1}>
-    {content}
-    <AddClientDialog />
-  </Box>;
+  return (
+    <Box height={1}>
+      {content}
+      <AddClientDialog open={addClientDialogOpen} onClose={handleClose} />
+    </Box>
+  );
 };
 
 export default Clients;
