@@ -4,8 +4,6 @@ import { Button, LinearProgress } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { MainContainer } from "../../MainContainer/MainContainer";
 import { CustomSnackbar } from "../../UI/CustomSnackbar";
-import { useAppDispatch } from "../../../state/storeHooks";
-import { loadUserIntoApp } from "../../App/App.slice";
 import { mapFirebaseErrorCodeToMsg } from "../../../firebase/helperFunctions";
 import FormContainer from "../../Form/FormContainer";
 import { UserContext } from "../../../contexts/UserContext";

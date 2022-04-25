@@ -1,26 +1,45 @@
 import { Box, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { AddClientDialog } from "./AddClientDialog";
 import ClientsTable from "./ClientsTable";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import { DocumentData, DocumentReference } from "firebase/firestore";
+import { clientsRef } from "../../../firebase/fbRefs";
+
+export interface Client {
+  name: string;
+  lastname: string;
+  email: string;
+  age: number;
+  id: string;
+  trainerId: string;
+  ref: DocumentReference<DocumentData>;
+}
 
 const Clients = () => {
   let content;
 
-  const [clients, setClients] = useState(null); // Replace later with useSelector
+  const [clients, loading, error] = useCollectionData(clientsRef);
+
+  console.log("clients", clients);
+  console.log("loading", loading);
+  console.log("error", error);
 
   const [addClientDialogOpen, setAddClientDialogOpen] =
     useState<boolean>(false);
 
-  const handleClickOpen = () => {
+  const openAddClientDialog = () => {
     setAddClientDialogOpen(true);
   };
 
-  const handleClose = () => {
+  const closeAddClientDialog = () => {
     setAddClientDialogOpen(false);
   };
 
-  if (clients) {
-    content = <ClientsTable />;
+  if (loading) {
+    content = <p>Cargando..</p>;
+  } else if (clients?.length) {
+    content = <ClientsTable clients={clients} onAddClient={openAddClientDialog} />;
   } else {
     content = (
       <Box
@@ -36,7 +55,7 @@ const Clients = () => {
           variant="subtitle1"
           color="primary"
           sx={{ cursor: "pointer" }}
-          onClick={handleClickOpen}
+          onClick={openAddClientDialog}
         >
           Crea uno nuevo
         </Typography>
@@ -47,7 +66,7 @@ const Clients = () => {
   return (
     <Box height={1}>
       {content}
-      <AddClientDialog open={addClientDialogOpen} onClose={handleClose} />
+      <AddClientDialog open={addClientDialogOpen} onClose={closeAddClientDialog} />
     </Box>
   );
 };

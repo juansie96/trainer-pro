@@ -1,8 +1,17 @@
 import React from 'react'
+import { Client } from './Clients'
 
-const ClientsTable = () => {
+export interface ClientsTableProps {
+  clients: Client[];
+  onAddClient(): void;
+}
+
+const ClientsTable = ({clients, onAddClient}: ClientsTableProps) => {
   return (
-    <div>ClientsTable</div>
+    <>
+      <div>ClientsTable</div>
+      <button onClick={onAddClient}>Agregar cliente</button>
+    </>
   )
 }
 

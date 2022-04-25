@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useContext, useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -10,10 +10,11 @@ import FormContainer from "../../Form/FormContainer";
 import TextFieldElement from "../../Form/TextFieldElement";
 import { Stack } from "@mui/material";
 import { Box } from "@mui/system";
-import { selectLoggedInUser } from "../../App/App.slice";
-import { useAppSelector } from "../../../state/storeHooks";
-import { UserData } from "../../../types/user";
-import { useSaveClientMutation } from "./Clients.api";
+import { addDoc, FirestoreError, WithFieldValue } from "firebase/firestore";
+import { UserContext } from "../../../contexts/UserContext";
+import { User } from "firebase/auth";
+import { clientsRef } from "../../../firebase/fbRefs";
+import { Client } from "./Clients";
 
 export interface AddClientFormData {
   name: string;
@@ -29,13 +30,25 @@ interface AddClientDialogProps {
 
 export function AddClientDialog({ open, onClose }: AddClientDialogProps) {
 
-  const loggedInUser = useAppSelector(selectLoggedInUser) as UserData;  
-  const [addClient, othershit] = useSaveClientMutation()
-
+  const loggedInUser = useContext(UserContext) as User
   const formContext = useForm<AddClientFormData>();
+  const [isAdding, setIsAdding] = useState<boolean>(false)
   
   const onSubmit = async (newClient: AddClientFormData) => {
-    addClient({newClient, loggedInUser})
+    setIsAdding(true);
+    try {
+      await addDoc(clientsRef, {
+        ...newClient,
+        trainerId: loggedInUser.uid
+      } as WithFieldValue<Client>)
+      setIsAdding(false);
+      onClose();
+    } catch(err: any) {
+      setIsAdding(false);
+      const error = err as FirestoreError;
+      console.log('error', error)
+    }
+    
   };
 
   return (
@@ -97,8 +110,8 @@ export function AddClientDialog({ open, onClose }: AddClientDialogProps) {
           </DialogContent>
           <DialogActions sx={{ px: 3, py: 2, borderTop: "1px solid #e3e3e3" }}>
             <Button onClick={onClose}>Cancelar</Button>
-            <Button type="submit" variant="contained">
-              Agregar Cliente
+            <Button type="submit" variant="contained" disabled={isAdding}>
+              {isAdding ? 'Agregando Cliente' : 'Agregar Cliente'}
             </Button>
           </DialogActions>
         </FormContainer>
