@@ -92,8 +92,8 @@ export const Register = () => {
   }
 
   async function onSignUp(user: RegisterFormValues) {
+    setSigningUp(true);
     try {
-      setSigningUp(true);
       const response = await registerUserFB(user.Email, user.Contraseña);
       setSigningUp(false);
       setRegisterError("");

@@ -9,12 +9,13 @@ import Clients from "../Pages/Clients/Clients";
 import HomeScreen from "../Pages/Home/Home";
 import NutritionScreen from "../Pages/Nutrition/Nutrition";
 import Workouts from "../Pages/Workouts/Workouts";
+import { UserProvider } from "../../contexts/UserContext";
 
 function App() {
   const user = useAppSelector(selectLoggedInUser);
 
   return (
-    <>
+    <UserProvider>
       <Header />
       <Routes>
         <Route
@@ -30,7 +31,7 @@ function App() {
           <Route path="nutrition" element={<NutritionScreen />} />
         </Route>
       </Routes>
-    </>
+    </UserProvider>
   );
 }
 

@@ -1,67 +1,67 @@
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Navigate } from "react-router-dom";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Box,
-  Button,
-  LinearProgress,
-} from "@mui/material";
-
+import { Button, LinearProgress } from "@mui/material";
 import { MainContainer } from "../../MainContainer/MainContainer";
-import { Input } from "../../Form/Input";
-import { FormErrors } from "../../UI/Errors";
 import { CustomSnackbar } from "../../UI/CustomSnackbar";
-
-import { validEmailRegex } from "../../../constants/constants";
-import { useAppDispatch, useAppSelector } from "../../../state/storeHooks";
-import { loadUserIntoApp, selectLoggedInUser } from "../../App/App.slice";
-import { signInUserFB } from "./LoginAPI";
 import { mapFirebaseErrorCodeToMsg } from "../../../firebase/helperFunctions";
-import FormContainer from '../../Form/FormContainer'
+import FormContainer from "../../Form/FormContainer";
 import TextFieldElement from "../../Form/TextFieldElement";
+import { auth } from "../../../firebase/firebase";
+import { UserContext } from "../../../contexts/UserContext";
+import { AuthError, signInWithEmailAndPassword } from "firebase/auth";
 
 type RegisterFormValues = {
   email: string;
   password: string;
 };
 
-export const Login: React.FC<any> = () => {
-
-  const user = useAppSelector(selectLoggedInUser);
-  const dispatch = useAppDispatch();
-  const [signingUp, setSigningUp] = useState(false);
-  const [loginError, setLoginError] = useState<any>("");
+export const Login: React.FC = () => {
+  const user = useContext(UserContext);
 
   const formContext = useForm<RegisterFormValues>({
     mode: "onBlur",
     defaultValues: {
       email: "",
       password: "",
-    }
+    },
   });
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState<any>("");
 
   if (user) {
     return <Navigate to="/dashboard" />;
   }
 
   return (
-    <MainContainer sx={{mt: 4}} maxWidth="xs">
+    <MainContainer sx={{ mt: 4 }} maxWidth="xs">
       {/* <FormErrors errors={formErrors} /> */}
-      <FormContainer formContext={formContext} handleSubmit={formContext.handleSubmit(loginUser)} >
-        <TextFieldElement sx={{mb: 2}} fullWidth label='Email' name='email' type='email' validation={{required: 'El email es requerido'}} />
-        <TextFieldElement sx={{mb: 2}} fullWidth label='Password' name='password' type='password' validation={{required: 'La contraseña es requerida'}} />
-        <Button
-          variant="contained"
-          type="submit"
+      <FormContainer
+        formContext={formContext}
+        handleSubmit={formContext.handleSubmit(loginUser)}
+      >
+        <TextFieldElement
+          sx={{ mb: 2 }}
           fullWidth
-          disabled={signingUp}
-        >
-          {signingUp ? "INICIANDO SESIÓN" : "INICIAR SESIÓN"}
+          label="Email"
+          name="email"
+          type="email"
+          validation={{ required: "El email es requerido" }}
+        />
+        <TextFieldElement
+          sx={{ mb: 2 }}
+          fullWidth
+          label="Password"
+          name="password"
+          type="password"
+          validation={{ required: "La contraseña es requerida" }}
+        />
+        <Button variant="contained" type="submit" fullWidth disabled={loading}>
+          {loading ? "INICIANDO SESIÓN" : "INICIAR SESIÓN"}
         </Button>
       </FormContainer>
-      <>{signingUp && <LinearProgress sx={{ my: 3 }} />}</>
+      <>{loading && <LinearProgress sx={{ my: 3 }} />}</>
       <CustomSnackbar
         open={!!loginError}
         message={loginError}
@@ -76,16 +76,15 @@ export const Login: React.FC<any> = () => {
   }
 
   async function loginUser(user: RegisterFormValues) {
+    setLoading(true);
     try {
-      setSigningUp(true);
-      const response = await signInUserFB(user.email, user.password);
-      setSigningUp(false);
-      dispatch(loadUserIntoApp(response))
-      setLoginError("");
-    } catch (err: any) {
-      setSigningUp(false);
-      setLoginError(mapFirebaseErrorCodeToMsg(err.code));
-      formContext.setValue("password", "")
+      await signInWithEmailAndPassword(auth, user.email, user.password);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      const error = err as AuthError;
+      setLoginError(mapFirebaseErrorCodeToMsg(error.code));
+      formContext.setValue("password", "");
     }
   }
 };
