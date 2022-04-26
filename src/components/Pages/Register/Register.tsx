@@ -36,7 +36,7 @@ export const Register = () => {
   }
 
   return (
-    <MainContainer maxWidth="xs">
+    <MainContainer maxWidth="xs" sx={{ mt: 4 }}>
       {/* <FormErrors errors={formErrors} /> */}
       <>{signingUp && <LinearProgress sx={{ my: 3 }} />}</>
       <FormContainer formContext={formContext} handleSubmit={formContext.handleSubmit(onSignUp)}>

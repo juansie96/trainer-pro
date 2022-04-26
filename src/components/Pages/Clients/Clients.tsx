@@ -1,10 +1,18 @@
-import { Box, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { AddClientDialog } from "./AddClientDialog";
 import ClientsTable from "./ClientsTable";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { DocumentData, DocumentReference } from "firebase/firestore";
 import { clientsRef } from "../../../firebase/fbRefs";
+import SearchIcon from "@mui/icons-material/Search";
 
 export interface Client {
   name: string;
@@ -39,7 +47,17 @@ const Clients = () => {
   if (loading) {
     content = <p>Cargando..</p>;
   } else if (clients?.length) {
-    content = <ClientsTable clients={clients} onAddClient={openAddClientDialog} />;
+    content = (
+      <Box mt={5}>
+        <Box display="flex" justifyContent="center">
+          <SearchClientInput />
+          <Button variant="contained" disabled={loading}>
+            Agregar cliente
+          </Button>
+        </Box>
+        <ClientsTable clients={clients} onAddClient={openAddClientDialog} />;
+      </Box>
+    );
   } else {
     content = (
       <Box
@@ -66,9 +84,34 @@ const Clients = () => {
   return (
     <Box height={1}>
       {content}
-      <AddClientDialog open={addClientDialogOpen} onClose={closeAddClientDialog} />
+      <AddClientDialog
+        open={addClientDialogOpen}
+        onClose={closeAddClientDialog}
+      />
     </Box>
   );
 };
+
+const SearchClientInput: React.FC = () => (
+  <TextField
+    sx={{ width: 600, mr: 2 }}
+    type="text"
+    size="small"
+    label="Buscar un cliente"
+    InputProps={{
+      endAdornment: (
+        <InputAdornment position="end">
+          <IconButton
+            aria-label="toggle password visibility"
+            onClick={() => console.log("cliekd")}
+            onMouseDown={() => console.log("mosue down")}
+          >
+            <SearchIcon />
+          </IconButton>
+        </InputAdornment>
+      ),
+    }}
+  />
+);
 
 export default Clients;

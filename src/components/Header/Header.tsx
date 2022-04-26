@@ -6,6 +6,10 @@ import Button from "@mui/material/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../state/storeHooks";
 import { logoutUser, selectLoggedInUser } from "../App/App.slice";
+import { useContext } from "react";
+import { UserContext } from "../../contexts/UserContext";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/firebase";
 
 type Link = {
   label: string;
@@ -15,13 +19,13 @@ type Link = {
 
 export function Header() {
 
-  const user = useAppSelector(selectLoggedInUser);
+  const user = useContext(UserContext)
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   let links;
 
   const onLogout = () => {
-    dispatch(logoutUser());
+    signOut(auth)
     navigate('/login')
   }
 
