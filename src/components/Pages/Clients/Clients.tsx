@@ -1,18 +1,11 @@
-import {
-  Box,
-  Button,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 import { AddClientDialog } from "./AddClientDialog";
-import ClientsTable from "./ClientsTable";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { DocumentData, DocumentReference } from "firebase/firestore";
 import { clientsRef } from "../../../firebase/fbRefs";
-import SearchIcon from "@mui/icons-material/Search";
+import { CenteredLayout } from "../../UI/CenteredLayout";
+import { ClientsLayout } from "./ClientsLayout";
 
 export interface Client {
   name: string;
@@ -29,10 +22,6 @@ const Clients = () => {
 
   const [clients, loading, error] = useCollectionData(clientsRef);
 
-  console.log("clients", clients);
-  console.log("loading", loading);
-  console.log("error", error);
-
   const [addClientDialogOpen, setAddClientDialogOpen] =
     useState<boolean>(false);
 
@@ -46,27 +35,11 @@ const Clients = () => {
 
   if (loading) {
     content = <p>Cargando..</p>;
-  } else if (clients?.length) {
-    content = (
-      <Box mt={5}>
-        <Box display="flex" justifyContent="center">
-          <SearchClientInput />
-          <Button variant="contained" disabled={loading}>
-            Agregar cliente
-          </Button>
-        </Box>
-        <ClientsTable clients={clients} onAddClient={openAddClientDialog} />;
-      </Box>
-    );
+  } else if (clients && clients.length > 0) {
+    content = <ClientsLayout openAddClientDialog={openAddClientDialog}/>
   } else {
     content = (
-      <Box
-        display="flex"
-        flexDirection="column"
-        height={1}
-        textAlign="center"
-        justifyContent="center"
-      >
+      <CenteredLayout>
         <Typography variant="h5">Todavía no tienes ningún cliente</Typography>
         <Typography
           fontSize={20}
@@ -77,7 +50,7 @@ const Clients = () => {
         >
           Crea uno nuevo
         </Typography>
-      </Box>
+      </CenteredLayout>
     );
   }
 
@@ -91,27 +64,5 @@ const Clients = () => {
     </Box>
   );
 };
-
-const SearchClientInput: React.FC = () => (
-  <TextField
-    sx={{ width: 600, mr: 2 }}
-    type="text"
-    size="small"
-    label="Buscar un cliente"
-    InputProps={{
-      endAdornment: (
-        <InputAdornment position="end">
-          <IconButton
-            aria-label="toggle password visibility"
-            onClick={() => console.log("cliekd")}
-            onMouseDown={() => console.log("mosue down")}
-          >
-            <SearchIcon />
-          </IconButton>
-        </InputAdornment>
-      ),
-    }}
-  />
-);
 
 export default Clients;

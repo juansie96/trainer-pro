@@ -17,16 +17,16 @@ export interface ClientsTableProps {
   onAddClient(): void;
 }
 
-const ClientsTable = ({ clients, onAddClient }: ClientsTableProps) => (
-  <TableContainer component={Paper} sx={{ mt: 5, width: 0.9, mx: 'auto' }}>
+export const ClientsTable = ({ clients, onAddClient }: ClientsTableProps) => (
+  <TableContainer component={Paper} sx={{ width: 0.9, mx: 'auto' }}>
     <Table sx={{ minWidth: 650 }} aria-label="clients table">
       <TableHead>
         <TableRow>
           <TableCell>Nombre</TableCell>
           <TableCell>Tipo de plan</TableCell>
-          <TableCell>Vencimiento</TableCell>
-          <TableCell>Cumplimiento semanal</TableCell>
-          <TableCell>Cumplimiento mensual</TableCell>
+          <TableCell align='center'>Vencimiento</TableCell>
+          <TableCell align='center'>Cumplimiento semanal</TableCell>
+          <TableCell align='center'>Cumplimiento mensual</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -42,14 +42,12 @@ const ClientsTable = ({ clients, onAddClient }: ClientsTableProps) => (
               {client.name}
             </TableCell>
             <TableCell>Full body al fallo</TableCell>
-            <TableCell>03/11</TableCell>
-            <TableCell>100%</TableCell>
-            <TableCell>50%</TableCell>
+            <TableCell align='center'>03/11</TableCell>
+            <TableCell align='center'>100%</TableCell>
+            <TableCell align='center'>50%</TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
   </TableContainer>
 );
-
-export default ClientsTable;

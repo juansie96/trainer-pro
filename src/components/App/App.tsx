@@ -10,9 +10,12 @@ import HomeScreen from "../Pages/Home/Home";
 import NutritionScreen from "../Pages/Nutrition/Nutrition";
 import Workouts from "../Pages/Workouts/Workouts";
 import { UserProvider } from "../../contexts/UserContext";
+import dayjs from "dayjs";
 
 function App() {
   const user = useAppSelector(selectLoggedInUser);
+
+  // console.log('dayjs()', dayjs().motnh)
 
   return (
     <UserProvider>
