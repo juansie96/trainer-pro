@@ -11,6 +11,7 @@ import NutritionScreen from "../Pages/Nutrition/Nutrition";
 import Workouts from "../Pages/Workouts/Workouts";
 import { UserProvider } from "../../contexts/UserContext";
 import dayjs from "dayjs";
+import Client from "../Pages/Client/Client";
 
 function App() {
   const user = useAppSelector(selectLoggedInUser);
@@ -29,9 +30,10 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />}>
           <Route path="" element={<HomeScreen />} />
-          <Route path="clients" element={<Clients />} />
+          <Route path="clients" element={<Clients />} /> 
           <Route path="workouts" element={<Workouts />} />
           <Route path="nutrition" element={<NutritionScreen />} />
+          <Route path="client/:clientId" element={<Client />} />
         </Route>
       </Routes>
     </UserProvider>

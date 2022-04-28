@@ -30,7 +30,7 @@ interface AddClientDialogProps {
 
 export function AddClientDialog({ open, onClose }: AddClientDialogProps) {
 
-  const loggedInUser = useContext(UserContext) as User
+  const loggedInUser = useContext(UserContext)?.user as User
   const formContext = useForm<AddClientFormData>();
   const [isAdding, setIsAdding] = useState<boolean>(false)
   

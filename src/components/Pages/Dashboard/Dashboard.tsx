@@ -6,16 +6,16 @@ import { CustomSnackbar } from "../../UI/CustomSnackbar";
 import { DashboardTabs } from "./DashboardTabs";
 
 export const Dashboard = () => {
-  const user = useContext(UserContext);
+  const userContext = useContext(UserContext);
 
-  if (!user) {
+  if (!userContext?.user && !userContext?.loading) {
     return <Navigate to="/login" />;
   }
 
   return (
     <Box className="dashboard" height={dashboardHeight}>
       <DashboardTabs />
-      <Box className="dashboard-content" height={dashboardContentHeight}>
+      <Box className="dashboard-content" display='flex' flexDirection="column" height={dashboardContentHeight}>
         <Outlet />
       </Box>
     </Box>
