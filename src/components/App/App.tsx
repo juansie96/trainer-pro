@@ -12,10 +12,14 @@ import Client from "../Pages/Client/Client";
 import ClientPlanification from "../Pages/Client/ClientPlanification"
 import ClientInformation from "../Pages/Client/ClientInformation";
 import { useContext } from "react";
+import ClientNutrition from "../Pages/Client/ClientNutrition";
+import { getMonth } from "../../utils/utils";
 
 function App() {
   
   const user = useContext(UserContext)?.user;
+
+  console.log(getMonth())
 
   return (
     <UserProvider>
@@ -29,16 +33,14 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />}>
           <Route path="" element={<HomeScreen />} />
-          <Route path="clients" element={<Clients />} /> 
+          <Route path="clients" element={<Clients />} />
           <Route path="workouts" element={<Workouts />} />
           <Route path="nutrition" element={<NutritionScreen />} />
-          <Route path="client/:clientId" element={<Client />} >
-            <Route
-              path=""
-              element={<Navigate to="planification" />}
-            />
+          <Route path="client/:clientId" element={<Client />}>
+            <Route path="" element={<Navigate to="planification" />} />
             <Route path="planification" element={<ClientPlanification />} />
-            <Route path="information" element={<ClientInformation/>} />
+            <Route path="information" element={<ClientInformation />} />
+            <Route path="nutrition" element={<ClientNutrition />} />
           </Route>
         </Route>
       </Routes>
