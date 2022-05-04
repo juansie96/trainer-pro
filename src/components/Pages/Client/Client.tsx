@@ -10,9 +10,9 @@ const Client = () => {
   console.log('params', params)
 
   return (
-    <Box flex={1} className='client-layout'>
+    <Box flex={1} className='client-layout' display='flex' flexDirection="column">
       <ClientSidebar />
-      <Box ml="150px" p={3}>
+      <Box ml="150px" p={3} flex={1}>
         <Outlet/>
       </Box>
     </Box>
