@@ -67,11 +67,11 @@ const MenuItem: React.FC<{ active: boolean; onClick(): void }> = ({
 
 const sidebarStyles = {
   flex: 1,
-  width: 150,
+  width: 110,
   background: "#1976d2",
   boxShadow: "0px 3px 6px 4px rgb(0 0 0 / 20%)",
   color: "white",
-  height: 'calc(100% - 64px - 72px)'
+  height: 'calc(100% - 64px - 50px)'
 };
 
 export default ClientSidebar;

@@ -12,7 +12,7 @@ const Client = () => {
   return (
     <Box flex={1} className='client-layout' display='flex' flexDirection="column">
       <ClientSidebar />
-      <Box ml="150px" p={3} flex={1}>
+      <Box ml="110px" p={2} flex={1}>
         <Outlet/>
       </Box>
     </Box>

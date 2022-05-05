@@ -29,4 +29,4 @@ export const Dashboard = () => {
 };
 
 const dashboardHeight = "calc(100% - 64px)";
-const dashboardContentHeight = "calc(100% - 72px)";
+const dashboardContentHeight = "calc(100% - 50px)";

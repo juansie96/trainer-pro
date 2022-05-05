@@ -14,3 +14,23 @@ export const getMonth = (month = dayjs().month()) => {
 
   return daysMatrix;
 };
+
+export const translateDayToSpanish = (day: string) => {
+  switch(day) {
+    case 'Sun':
+      return 'Dom'
+    case 'Mon':
+      return 'Lun'
+    case 'Tue':
+      return 'Mar'
+    case 'Wed':
+      return 'Mie'
+    case 'Thu':
+      return 'Jue'
+    case 'Fri':
+      return 'Vie'
+    case 'Sat':
+      return 'Sab'
+    default: return '';
+  }
+} 

@@ -40,17 +40,19 @@ export const DashboardTabs = () => {
       onChange={handleTabChange}
       sx={TabsStyles}
     >
-      <Tab icon={<HomeIcon />} label="HOME" onClick={() => navigate('')} />
-      <Tab icon={<PersonIcon />} label="CLIENTES" onClick={() => navigate('clients')} />
-      <Tab icon={<FitnessCenterIcon />} label="RUTINAS" onClick={() => navigate('workouts')} />
-      <Tab icon={<RestaurantIcon />} label="NUTRICIÓN" onClick={() => navigate('nutrition')} />
+      <Tab icon={<HomeIcon />} iconPosition="start" label="HOME" onClick={() => navigate('')} />
+      <Tab icon={<PersonIcon />} iconPosition="start" label="CLIENTES" onClick={() => navigate('clients')} />
+      <Tab icon={<FitnessCenterIcon />} iconPosition="start" label="RUTINAS" onClick={() => navigate('workouts')} />
+      <Tab icon={<RestaurantIcon />} iconPosition="start" label="NUTRICIÓN" onClick={() => navigate('nutrition')} />
     </Tabs>
   )
 }
 
 const TabsStyles = {
   bgcolor: "#1976d2",
-  "& .MuiTab-root": { color: "white", width: 200 },
+  height: 50,
+  minHeight: 50,
+  "& .MuiTab-root": { color: "white", width: 200, height: 50, minHeight: 50 },
   "& .MuiTabs-indicator": { height: 5, bgcolor: "#e7ca2c" },
   "& .MuiTab-root.Mui-selected": { color: '#e7ca2c' },
 } 
