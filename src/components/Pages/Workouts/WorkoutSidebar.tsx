@@ -5,7 +5,7 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Sidebar, { MenuItem } from "../../Sidebar";
 
-const ClientSidebar = () => {
+const WorkoutSidebar = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -18,25 +18,18 @@ const ClientSidebar = () => {
         onClick={() => navigate(`/dashboard/client/${clientId}/planification`)}
       >
         <EventNoteIcon sx={{ p: 1 }} />
-        <Typography>Planificación</Typography>
+        <Typography>Rutinas</Typography>
       </MenuItem>
       <MenuItem
         active={location.pathname.includes("information")}
         onClick={() => navigate(`/dashboard/client/${clientId}/information`)}
       >
         <InfoIcon sx={{ p: 1 }} />
-        <Typography>Información</Typography>
-      </MenuItem>
-      <MenuItem
-        active={location.pathname.includes("nutrition")}
-        onClick={() => navigate(`/dashboard/client/${clientId}/nutrition`)}
-      >
-        <RestaurantIcon sx={{ p: 1 }} />
-        <Typography>Nutrición</Typography>
+        <Typography>Ejercicios</Typography>
       </MenuItem>
     </Sidebar>
   );
 };
 
 
-export default ClientSidebar;
+export default WorkoutSidebar;

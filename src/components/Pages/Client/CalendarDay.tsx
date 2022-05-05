@@ -3,7 +3,6 @@ import React from "react";
 import { translateDayToSpanish } from "../../../utils/utils";
 import dayjs from "dayjs";
 import CircleIcon from "@mui/icons-material/Circle";
-import { number } from "yup";
 
 interface CalendarDayProps {
   rowIdx: number;
@@ -39,7 +38,7 @@ const CalendarDayHeader = ({
     {rowIdx === 0 && (
       <Typography
         variant="subtitle1"
-        textAlign="center"
+        textAlign="center" 
         fontSize={13}
         fontWeight={600}
       >
@@ -47,7 +46,11 @@ const CalendarDayHeader = ({
       </Typography>
     )}
     <Box display="flex" flexDirection="column" alignItems="end">
-      <Typography component="span" mr={1} fontSize={13} sx={getDayStyles(day)}>
+      <Typography
+        mr={1}
+        fontSize={13}
+        fontWeight={isCurrentDay(day) ? 600 : 400}
+      >
         {day.date()}
       </Typography>
     </Box>
@@ -74,14 +77,9 @@ const CalendarDay: React.FC<CalendarDayProps> = ({ day, rowIdx, colIdx }) => {
 
 const borderStyles = "1px solid #d7d7d7";
 
-const getDayStyles = (day: dayjs.Dayjs) => {
-  if (day.format("DD-MM-YYYY") === dayjs().format("DD-MM-YYYY")) {
-    return {
-      fontWeight: 800,
-    };
-  } else {
-    return {};
-  }
-};
+
+const isCurrentDay = (day: dayjs.Dayjs) => {
+  return day.format("DD-MM-YYYY") === dayjs().format("DD-MM-YYYY")
+}
 
 export default CalendarDay;
