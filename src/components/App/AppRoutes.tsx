@@ -12,7 +12,8 @@ import ClientPlanification from "../Pages/Client/ClientPlanification"
 import ClientInformation from "../Pages/Client/ClientInformation";
 import { useContext } from "react";
 import ClientNutrition from "../Pages/Client/ClientNutrition";
-import Routines from "../Pages/Workouts/Routines";
+import Routines from "../Pages/Workouts/Routines/Routines";
+import Exercises from "../Pages/Workouts/Exercises";
 
 const AppRoutes = () => {
 
@@ -31,6 +32,7 @@ const AppRoutes = () => {
           <Route path="clients" element={<Clients />} />
           <Route path="workouts" element={<Workouts />}>
             <Route path="" element={<Routines />} />
+            <Route path="exercises" element={<Exercises />} />
           </Route>
           <Route path="nutrition" element={<NutritionScreen />} />
           <Route path="client/:clientId" element={<Client />}>

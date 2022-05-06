@@ -8,26 +8,26 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import { Client } from "./Clients";
-import { CenteredLayout } from "../../UI/CenteredLayout";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { clientsRef } from "../../../firebase/fbRefs";
-import { ClientsTable } from "./ClientsTable";
+import { workoutsRef } from "../../../../firebase/fbRefs";
+import RoutinesTable from "./RoutinesTable";
+import { Workout } from "./Routines";
+import { CenteredLayout } from "../../../UI/CenteredLayout";
 
-export const ClientsLayout = ({
-  openAddClientDialog,
+export const RoutinesLayout = ({
+  openAddWorkoutDialog,
 }: {
-  openAddClientDialog(): void;
+  openAddWorkoutDialog(): void;
 }) => {
-  const [clients, loading] = useCollectionData(clientsRef);
+  const [workouts, loading] = useCollectionData(workoutsRef);
 
   const [query, setQuery] = useState("");
 
-  let filteredClients = clients?.slice(0);
+  let filteredWorkouts = workouts?.slice(0);
 
-  if (query && clients) {
-    filteredClients = clients.filter((c) =>
-      c.name.toUpperCase().includes(query.toUpperCase())
+  if (query && workouts) {
+    filteredWorkouts = workouts.filter((workout) =>
+      workout.name.toUpperCase().includes(query.toUpperCase())
     );
   }
 
@@ -43,17 +43,16 @@ export const ClientsLayout = ({
         <Button
           variant="contained"
           disabled={loading}
-          onClick={openAddClientDialog}
+          onClick={openAddWorkoutDialog}
         >
-          Agregar cliente
+          Agregar rutina
         </Button>
       </Box>
-      {filteredClients && filteredClients.length > 0 ? (
-        <ClientsTable
-          clients={filteredClients as Client[]} />
+      {filteredWorkouts && filteredWorkouts.length > 0 ? (
+        <RoutinesTable workouts={filteredWorkouts as Workout[]} />
       ) : (
         <CenteredLayout>
-          <Typography variant="h5">No se encontró ningun cliente</Typography>
+          <Typography variant="h5">No se encontró ninguna rutina</Typography>
         </CenteredLayout>
       )}
     </Box>
@@ -71,7 +70,7 @@ const SearchClientInput = ({
     sx={{ width: 600, mr: 2 }}
     type="text"
     size="small"
-    label="Buscar un cliente"
+    label="Buscar una rutina"
     value={value}
     onChange={onChange}
     InputProps={{

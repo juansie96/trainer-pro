@@ -14,15 +14,15 @@ const WorkoutSidebar = () => {
   return (
     <Sidebar>
       <MenuItem
-        active={location.pathname.includes("planification")}
-        onClick={() => navigate(`/dashboard/client/${clientId}/planification`)}
+        active={!location.pathname.includes("exercises")}
+        onClick={() => navigate(`/dashboard/workouts`)}
       >
         <EventNoteIcon sx={{ p: 1 }} />
         <Typography>Rutinas</Typography>
       </MenuItem>
       <MenuItem
-        active={location.pathname.includes("information")}
-        onClick={() => navigate(`/dashboard/client/${clientId}/information`)}
+        active={location.pathname.includes("exercises")}
+        onClick={() => navigate(`/dashboard/workouts/exercises`)}
       >
         <InfoIcon sx={{ p: 1 }} />
         <Typography>Ejercicios</Typography>

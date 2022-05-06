@@ -45,10 +45,7 @@ export function AddClientDialog({ open, onClose }: AddClientDialogProps) {
       onClose();
     } catch(err: any) {
       setIsAdding(false);
-      const error = err as FirestoreError;
-      console.log('error', error)
     }
-    
   };
 
   return (

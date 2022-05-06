@@ -7,11 +7,11 @@ import {
   WithFieldValue,
 } from "firebase/firestore";
 import { Client } from "../components/Pages/Clients/Clients";
+import { Workout } from "../components/Pages/Workouts/Routines/Routines";
 import { firestoreDB } from "./firebase";
 
 const clientConverter: FirestoreDataConverter<Client> = {
   toFirestore(client: WithFieldValue<Client>): DocumentData {
-    console.log('executing', client)
     return {
       name: client.name,
       lastname: client.lastname,
@@ -37,6 +37,28 @@ const clientConverter: FirestoreDataConverter<Client> = {
   },
 };
 
+const workoutConverter: FirestoreDataConverter<Workout> = {
+  toFirestore(workout: WithFieldValue<Workout>): DocumentData {
+    return {
+      name: workout.name,
+    };
+  },
+  fromFirestore(
+    snapshot: QueryDocumentSnapshot,
+    options: SnapshotOptions
+  ): Workout {
+    const data = snapshot.data(options);
+    return {
+      name: data.name,
+      id: snapshot.id,
+      ref: snapshot.ref,
+    };
+  },
+};
+
+
+
 export const clientsRef = collection(firestoreDB, "clients").withConverter(clientConverter);
+export const workoutsRef = collection(firestoreDB, "workouts").withConverter(workoutConverter);
 
 export default null;

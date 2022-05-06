@@ -12,7 +12,6 @@ import { Client } from "./Clients";
 
 export interface ClientsTableProps {
   clients: Client[];
-  onAddClient(): void;
 }
 
 export const ClientsTable = ({ clients }: ClientsTableProps) => {
