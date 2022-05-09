@@ -13,7 +13,7 @@ import ClientInformation from "../Pages/Client/ClientInformation";
 import { useContext } from "react";
 import ClientNutrition from "../Pages/Client/ClientNutrition";
 import Routines from "../Pages/Workouts/Routines/Routines";
-import Exercises from "../Pages/Workouts/Exercises";
+import Exercises from "../Pages/Workouts/Exercises/Exercises";
 
 const AppRoutes = () => {
 

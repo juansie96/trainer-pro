@@ -1,4 +1,12 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Stack,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { addDoc, WithFieldValue } from "firebase/firestore";
 import React, { useState } from "react";
@@ -20,25 +28,32 @@ export interface AddWorkoutFormData {
 const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
   const formContext = useForm<AddWorkoutFormData>();
 
-  const [isAdding, setIsAdding] = useState<boolean>(false)
+  const [isAdding, setIsAdding] = useState<boolean>(false);
 
   const onSubmit = async (newWorkout: AddWorkoutFormData) => {
     setIsAdding(true);
     try {
-      await addDoc(workoutsRef, newWorkout as WithFieldValue<Workout>)
+      await addDoc(workoutsRef, newWorkout as WithFieldValue<Workout>);
       setIsAdding(false);
       onClose();
-    } catch(err: any) {
+    } catch (err: any) {
       setIsAdding(false);
     }
   };
 
   return (
     <div>
-      <Dialog open={open} onClose={onClose}>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        PaperProps={{ sx: { maxWidth: 0.95, width: 0.95, height: 0.95 } }}
+      >
         <FormContainer
           formContext={formContext}
           handleSubmit={formContext.handleSubmit(onSubmit)}
+          FormProps={{
+            style: { height: "100%", display: "flex", flexDirection: "column" },
+          }}
         >
           <Box borderBottom="1px solid #e3e3e3">
             <DialogTitle>Agregar Rutina</DialogTitle>
@@ -62,19 +77,6 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
                 sx={{ width: 0.475 }}
                 size="small"
               />
-              
-
-              {/* <TextFieldElement
-                name="age"
-                label="Edad"
-                type="number"
-                validation={{ required: "La edad es requerida" }}
-                sx={{ width: 0.475, mt: 2 }}
-                size="small"
-                customOnChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  formContext.setValue("age", parseInt(e.target.value))
-                }
-              /> */}
             </Stack>
           </DialogContent>
           <DialogActions sx={{ px: 3, py: 2, borderTop: "1px solid #e3e3e3" }}>
