@@ -9,10 +9,10 @@ import { exercisesRef, workoutsRef } from "../../../../firebase/fbRefs";
 
 export interface Exercise {
   name: string;
-  description: string;
+  description?: string;
   id: string;
-  videoUrl: string;
-  imgUrl: string;
+  videoUrl?: string;
+  imgUrls?: string[] | null;
   tags: string[] | null;
   ref: DocumentReference<DocumentData>;
 }
@@ -58,10 +58,12 @@ const Exercises = () => {
   return (
     <Box height={1}>
       {content}
-      <AddExerciseDialog
-        open={addExerciseDialogOpen}
-        onClose={closeAddExerciseDialog}
-      />
+      {addExerciseDialogOpen && (
+        <AddExerciseDialog
+          open={addExerciseDialogOpen}
+          onClose={closeAddExerciseDialog}
+        />
+      )}
     </Box>
   );
 };

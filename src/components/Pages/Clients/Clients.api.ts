@@ -20,7 +20,6 @@ export const clientsApi = createApi({
             ...newClient,
             trainerId: loggedInUser ? loggedInUser.id : "GGWP",
           }); // call firebase here
-          console.log('inside RTK repsonse', response)
           return { data: response };
         } catch (e) {
           return { error: e };

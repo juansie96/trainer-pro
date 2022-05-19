@@ -61,10 +61,10 @@ const exerciseConverter: FirestoreDataConverter<Exercise> = {
   toFirestore(exercise: WithFieldValue<Exercise>): DocumentData {
     return {
       name: exercise.name,
-      description: exercise.description,
+      description: exercise.description ? exercise.description : '',
       videoUrl: exercise.videoUrl,
-      imgUrl: exercise.imgUrl,
-      tags: exercise.tags,
+      imgUrls: exercise.imgUrls,
+      tags: exercise.tags ? exercise.tags : [],
     };
   },
   fromFirestore(
@@ -76,7 +76,7 @@ const exerciseConverter: FirestoreDataConverter<Exercise> = {
       name: data.name,
       description: data.description,
       videoUrl: data.videoUrl,
-      imgUrl: data.imgUrl,
+      imgUrls: data.imgUrls,
       tags: data.tags,
       id: snapshot.id,
       ref: snapshot.ref,

@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Card,
   IconButton,
   InputAdornment,
   TextField,
@@ -11,6 +12,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { exercisesRef, workoutsRef } from "../../../../firebase/fbRefs";
 import { CenteredLayout } from "../../../UI/CenteredLayout";
+import ExercisesGrid from "./ExercisesGrid";
 
 export const ExercisesLayout = ({
   openAddExerciseDialog,
@@ -31,29 +33,38 @@ export const ExercisesLayout = ({
 
   return (
     <Box mt={5}>
-      <Box display="flex" justifyContent="center" mb={5}>
-        <SearchClientInput
-          value={query}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setQuery(e.target.value)
-          }
-        />
-        <Button
-          variant="contained"
-          disabled={loading}
-          onClick={openAddExerciseDialog}
-        >
-          Agregar ejercicio
-        </Button>
-      </Box>
-      {filteredExercises && filteredExercises.length > 0 ? (
-        // <RoutinesTable workouts={filteredWorkouts as Workout[]} />
-        <p>Aca irian todos los ejercicios, no mas tabla...</p>
-      ) : (
-        <CenteredLayout>
-          <Typography variant="h5">No se encontró ningun ejercicio</Typography>
-        </CenteredLayout>
-      )}
+      <Card
+        sx={{ height: 1, display: "flex", flexDirection: "column" }}
+        elevation={10}
+        className="exercises-layout"
+      >
+        <Box display="flex" justifyContent="center" mt={3}>
+          <SearchClientInput
+            value={query}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setQuery(e.target.value)
+            }
+          />
+          <Button
+            variant="contained"
+            disabled={loading}
+            onClick={openAddExerciseDialog}
+          >
+            Agregar ejercicio
+          </Button>
+        </Box>
+
+        {filteredExercises && filteredExercises.length > 0 ? (
+          // <RoutinesTable workouts={filteredWorkouts as Workout[]} />
+          <ExercisesGrid exercises={filteredExercises}/>
+        ) : (
+          <CenteredLayout>
+            <Typography variant="h5">
+              No se encontró ningun ejercicio
+            </Typography>
+          </CenteredLayout>
+        )}
+      </Card>
     </Box>
   );
 };
