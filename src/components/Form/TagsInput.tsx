@@ -6,21 +6,23 @@ interface TagsInputProps {
   control?: Control<any>;
   label: string;
   placeholder: string;
+  name: string;
 }
 
-export const TagsInput: React.FC<TagsInputProps> = ({control, label, placeholder}) => {
+export const TagsInput: React.FC<TagsInputProps> = ({name, control, label, placeholder}) => {
   return (
     <Controller
-      name="tags"
+      name={name}
       control={control}
       render={({ field }) => (
         <Autocomplete
+          {...field}
           sx={{ mt: 2 }}
           fullWidth
           multiple
           id="tags-filled"
           options={[]}
-          defaultValue={[]}
+          // defaultValue={field.value}
           freeSolo
           onChange={(e, value) => field.onChange(value)}
           renderTags={(

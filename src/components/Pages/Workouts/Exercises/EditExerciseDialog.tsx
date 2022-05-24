@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import {
   Autocomplete,
   Button,
@@ -27,15 +27,16 @@ import TextFieldElement from "../../../Form/TextFieldElement";
 import { extractVideoID, videoUrlIsValid } from "../../../../utils/utils";
 import { TagsInput } from "../../../Form/TagsInput";
 import { storage } from "../../../../firebase/firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes } from "firebase/storage";
 import Swal from 'sweetalert2'
 
-interface AddExerciseDialogProps {
+interface EditExerciseDialogProps {
   open: boolean;
   onClose(): void;
+  exercise: Exercise;
 }
 
-export interface AddExerciseFormData {
+export interface EditExerciseFormData {
   name: string;
   description: string;
   videoUrl?: string;
@@ -45,18 +46,65 @@ export interface AddExerciseFormData {
 type MediaType = "video" | "image" | "none";
 
 interface Image {
-  file: File;
+  file: File | null;
   objectURL: string;
 }
 
-const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
-  const formContext = useForm<AddExerciseFormData>();
+const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps) => {
+
+  const getMediaType = () => {
+    const { videoUrl, imgUrls } = exercise;
+    if (videoUrl && videoUrl.length > 0) {
+      return 'video'
+    } else if (imgUrls && imgUrls.length > 0) {
+      return 'image'
+    } else {
+      return 'none'
+    }
+  }
+
+  const formContext = useForm<EditExerciseFormData>({
+    defaultValues: {
+      name: exercise.name,
+      tags: exercise.tags,
+      description: exercise.description,
+      videoUrl: exercise.videoUrl,
+    },
+  });
+
+  console.log(formContext.getValues())
 
   const [isAdding, setIsAdding] = useState<boolean>(false);
-  const [mediaType, setMediaType] = useState<MediaType>("video");
-  const [firstImage, setFirstImage] = useState<Image>();
-  const [secondImage, setSecondImage] = useState<Image>();
-  const [thirdImage, setThirdImage] = useState<Image>();
+  const [mediaType, setMediaType] = useState<MediaType>(getMediaType());
+  const [firstImage, setFirstImage] = useState<Image | null>(
+    exercise.imgUrls && exercise.imgUrls[0]
+      ? { file: null, objectURL: exercise.imgUrls[0] }
+      : null
+  );
+  const [secondImage, setSecondImage] = useState<Image | null>(
+    exercise.imgUrls && exercise.imgUrls[1]
+      ? { file: null, objectURL: exercise.imgUrls[1] }
+      : null
+  );
+  const [thirdImage, setThirdImage] = useState<Image | null>(
+    exercise.imgUrls && exercise.imgUrls[2]
+      ? { file: null, objectURL: exercise.imgUrls[2] }
+      : null
+  );
+
+  console.log('exercise', exercise)
+  console.log('mediaType', mediaType)
+
+  useEffect(() => {
+    if (exercise.imgUrls && exercise.imgUrls.length) {
+      exercise.imgUrls.forEach((imgUrl, idx) => {
+        if (idx === 0) {
+          console.log('imgUrl', imgUrl)
+        }
+      })
+    }
+  }, [])
+  
 
   let selectMediaTypeContent;
 
@@ -90,45 +138,43 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
 
   const uploadImages = async (): Promise<string[]> => {
     const uploadImgsPromises = [];
-    if (firstImage) uploadImgsPromises.push(uploadImageToCloudStorage(firstImage.file))
-    if (secondImage) uploadImgsPromises.push(uploadImageToCloudStorage(secondImage.file))
-    if (thirdImage) uploadImgsPromises.push(uploadImageToCloudStorage(thirdImage.file))
+    if (firstImage?.file) uploadImgsPromises.push(uploadImageToCloudStorage(firstImage.file))
+    if (secondImage?.file) uploadImgsPromises.push(uploadImageToCloudStorage(secondImage.file))
+    if (thirdImage?.file) uploadImgsPromises.push(uploadImageToCloudStorage(thirdImage.file))
     return await Promise.all(uploadImgsPromises)
   }
 
-  const onSubmit = async (exercise: AddExerciseFormData) => {
+  const onSubmit = async (exercise: EditExerciseFormData) => {
 
-    let newExercise: AddExerciseFormData & { imgUrls?: string[] | null } = {
+    console.log('exercise', exercise)
+
+    let newExercise: EditExerciseFormData & { imgUrls?: string[] | null } = {
       ...exercise,
     };
 
-    setIsAdding(true);
+    // setIsAdding(true);
 
-    if (mediaType === 'image') {
-      newExercise.videoUrl = '';
-      const imgUrls = await uploadImages()
-      newExercise.imgUrls = imgUrls;
-    } else if (mediaType === 'video') {
-      newExercise.imgUrls = null;
-    } else {
-      newExercise.videoUrl = '';
-      newExercise.imgUrls = null;
-    }
-
-    try {
-      const res = await addDoc(exercisesRef, newExercise as WithFieldValue<Exercise>);
-      console.log(res)
-      setIsAdding(false);
-      onClose()
-      Swal.fire(
-        '¡Éxito!',
-        'El ejercicio se creo correctamente!',
-        'success'
-      )
-    } catch(error) {
-      console.error(error)
-      setIsAdding(false);
-    }
+    // if (mediaType === 'image') {
+    //   newExercise.videoUrl = '';
+    //   const imgUrls = await uploadImages()
+    //   newExercise.imgUrls = imgUrls;
+    // } else {
+    //   newExercise.imgUrls = null;
+    // }
+    // try {
+    //   const res = await addDoc(exercisesRef, newExercise as WithFieldValue<Exercise>);
+    //   console.log(res)
+    //   setIsAdding(false);
+    //   onClose()
+    //   Swal.fire(
+    //     '¡Éxito!',
+    //     'El ejercicio se editó correctamente!',
+    //     'success'
+    //   )
+    // } catch(error) {
+    //   console.error(error)
+    //   setIsAdding(false);
+    // }
   };
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -387,8 +433,7 @@ const validVideoURLRegex =
 const uploadImageToCloudStorage = async (file: File): Promise<string> => {
   const storageRef = ref(storage, `images/${file.name}`);
   const response = await uploadBytes(storageRef, file);
-  const downloadURL = await getDownloadURL(response.ref)
-  return downloadURL;
+  return response.metadata.fullPath;
 };
 
-export default AddExerciseDialog;
+export default EditExerciseDialog;
