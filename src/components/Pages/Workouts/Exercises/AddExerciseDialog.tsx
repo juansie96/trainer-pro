@@ -117,7 +117,6 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
 
     try {
       const res = await addDoc(exercisesRef, newExercise as WithFieldValue<Exercise>);
-      console.log(res)
       setIsAdding(false);
       onClose()
       Swal.fire(

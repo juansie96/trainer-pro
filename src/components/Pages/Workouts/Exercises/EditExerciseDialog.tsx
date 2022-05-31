@@ -26,9 +26,10 @@ import { Box } from "@mui/system";
 import TextFieldElement from "../../../Form/TextFieldElement";
 import { extractVideoID, videoUrlIsValid } from "../../../../utils/utils";
 import { TagsInput } from "../../../Form/TagsInput";
-import { storage } from "../../../../firebase/firebase";
-import { ref, uploadBytes } from "firebase/storage";
-import Swal from 'sweetalert2'
+import { firestoreDB, storage } from "../../../../firebase/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import Swal from "sweetalert2";
+import { doc, updateDoc } from "firebase/firestore";
 
 interface EditExerciseDialogProps {
   open: boolean;
@@ -50,19 +51,27 @@ interface Image {
   objectURL: string;
 }
 
-const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps) => {
+const VideoErrorContainer = ({ message }: { message: string }) => (
+  <Box
+    width={560}
+    height={315}
+    bgcolor="#acacac"
+    display="flex"
+    justifyContent="center"
+    alignItems="center"
+    borderRadius={5}
+  >
+    <Typography variant="h5" color="#fff">
+      {message}
+    </Typography>
+  </Box>
+);
 
-  const getMediaType = () => {
-    const { videoUrl, imgUrls } = exercise;
-    if (videoUrl && videoUrl.length > 0) {
-      return 'video'
-    } else if (imgUrls && imgUrls.length > 0) {
-      return 'image'
-    } else {
-      return 'none'
-    }
-  }
-
+const EditExerciseDialog = ({
+  open,
+  onClose,
+  exercise,
+}: EditExerciseDialogProps) => {
   const formContext = useForm<EditExerciseFormData>({
     defaultValues: {
       name: exercise.name,
@@ -72,10 +81,15 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
     },
   });
 
-  console.log(formContext.getValues())
-
   const [isAdding, setIsAdding] = useState<boolean>(false);
-  const [mediaType, setMediaType] = useState<MediaType>(getMediaType());
+
+  const [mediaType, setMediaType] = useState<MediaType>(
+    getMediaType(exercise.videoUrl, exercise.imgUrls)
+  );
+
+  const mediaTypeChanged =
+    mediaType !== getMediaType(exercise.videoUrl, exercise.imgUrls);
+
   const [firstImage, setFirstImage] = useState<Image | null>(
     exercise.imgUrls && exercise.imgUrls[0]
       ? { file: null, objectURL: exercise.imgUrls[0] }
@@ -92,24 +106,24 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
       : null
   );
 
-  console.log('exercise', exercise)
-  console.log('mediaType', mediaType)
+  const [imagesChanged, setImagesChanged] = useState(false);
 
-  useEffect(() => {
-    if (exercise.imgUrls && exercise.imgUrls.length) {
-      exercise.imgUrls.forEach((imgUrl, idx) => {
-        if (idx === 0) {
-          console.log('imgUrl', imgUrl)
-        }
-      })
-    }
-  }, [])
-  
+  // useEffect(() => {
+  //   if (exercise.imgUrls && exercise.imgUrls.length) {
+  //     exercise.imgUrls.forEach((imgUrl, idx) => {
+  //       if (idx === 0) {
+  //         console.log("imgUrl", imgUrl);
+  //       }
+  //     });
+  //   }
+  // }, []);
 
   let selectMediaTypeContent;
+  const exerciseChanged =
+    formContext.formState.isDirty || imagesChanged || mediaTypeChanged;
 
   const videoUrl = formContext.watch("videoUrl");
-  let videoContainerContent;
+  let videoContainerContent: JSX.Element;
 
   if (videoUrl) {
     if (videoUrlIsValid(videoUrl)) {
@@ -138,43 +152,61 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
 
   const uploadImages = async (): Promise<string[]> => {
     const uploadImgsPromises = [];
-    if (firstImage?.file) uploadImgsPromises.push(uploadImageToCloudStorage(firstImage.file))
-    if (secondImage?.file) uploadImgsPromises.push(uploadImageToCloudStorage(secondImage.file))
-    if (thirdImage?.file) uploadImgsPromises.push(uploadImageToCloudStorage(thirdImage.file))
-    return await Promise.all(uploadImgsPromises)
-  }
+    if (firstImage) {
+      uploadImgsPromises.push(
+        firstImage.file
+          ? uploadImageToCloudStorage(firstImage.file)
+          : Promise.resolve(firstImage.objectURL)
+      );
+    }
+    if (secondImage) {
+      uploadImgsPromises.push(
+        secondImage.file
+          ? uploadImageToCloudStorage(secondImage.file)
+          : Promise.resolve(secondImage.objectURL)
+      );
+    }
+    if (thirdImage) {
+      uploadImgsPromises.push(
+        thirdImage.file
+          ? uploadImageToCloudStorage(thirdImage.file)
+          : Promise.resolve(thirdImage.objectURL)
+      );
+    } 
 
-  const onSubmit = async (exercise: EditExerciseFormData) => {
+    return await Promise.all(uploadImgsPromises);
+  };
 
-    console.log('exercise', exercise)
-
+  const onSubmit = async (exerciseData: EditExerciseFormData) => {
     let newExercise: EditExerciseFormData & { imgUrls?: string[] | null } = {
-      ...exercise,
+      ...exerciseData,
     };
 
-    // setIsAdding(true);
+    if (!exerciseChanged) {
+      onClose();
+      return;
+    }
 
-    // if (mediaType === 'image') {
-    //   newExercise.videoUrl = '';
-    //   const imgUrls = await uploadImages()
-    //   newExercise.imgUrls = imgUrls;
-    // } else {
-    //   newExercise.imgUrls = null;
-    // }
-    // try {
-    //   const res = await addDoc(exercisesRef, newExercise as WithFieldValue<Exercise>);
-    //   console.log(res)
-    //   setIsAdding(false);
-    //   onClose()
-    //   Swal.fire(
-    //     '¡Éxito!',
-    //     'El ejercicio se editó correctamente!',
-    //     'success'
-    //   )
-    // } catch(error) {
-    //   console.error(error)
-    //   setIsAdding(false);
-    // }
+    setIsAdding(true);
+
+    if (imagesChanged) {
+      // Check what images needs to be kept and what images need to be upload
+      newExercise.videoUrl = "";
+      const imgUrls = await uploadImages();
+      newExercise.imgUrls = imgUrls;
+    } else {
+      newExercise.imgUrls = null;
+    }
+
+    try {
+      const res = updateDoc(exercise.ref, { ...newExercise });
+      setIsAdding(false);
+      onClose();
+      Swal.fire("¡Éxito!", "El ejercicio se editó correctamente!", "success");
+    } catch (error) {
+      console.error(error);
+      setIsAdding(false);
+    }
   };
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -182,6 +214,7 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
   };
 
   const onImageChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
+    setImagesChanged(true);
     if (!e.target.files) {
       return;
     }
@@ -189,19 +222,19 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
       case "first":
         setFirstImage({
           file: e.target.files[0],
-          objectURL: URL.createObjectURL(e.target.files[0]),
+          objectURL: URL.createObjectURL(e.target.files[0])
         });
         return;
       case "second":
         setSecondImage({
           file: e.target.files[0],
-          objectURL: URL.createObjectURL(e.target.files[0]),
+          objectURL: URL.createObjectURL(e.target.files[0])
         });
         return;
       case "third":
         setThirdImage({
           file: e.target.files[0],
-          objectURL: URL.createObjectURL(e.target.files[0]),
+          objectURL: URL.createObjectURL(e.target.files[0])
         });
         return;
       default:
@@ -318,16 +351,20 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
           formContext={formContext}
           handleSubmit={formContext.handleSubmit(onSubmit)}
           FormProps={{
-            style: { height: "100%", display: "flex", flexDirection: "column" },
+            style: {
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+            },
           }}
         >
           <Box borderBottom="1px solid #e3e3e3">
-            <DialogTitle>Crear Ejercicio</DialogTitle>
+            <DialogTitle>Editar Ejercicio</DialogTitle>
           </Box>
           <DialogContent sx={{ pt: 3, pb: 4 }}>
-            <DialogContentText>
+            {/* <DialogContentText>
               Completa los datos de tu nuevo ejercicio
-            </DialogContentText>
+            </DialogContentText> */}
 
             <Stack
               width={1}
@@ -376,7 +413,7 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
                 fullWidth
               />
               <TagsInput
-                name='tags'
+                name="tags"
                 label="Categorías"
                 placeholder="Agrega una categoría presionando enter"
               />
@@ -385,7 +422,7 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
           <DialogActions sx={{ px: 3, py: 2, borderTop: "1px solid #e3e3e3" }}>
             <Button onClick={onClose}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={isAdding}>
-              {isAdding ? "Creando Ejercicio" : "Crear Ejercicio"}
+              {isAdding ? "Guardando Ejercicio" : "Guardar Ejercicio"}
             </Button>
           </DialogActions>
         </FormContainer>
@@ -394,28 +431,11 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
   );
 };
 
-const VideoErrorContainer = ({ message }: { message: string }) => (
-  <Box
-    width={560}
-    height={315}
-    bgcolor="#acacac"
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
-    borderRadius={5}
-  >
-    <Typography variant="h5" color="#fff">
-      {message}
-    </Typography>
-  </Box>
-);
-
 const validVideoURLRegex =
   /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w-]+\?v=|embed\/|v\/)?)([\w-]+)(\S+)?$/;
 
-  
-  const ExerciseSvgPlaceholder = (props: any) => (
-    <svg
+const ExerciseSvgPlaceholder = (props: any) => (
+  <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 511.998 511.998"
     style={{
@@ -424,7 +444,7 @@ const validVideoURLRegex =
     }}
     xmlSpace="preserve"
     {...props}
-    >
+  >
     <circle cx={264.358} cy={55.54} r={42.502} />
     <path d="M418.946 203.093c-9.346-5.34-21.253-2.092-26.593 7.255-3.145 5.504-3.291 11.889-.987 17.305l-3.069 5.372-29.226-30.973-24.156-74.089c-2.414-7.404-8.961-12.298-16.251-12.975v-.267h-94.239c-.222-.096-.431-.208-.659-.297L166.9 92.138l-4.832-55.134 10.35.042c3.541 4.701 9.143 7.764 15.484 7.791 10.765.043 19.527-8.647 19.57-19.411.043-10.765-8.647-19.527-19.412-19.57-6.339-.026-11.968 2.992-15.546 7.664l-12.904-.052C157.086 5.054 148.933-.717 139.836.072c-7.886.692-14.208 6.129-16.418 13.25l-5.138-.021c-3.541-4.701-9.143-7.765-15.484-7.791-10.763-.045-19.526 8.646-19.57 19.41-.044 10.765 8.647 19.527 19.412 19.57 6.339.025 11.968-2.992 15.546-7.664l5.879.023 6.159 70.278a18.922 18.922 0 0 0 11.947 15.966l67.787 26.565c.032.013.065.021.099.033v132.598l-46.906 199.465c-3.11 13.228 5.091 26.474 18.319 29.585 13.235 3.11 26.475-5.095 29.585-18.319l47.575-202.305h11.464l47.575 202.305c3.11 13.226 16.352 21.429 29.585 18.319 13.229-3.111 21.43-16.357 18.319-29.585L318.664 282.29v-82.082l5.74 17.608a18.912 18.912 0 0 0 4.228 7.121l40.04 42.435-4.21 7.369c-5.836.765-11.261 4.133-14.406 9.638-5.34 9.346-2.092 21.253 7.255 26.593 9.346 5.34 21.253 2.092 26.593-7.255 3.145-5.504 3.291-11.889.987-17.305l2.415-4.227c6.139 1.285 12.386-.51 16.88-4.749 7.523-7.1 7.929-18.9.98-26.51l6.629-11.603c5.836-.765 11.261-4.134 14.406-9.638 5.34-9.346 2.091-21.251-7.255-26.592z" />
   </svg>
@@ -433,7 +453,18 @@ const validVideoURLRegex =
 const uploadImageToCloudStorage = async (file: File): Promise<string> => {
   const storageRef = ref(storage, `images/${file.name}`);
   const response = await uploadBytes(storageRef, file);
-  return response.metadata.fullPath;
+  const downloadURL = await getDownloadURL(response.ref)
+  return downloadURL;
 };
+
+function getMediaType(videoUrl: string, imgUrls: string[] | null) {
+  if (videoUrl && videoUrl.length > 0) {
+    return "video";
+  } else if (imgUrls && imgUrls.length > 0) {
+    return "image";
+  } else {
+    return "none";
+  }
+}
 
 export default EditExerciseDialog;

@@ -11,8 +11,8 @@ export interface Exercise {
   name: string;
   description?: string;
   id: string;
-  videoUrl?: string;
-  imgUrls?: string[] | null;
+  videoUrl: string;
+  imgUrls: string[] | null;
   tags: string[] | null;
   ref: DocumentReference<DocumentData>;
 }

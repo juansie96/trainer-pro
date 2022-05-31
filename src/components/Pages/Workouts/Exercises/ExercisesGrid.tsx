@@ -12,7 +12,6 @@ interface ExercisesGridProps {
 }
 
 const ExercisesGrid: React.FC<ExercisesGridProps> = ({ exercises }) => {
-  console.log("styles", styles);
   return (
     <Box
       className="exercises-grid"
@@ -63,6 +62,7 @@ const ExerciseCard = ({ exercise }: { exercise: Exercise }) => {
         top={0}
         width={1}
         height={1}
+        onClick={openEditExerciseDialog}
       ></Box>
       <Box position="absolute" bottom={10} left={10}>
         <Typography variant="subtitle1" color="white" fontWeight={600}>
@@ -105,5 +105,3 @@ function getExerciseImgUrl(exercise: Exercise): string {
 
   return "";
 }
-
-// Video Image: https://img.youtube.com/vi/${id}/mqdefault.jpg
