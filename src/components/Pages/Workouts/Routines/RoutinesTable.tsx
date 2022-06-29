@@ -1,7 +1,14 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
-import { Workout } from './Routines';
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Workout } from "./Routines";
 
 export interface WorkoutsTableProps {
   workouts: Workout[];
@@ -28,7 +35,6 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
                 cursor: "pointer",
                 "&:last-child td, &:last-child th": { border: 0 },
               }}
-              onClick={() => navigate(`/dashboard/workout/${workout.id}`)}
             >
               <TableCell component="th" scope="row">
                 {workout.name}
@@ -41,6 +47,6 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
       </Table>
     </TableContainer>
   );
-}
+};
 
-export default RoutinesTable
+export default RoutinesTable;

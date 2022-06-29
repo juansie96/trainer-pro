@@ -28,7 +28,12 @@ const Calendar = () => {
         {month.map((row, rowIdx) => (
           <React.Fragment key={rowIdx}>
             {row.map((day, colIdx) => (
-              <CalendarDay day={day} rowIdx={rowIdx} colIdx={colIdx} />
+              <CalendarDay
+                day={day}
+                rowIdx={rowIdx}
+                colIdx={colIdx}
+                key={day.toISOString()}
+              />
             ))}
           </React.Fragment>
         ))}

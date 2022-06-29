@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { Exercise } from "../components/Pages/Workouts/Exercises/Exercises";
 
 export const getMonth = (month = dayjs().month()) => {
   const year = dayjs().year();
@@ -53,3 +54,14 @@ export const extractVideoID = (videoUrl: string) => {
     return "";
   }
 };
+
+export function getExerciseImgUrl(exercise: Exercise): string {
+  if (exercise.videoUrl && exercise.videoUrl.length > 0) {
+    const videoId = extractVideoID(exercise.videoUrl);
+    return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+  } else if (exercise.imgUrls && exercise.imgUrls.length) {
+    return exercise.imgUrls[0];
+  } else {
+    return "https://reviverestore.org/wp-content/uploads/2017/05/placeholder-image-cropped.jpg";
+  }
+}

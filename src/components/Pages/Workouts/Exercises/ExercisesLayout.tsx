@@ -59,7 +59,7 @@ export const ExercisesLayout = ({
           <ExercisesGrid exercises={filteredExercises}/>
         ) : (
           <CenteredLayout>
-            <Typography variant="h5">
+            <Typography variant="h5" my={3}>
               No se encontró ningun ejercicio
             </Typography>
           </CenteredLayout>

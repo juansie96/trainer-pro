@@ -30,7 +30,7 @@ export const Login: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<any>("");
 
-  if (user) {
+  if (user?.user) {
     return <Navigate to="/dashboard" />;
   }
 

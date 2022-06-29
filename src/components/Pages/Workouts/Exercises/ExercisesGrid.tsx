@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import { getDownloadURL, ref } from "firebase/storage";
 import React, { useState } from "react";
 import { storage } from "../../../../firebase/firebase";
-import { extractVideoID } from "../../../../utils/utils";
+import { extractVideoID, getExerciseImgUrl } from "../../../../utils/utils";
 import EditExerciseDialog from "./EditExerciseDialog";
 import { Exercise } from "./Exercises";
 import styles from "./Exercises.module.css";
@@ -92,16 +92,3 @@ const Tag = ({ name }: { name: string }) => (
     </Typography>
   </Box>
 );
-
-function getExerciseImgUrl(exercise: Exercise): string {
-  if (exercise.videoUrl && exercise.videoUrl.length > 0) {
-    const videoId = extractVideoID(exercise.videoUrl);
-    return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-  } else if (exercise.imgUrls && exercise.imgUrls.length) {
-    return exercise.imgUrls[0];
-  } else {
-    return "https://reviverestore.org/wp-content/uploads/2017/05/placeholder-image-cropped.jpg";
-  }
-
-  return "";
-}
