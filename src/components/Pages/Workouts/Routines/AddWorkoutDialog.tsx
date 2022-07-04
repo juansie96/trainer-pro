@@ -6,6 +6,8 @@ import {
   DialogContentText,
   DialogTitle,
   Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { Box } from "@mui/system"
 import { addDoc, WithFieldValue } from "firebase/firestore";
@@ -45,10 +47,6 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
     }
   );
 
-  console.log('fields', fields)
-
-  console.log("workoutExercises", formContext.watch('workoutExercises'));
-
   const [isAdding, setIsAdding] = useState<boolean>(false);
 
   const onSubmit = async (newWorkout: AddWorkoutFormData) => {
@@ -69,6 +67,37 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
     //   setIsAdding(false);
     // }
   };
+
+  const LeftSideContent = () => {
+    console.log('rendering brodacho')
+    return (
+      <Box width={0.55}>
+        <TextFieldElement
+          name="name"
+          label="Nombre"
+          validation={{ required: "El nombre es requerido" }}
+          size="small"
+          fullWidth
+        />
+        <TextFieldElement
+          name="description"
+          label="Descripción"
+          validation={{ required: "La descripción es requerida" }}
+          size="small"
+          fullWidth
+          multiline
+          rows={3}
+          sx={{ my: 2 }}
+        />
+        {exercises ? (
+          <EnhancedTable fields={fields} exercises={exercises} />
+        ) : (
+          <p>Cargando tabla</p>
+        )}
+      </Box>
+    );
+  }
+  
 
   return (
     <div>
@@ -98,29 +127,17 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
               justifyContent="space-between"
               flexWrap="wrap"
               mt={2}
+              position='relative'
             >
-              <Box width={0.475}>
-                <TextFieldElement
-                  name="name"
-                  label="Nombre"
-                  validation={{ required: "El nombre es requerido" }}
-                  size="small"
-                  fullWidth
-                />
-                <TextFieldElement
-                  name="description"
-                  label="Descripción"
-                  validation={{ required: "La descripción es requerida" }}
-                  size="small"
-                  fullWidth
-                  multiline
-                  rows={3}
-                  sx={{ my: 2 }}
-                />
-                {exercises ? <EnhancedTable fields={fields} exercises={exercises} /> : <p>Cargando tabla</p>}
+              <LeftSideContent/>
+              <Box width={'1px'} bgcolor='#b1aeae71' >
                 
               </Box>
-              <Box width={0.475}>
+              <Box width={0.4}>
+                <DialogContentText sx={{mb: 1}}>
+                  Selecciona los ejercicios de tu nueva rutina
+                </DialogContentText>
+                <TextField name="" fullWidth size="small" label='Busca ejercicios por nombre'/>
                 {exercises?.map((e) => {
                   return (
                     <p
