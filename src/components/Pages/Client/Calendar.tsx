@@ -1,15 +1,15 @@
-import { Card, Typography } from "@mui/material";
-import { Box } from "@mui/system";
-import React from "react";
-import { getMonth } from "../../../utils/utils";
-import CalendarDay from "./CalendarDay";
+import { Card, Typography } from '@mui/material';
+import { Box } from '@mui/system';
+import React from 'react';
+import { getMonth } from '../../../utils/utils';
+import CalendarDay from './CalendarDay';
 
 const Calendar = () => {
   const month = getMonth();
 
   return (
     <Card
-      sx={{ height: 1, display: "flex", flexDirection: "column" }}
+      sx={{ height: 1, display: 'flex', flexDirection: 'column' }}
       elevation={10}
       className="calendar-wrapper"
     >

@@ -6,13 +6,13 @@ import {
   InputAdornment,
   TextField,
   Typography,
-} from "@mui/material";
-import React, { useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
-import { useCollectionData } from "react-firebase-hooks/firestore";
-import { exercisesRef, workoutsRef } from "../../../../firebase/fbRefs";
-import { CenteredLayout } from "../../../UI/CenteredLayout";
-import ExercisesGrid from "./ExercisesGrid";
+} from '@mui/material';
+import React, { useState } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { exercisesRef, workoutsRef } from '../../../../firebase/fbRefs';
+import { CenteredLayout } from '../../../UI/CenteredLayout';
+import ExercisesGrid from './ExercisesGrid';
 
 export const ExercisesLayout = ({
   openAddExerciseDialog,
@@ -21,7 +21,7 @@ export const ExercisesLayout = ({
 }) => {
   const [exercises, loading] = useCollectionData(exercisesRef);
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
 
   let filteredExercises = exercises?.slice(0);
 
@@ -34,7 +34,7 @@ export const ExercisesLayout = ({
   return (
     <Box mt={5}>
       <Card
-        sx={{ height: 1, display: "flex", flexDirection: "column" }}
+        sx={{ height: 1, display: 'flex', flexDirection: 'column' }}
         elevation={10}
         className="exercises-layout"
       >

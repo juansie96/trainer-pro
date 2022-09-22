@@ -1,20 +1,20 @@
 import React from 'react'
-import HomeIcon from "@mui/icons-material/Home";
+import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
-import { Tab, Tabs } from "@mui/material";
+import { Tab, Tabs } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 type Pathname =
-  | "/dashboard"
-  | "/dashboard/"
-  | "/dashboard/clients"
-  | "/dashboard/clients/"
-  | "/dashboard/workouts"
-  | "/dashboard/workouts/"
-  | "/dashboard/nutrition"
-  | "/dashboard/nutrition/";
+  | '/dashboard'
+  | '/dashboard/'
+  | '/dashboard/clients'
+  | '/dashboard/clients/'
+  | '/dashboard/workouts'
+  | '/dashboard/workouts/'
+  | '/dashboard/nutrition'
+  | '/dashboard/nutrition/';
 
 export const DashboardTabs = () => {
 
@@ -49,12 +49,12 @@ export const DashboardTabs = () => {
 }
 
 const TabsStyles = {
-  bgcolor: "#1976d2",
+  bgcolor: '#1976d2',
   height: 50,
   minHeight: 50,
-  "& .MuiTab-root": { color: "white", width: 200, height: 50, minHeight: 50 },
-  "& .MuiTabs-indicator": { height: 5, bgcolor: "#e7ca2c" },
-  "& .MuiTab-root.Mui-selected": { color: '#e7ca2c' },
+  '& .MuiTab-root': { color: 'white', width: 200, height: 50, minHeight: 50 },
+  '& .MuiTabs-indicator': { height: 5, bgcolor: '#e7ca2c' },
+  '& .MuiTab-root.Mui-selected': { color: '#e7ca2c' },
 } 
 
 const LOCATION_VALUES = {

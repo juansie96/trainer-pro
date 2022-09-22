@@ -1,90 +1,87 @@
-import { useContext, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Navigate } from "react-router-dom";
-import { Button, LinearProgress } from "@mui/material";
-import { MainContainer } from "../../MainContainer/MainContainer";
-import { CustomSnackbar } from "../../UI/CustomSnackbar";
-import { mapFirebaseErrorCodeToMsg } from "../../../firebase/helperFunctions";
-import FormContainer from "../../Form/FormContainer";
-import TextFieldElement from "../../Form/TextFieldElement";
-import { auth } from "../../../firebase/firebase";
-import { UserContext } from "../../../contexts/UserContext";
-import { AuthError, signInWithEmailAndPassword } from "firebase/auth";
+import { useContext, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Navigate } from 'react-router-dom'
+import { Button, LinearProgress } from '@mui/material'
+import { MainContainer } from '../../MainContainer/MainContainer'
+import { CustomSnackbar } from '../../UI/CustomSnackbar'
+import FormContainer from '../../Form/FormContainer'
+import TextFieldElement from '../../Form/TextFieldElement'
+import { auth } from '../../../firebase/firebase'
+import { UserContext } from '../../../contexts/UserContext'
+import { AuthError, signInWithEmailAndPassword } from 'firebase/auth'
+import { mapFirebaseErrorCodeToMsg } from '../../../utils/utils'
 
 type RegisterFormValues = {
-  email: string;
-  password: string;
-};
+  email: string
+  password: string
+}
 
 export const Login: React.FC = () => {
-  const user = useContext(UserContext);
+  const user = useContext(UserContext)
 
   const formContext = useForm<RegisterFormValues>({
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-  });
+  })
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [loginError, setLoginError] = useState<any>("");
+  const [loading, setLoading] = useState<boolean>(false)
+  const [loginError, setLoginError] = useState<any>('')
 
   if (user?.user) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to='/dashboard' />
   }
 
   return (
-    <MainContainer sx={{ mt: 4 }} maxWidth="xs">
+    <MainContainer sx={{ mt: 4 }} maxWidth='xs'>
       {/* <FormErrors errors={formErrors} /> */}
-      <FormContainer
-        formContext={formContext}
-        handleSubmit={formContext.handleSubmit(loginUser)}
-      >
+      <FormContainer formContext={formContext} handleSubmit={formContext.handleSubmit(loginUser)}>
         <TextFieldElement
           sx={{ mb: 2 }}
           fullWidth
-          label="Email"
-          name="email"
-          type="email"
-          validation={{ required: "El email es requerido" }}
+          label='Email'
+          name='email'
+          type='email'
+          validation={{ required: 'El email es requerido' }}
         />
         <TextFieldElement
           sx={{ mb: 2 }}
           fullWidth
-          label="Password"
-          name="password"
-          type="password"
-          validation={{ required: "La contraseña es requerida" }}
+          label='Password'
+          name='password'
+          type='password'
+          validation={{ required: 'La contraseña es requerida' }}
         />
-        <Button variant="contained" type="submit" fullWidth disabled={loading}>
-          {loading ? "INICIANDO SESIÓN" : "INICIAR SESIÓN"}
+        <Button variant='contained' type='submit' fullWidth disabled={loading}>
+          {loading ? 'INICIANDO SESIÓN' : 'INICIAR SESIÓN'}
         </Button>
       </FormContainer>
       <>{loading && <LinearProgress sx={{ my: 3 }} />}</>
       <CustomSnackbar
         open={!!loginError}
         message={loginError}
-        severity="error"
+        severity='error'
         onClose={onSnackbarClose}
       />
     </MainContainer>
-  );
+  )
 
   function onSnackbarClose() {
-    setLoginError("");
+    setLoginError('')
   }
 
   async function loginUser(user: RegisterFormValues) {
-    setLoading(true);
+    setLoading(true)
     try {
-      await signInWithEmailAndPassword(auth, user.email, user.password);
-      setLoading(false);
+      await signInWithEmailAndPassword(auth, user.email, user.password)
+      setLoading(false)
     } catch (err) {
-      setLoading(false);
-      const error = err as AuthError;
-      setLoginError(mapFirebaseErrorCodeToMsg(error.code));
-      formContext.setValue("password", "");
+      setLoading(false)
+      const error = err as AuthError
+      setLoginError(mapFirebaseErrorCodeToMsg(error.code))
+      formContext.setValue('password', '')
     }
   }
-};
+}

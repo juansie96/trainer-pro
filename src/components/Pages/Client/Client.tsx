@@ -1,7 +1,7 @@
-import { Box } from "@mui/material";
-import React from "react";
-import { Outlet, useParams } from "react-router-dom";
-import ClientSidebar from "./ClientSidebar";
+import { Box } from '@mui/material';
+import React from 'react';
+import { Outlet, useParams } from 'react-router-dom';
+import ClientSidebar from './ClientSidebar';
 
 const Client = () => (
   <Box flex={1} className="client-layout" display="flex" flexDirection="column">

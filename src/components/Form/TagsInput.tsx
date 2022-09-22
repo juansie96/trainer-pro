@@ -1,6 +1,6 @@
-import { Autocomplete, Chip, TextField } from "@mui/material";
-import React from "react";
-import { Control, Controller } from "react-hook-form";
+import { Autocomplete, Chip, TextField } from '@mui/material';
+import React from 'react';
+import { Control, Controller } from 'react-hook-form';
 
 interface TagsInputProps {
   control?: Control<any>;

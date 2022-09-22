@@ -1,6 +1,6 @@
-import { Header } from "../Header/Header";
-import { UserProvider } from "../../contexts/UserContext";
-import AppRoutes from "./AppRoutes";
+import { Header } from '../Header/Header';
+import { UserProvider } from '../../contexts/UserContext';
+import AppRoutes from './AppRoutes';
 
 function App() {
   return (

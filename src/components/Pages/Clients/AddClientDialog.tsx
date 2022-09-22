@@ -1,20 +1,20 @@
-import { useContext, useState } from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import { useForm } from "react-hook-form";
-import FormContainer from "../../Form/FormContainer";
-import TextFieldElement from "../../Form/TextFieldElement";
-import { Stack } from "@mui/material";
-import { Box } from "@mui/system";
-import { addDoc, FirestoreError, WithFieldValue } from "firebase/firestore";
-import { UserContext } from "../../../contexts/UserContext";
-import { User } from "firebase/auth";
-import { clientsRef } from "../../../firebase/fbRefs";
-import { Client } from "./Clients";
+import { useContext, useState } from 'react';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { useForm } from 'react-hook-form';
+import FormContainer from '../../Form/FormContainer';
+import TextFieldElement from '../../Form/TextFieldElement';
+import { Stack } from '@mui/material';
+import { Box } from '@mui/system';
+import { addDoc, FirestoreError, WithFieldValue } from 'firebase/firestore';
+import { UserContext } from '../../../contexts/UserContext';
+import { User } from 'firebase/auth';
+import { clientsRef } from '../../../firebase/fbRefs';
+import { Client } from './Clients';
 
 export interface AddClientFormData {
   name: string;
@@ -73,14 +73,14 @@ export function AddClientDialog({ open, onClose }: AddClientDialogProps) {
               <TextFieldElement
                 name="name"
                 label="Nombre"
-                validation={{ required: "El nombre es requerido" }}
+                validation={{ required: 'El nombre es requerido' }}
                 sx={{ width: 0.475 }}
                 size="small"
               />
               <TextFieldElement
                 name="lastname"
                 label="Apellido"
-                validation={{ required: "El apellido es requerido" }}
+                validation={{ required: 'El apellido es requerido' }}
                 sx={{ width: 0.475 }}
                 size="small"
               />
@@ -89,23 +89,23 @@ export function AddClientDialog({ open, onClose }: AddClientDialogProps) {
                 label="Email"
                 type="email"
                 sx={{ width: 0.475, mt: 2 }}
-                validation={{ required: "El email es requerido" }}
+                validation={{ required: 'El email es requerido' }}
                 size="small"
               />
               <TextFieldElement
                 name="age"
                 label="Edad"
                 type="number"
-                validation={{ required: "La edad es requerida" }}
+                validation={{ required: 'La edad es requerida' }}
                 sx={{ width: 0.475, mt: 2 }}
                 size="small"
                 customOnChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  formContext.setValue("age", parseInt(e.target.value))
+                  formContext.setValue('age', parseInt(e.target.value))
                 }
               />
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2, borderTop: "1px solid #e3e3e3" }}>
+          <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
             <Button onClick={onClose}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={isAdding}>
               {isAdding ? 'Agregando Cliente' : 'Agregar Cliente'}

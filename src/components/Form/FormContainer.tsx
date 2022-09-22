@@ -11,13 +11,12 @@ export type FormContainerProps = {
 
 const FormContainerCore: FunctionComponent<FormContainerProps> = ({
   defaultValues = {},
-  onSuccess = () => {
-  },
+  onSuccess = () => null,
   FormProps,
-  children
+  children,
 }) => {
   const methods = useForm<typeof defaultValues>({
-    defaultValues
+    defaultValues,
   })
   const { handleSubmit } = methods
   return (
@@ -28,16 +27,13 @@ const FormContainerCore: FunctionComponent<FormContainerProps> = ({
     </FormProvider>
   )
 }
-const FormContainer: FunctionComponent<FormContainerProps> = props => {
+const FormContainer: FunctionComponent<FormContainerProps> = (props) => {
   if (!props.formContext && !props.handleSubmit) {
     return <FormContainerCore {...props} />
   } else if (props.handleSubmit && props.formContext) {
     return (
       <FormProvider {...props.formContext}>
-        <form
-          noValidate
-          {...props.FormProps}
-          onSubmit={props.handleSubmit}>
+        <form noValidate {...props.FormProps} onSubmit={props.handleSubmit}>
           {props.children}
         </form>
       </FormProvider>
@@ -57,11 +53,7 @@ const FormContainer: FunctionComponent<FormContainerProps> = props => {
     )
   }
 
-  return (
-    <div>
-      Incomplete setup of FormContainer..
-    </div>
-  )
+  return <div>Incomplete setup of FormContainer..</div>
 }
 
 export default FormContainer

@@ -1,9 +1,9 @@
-import { ArrowRight } from "@mui/icons-material";
-import { Box, Card, Typography } from "@mui/material";
-import { nanoid } from "@reduxjs/toolkit";
+import { ArrowRight } from '@mui/icons-material';
+import { Box, Card, Typography } from '@mui/material';
+import { nanoid } from '@reduxjs/toolkit';
 
 export const Error = ({ errorMessage }: { errorMessage: string }) => (
-  <Box sx={{ display: "flex" }}>
+  <Box sx={{ display: 'flex' }}>
     <ArrowRight />
     <Typography variant="body1">{errorMessage}</Typography>
   </Box>
@@ -24,6 +24,6 @@ export const FormErrors = ({ errors }: { errors: string[] }): React.ReactElement
 const errorContainerStyle = {
   my: 3,
   p: 2,
-  bgcolor: "error.main",
-  color: "error.contrastText",
+  bgcolor: 'error.main',
+  color: 'error.contrastText',
 };

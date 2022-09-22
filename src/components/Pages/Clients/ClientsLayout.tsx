@@ -5,14 +5,14 @@ import {
   InputAdornment,
   TextField,
   Typography,
-} from "@mui/material";
-import React, { useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
-import { Client } from "./Clients";
-import { CenteredLayout } from "../../UI/CenteredLayout";
-import { useCollectionData } from "react-firebase-hooks/firestore";
-import { clientsRef } from "../../../firebase/fbRefs";
-import { ClientsTable } from "./ClientsTable";
+} from '@mui/material';
+import React, { useState } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
+import { Client } from './Clients';
+import { CenteredLayout } from '../../UI/CenteredLayout';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { clientsRef } from '../../../firebase/fbRefs';
+import { ClientsTable } from './ClientsTable';
 
 export const ClientsLayout = ({
   openAddClientDialog,
@@ -21,7 +21,7 @@ export const ClientsLayout = ({
 }) => {
   const [clients, loading] = useCollectionData(clientsRef);
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
 
   let filteredClients = clients?.slice(0);
 

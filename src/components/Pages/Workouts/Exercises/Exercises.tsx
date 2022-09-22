@@ -1,11 +1,11 @@
-import { Box, Typography } from "@mui/material";
-import { useState } from "react";
-import { useCollectionData } from "react-firebase-hooks/firestore";
-import { CenteredLayout } from "../../../UI/CenteredLayout";
-import { DocumentData, DocumentReference } from "firebase/firestore";
-import { ExercisesLayout } from "./ExercisesLayout";
-import AddExerciseDialog from "./AddExerciseDialog";
-import { exercisesRef, workoutsRef } from "../../../../firebase/fbRefs";
+import { Box, Typography } from '@mui/material';
+import { useState } from 'react';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { CenteredLayout } from '../../../UI/CenteredLayout';
+import { DocumentData, DocumentReference } from 'firebase/firestore';
+import { ExercisesLayout } from './ExercisesLayout';
+import AddExerciseDialog from './AddExerciseDialog';
+import { exercisesRef, workoutsRef } from '../../../../firebase/fbRefs';
 
 export interface Exercise {
   name: string;
@@ -46,7 +46,7 @@ const Exercises = () => {
           fontSize={20}
           variant="subtitle1"
           color="primary"
-          sx={{ cursor: "pointer" }}
+          sx={{ cursor: 'pointer' }}
           onClick={openAddExerciseDialog}
         >
           Crea uno nuevo

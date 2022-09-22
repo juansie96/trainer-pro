@@ -1,9 +1,9 @@
-import { Box } from "@mui/material";
-import React, { useContext } from "react";
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
-import { UserContext } from "../../../contexts/UserContext";
-import { CustomSnackbar } from "../../UI/CustomSnackbar";
-import { DashboardTabs } from "./DashboardTabs";
+import { Box } from '@mui/material';
+import React, { useContext } from 'react';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { UserContext } from '../../../contexts/UserContext';
+import { CustomSnackbar } from '../../UI/CustomSnackbar';
+import { DashboardTabs } from './DashboardTabs';
 
 export const Dashboard = () => {
   const userContext = useContext(UserContext);
@@ -28,5 +28,5 @@ export const Dashboard = () => {
   );
 };
 
-const dashboardHeight = "calc(100% - 64px)";
-const dashboardContentHeight = "calc(100% - 50px)";
+const dashboardHeight = 'calc(100% - 64px)';
+const dashboardContentHeight = 'calc(100% - 50px)';

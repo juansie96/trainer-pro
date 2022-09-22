@@ -6,9 +6,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { Client } from "./Clients";
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Client } from './Clients';
 
 export interface ClientsTableProps {
   clients: Client[];
@@ -18,7 +18,7 @@ export const ClientsTable = ({ clients }: ClientsTableProps) => {
   const navigate = useNavigate();
 
   return (
-    <TableContainer component={Paper} sx={{ width: 0.9, mx: "auto" }}>
+    <TableContainer component={Paper} sx={{ width: 0.9, mx: 'auto' }}>
       <Table sx={{ minWidth: 650 }} aria-label="clients table">
         <TableHead>
           <TableRow>
@@ -34,8 +34,8 @@ export const ClientsTable = ({ clients }: ClientsTableProps) => {
             <TableRow
               key={client.id}
               sx={{
-                cursor: "pointer",
-                "&:last-child td, &:last-child th": { border: 0 },
+                cursor: 'pointer',
+                '&:last-child td, &:last-child th': { border: 0 },
               }}
               onClick={() => navigate(`/dashboard/client/${client.id}`)}
             >

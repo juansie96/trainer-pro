@@ -2,11 +2,11 @@ import {
   configureStore,
   ThunkAction,
   Action,
-} from "@reduxjs/toolkit";
-import counterSlice from "../features/counter/counterSlice";
-import appSlice from "../components/App/App.slice";
-import clientsSlice from "../components/Pages/Clients/Clients.slice";
-import { clientsApi } from "../components/Pages/Clients/Clients.api";
+} from '@reduxjs/toolkit';
+import counterSlice from '../features/counter/counterSlice';
+import appSlice from '../components/App/App.slice';
+import clientsSlice from '../components/Pages/Clients/Clients.slice';
+import { clientsApi } from '../components/Pages/Clients/Clients.api';
 
 export const store = configureStore({
   reducer: {

@@ -1,7 +1,14 @@
 import React, { ChangeEvent } from 'react'
 import { Control, FieldError, useController } from 'react-hook-form'
-import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup, useTheme } from '@mui/material'
-
+import {
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  useTheme,
+} from '@mui/material'
 
 export type RadioButtonGroupProps = {
   options: any[]
@@ -36,18 +43,25 @@ export default function RadioButtonGroup({
   ...rest
 }: RadioButtonGroupProps): JSX.Element {
   const theme = useTheme()
-  const { field: { value, onChange }, fieldState: { invalid, error } } = useController({
+  const {
+    field: { value, onChange },
+    fieldState: { invalid, error },
+  } = useController({
     name,
     rules: required ? { required: 'This field is required' } : undefined,
-    control
+    control,
   })
 
-  helperText = error ? (typeof parseError === 'function' ? parseError(error) : error.message) : helperText
+  helperText = error
+    ? typeof parseError === 'function'
+      ? parseError(error)
+      : error.message
+    : helperText
 
   const onRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     const radioValue = (event.target as HTMLInputElement).value
     const returnValue = returnObject
-      ? options.find(items => items[valueKey] === radioValue)
+      ? options.find((items) => items[valueKey] === radioValue)
       : radioValue
     // setValue(name, returnValue, { shouldValidate: true })
     onChange(returnValue)
@@ -58,18 +72,24 @@ export default function RadioButtonGroup({
 
   return (
     <FormControl error={invalid}>
-      {label && <FormLabel required={required} error={invalid}>{label}</FormLabel>}
-      <RadioGroup onChange={onRadioChange}
-                  name={name}
-                  row={row}
-                  value={value || ''}>
+      {label && (
+        <FormLabel required={required} error={invalid}>
+          {label}
+        </FormLabel>
+      )}
+      <RadioGroup onChange={onRadioChange} name={name} row={row} value={value || ''}>
         {emptyOptionLabel && (
           <FormControlLabel
-            control={<Radio sx={{
-              color: invalid ? theme.palette.error.main : undefined
-            }} checked={!value} />}
+            control={
+              <Radio
+                sx={{
+                  color: invalid ? theme.palette.error.main : undefined,
+                }}
+                checked={!value}
+              />
+            }
             label={emptyOptionLabel}
-            value=""
+            value=''
           />
         )}
         {options.map((option: any) => {
@@ -77,20 +97,22 @@ export default function RadioButtonGroup({
           if (!optionKey) {
             console.error(
               `CheckboxButtonGroup: valueKey ${valueKey} does not exist on option`,
-              option
+              option,
             )
           }
           const isChecked = !!(
-            value &&
-            (returnObject
-              ? value[valueKey] === optionKey
-              : value === optionKey)
+            value && (returnObject ? value[valueKey] === optionKey : value === optionKey)
           )
           return (
             <FormControlLabel
-              control={<Radio sx={{
-                color: invalid ? theme.palette.error.main : undefined
-              }} checked={isChecked} />}
+              control={
+                <Radio
+                  sx={{
+                    color: invalid ? theme.palette.error.main : undefined,
+                  }}
+                  checked={isChecked}
+                />
+              }
               value={optionKey}
               label={option[labelKey]}
               key={optionKey}

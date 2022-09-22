@@ -1,22 +1,20 @@
-import { Box, Typography } from "@mui/material";
-import { getDownloadURL, ref } from "firebase/storage";
-import React, { useState } from "react";
-import { storage } from "../../../../firebase/firebase";
-import { extractVideoID, getExerciseImgUrl } from "../../../../utils/utils";
-import EditExerciseDialog from "./EditExerciseDialog";
-import { Exercise } from "./Exercises";
-import styles from "./Exercises.module.css";
+import { Box, Typography } from '@mui/material'
+import React, { useState } from 'react'
+import { getExerciseImgUrl } from '../../../../utils/utils'
+import EditExerciseDialog from './EditExerciseDialog'
+import { Exercise } from './Exercises'
+import styles from './Exercises.module.css'
 
 interface ExercisesGridProps {
-  exercises: Exercise[];
+  exercises: Exercise[]
 }
 
 const ExercisesGrid: React.FC<ExercisesGridProps> = ({ exercises }) => {
   return (
     <Box
-      className="exercises-grid"
-      display="grid"
-      gridTemplateColumns="repeat(4,1fr)"
+      className='exercises-grid'
+      display='grid'
+      gridTemplateColumns='repeat(4,1fr)'
       rowGap={2}
       columnGap={4}
       m={3}
@@ -25,50 +23,45 @@ const ExercisesGrid: React.FC<ExercisesGridProps> = ({ exercises }) => {
         <ExerciseCard key={exercise.id} exercise={exercise} />
       ))}
     </Box>
-  );
-};
+  )
+}
 
-export default ExercisesGrid;
+export default ExercisesGrid
 
 const ExerciseCard = ({ exercise }: { exercise: Exercise }) => {
-  const [editExerciseDialogOpen, setEditExerciseDialogOpen] =
-    useState<boolean>(false);
+  const [editExerciseDialogOpen, setEditExerciseDialogOpen] = useState<boolean>(false)
 
   const openEditExerciseDialog = () => {
-    setEditExerciseDialogOpen(true);
-  };
+    setEditExerciseDialogOpen(true)
+  }
 
   const closeEditExerciseDialog = () => {
-    setEditExerciseDialogOpen(false);
-  };
+    setEditExerciseDialogOpen(false)
+  }
 
   return (
-    <Box
-      height={200}
-      position="relative"
-      sx={{ cursor: "pointer" }}
-      borderRadius={2}
-    >
+    <Box height={200} position='relative' sx={{ cursor: 'pointer' }} borderRadius={2}>
       <img
-        height="100%"
-        style={{ width: "100%" }}
+        height='100%'
+        style={{ width: '100%' }}
         src={getExerciseImgUrl(exercise)}
         onClick={openEditExerciseDialog}
         className={styles.ImgInsetShadow}
+        alt=''
       />
       <Box
-        boxShadow="0px 0px 50px 11px rgba(0,0,0,0.75) inset"
-        position="absolute"
+        boxShadow='0px 0px 50px 11px rgba(0,0,0,0.75) inset'
+        position='absolute'
         top={0}
         width={1}
         height={1}
         onClick={openEditExerciseDialog}
       ></Box>
-      <Box position="absolute" bottom={10} left={10}>
-        <Typography variant="subtitle1" color="white" fontWeight={600}>
+      <Box position='absolute' bottom={10} left={10}>
+        <Typography variant='subtitle1' color='white' fontWeight={600}>
           {exercise.name}
         </Typography>
-        <Box display="flex" mt={0.5}>
+        <Box display='flex' mt={0.5}>
           {exercise.tags?.map((tag) => (
             <Tag key={tag + Math.random()} name={tag} />
           ))}
@@ -82,13 +75,13 @@ const ExerciseCard = ({ exercise }: { exercise: Exercise }) => {
         />
       )}
     </Box>
-  );
-};
+  )
+}
 
 const Tag = ({ name }: { name: string }) => (
-  <Box borderRadius={1} paddingX={1} bgcolor="#769395" flexWrap="wrap" mr={0.5}>
-    <Typography variant="caption" color="white">
+  <Box borderRadius={1} paddingX={1} bgcolor='#769395' flexWrap='wrap' mr={0.5}>
+    <Typography variant='caption' color='white'>
       {name}
     </Typography>
   </Box>
-);
+)

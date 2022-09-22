@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState } from 'react';
 import {
   Autocomplete,
   Button,
@@ -16,18 +16,18 @@ import {
   Stack,
   TextField,
   Typography,
-} from "@mui/material";
-import FormContainer from "../../../Form/FormContainer";
-import { Controller, useForm } from "react-hook-form";
-import { addDoc, WithFieldValue } from "firebase/firestore";
-import { exercisesRef } from "../../../../firebase/fbRefs";
-import { Exercise } from "./Exercises";
-import { Box } from "@mui/system";
-import TextFieldElement from "../../../Form/TextFieldElement";
-import { extractVideoID, videoUrlIsValid } from "../../../../utils/utils";
-import { TagsInput } from "../../../Form/TagsInput";
-import { storage } from "../../../../firebase/firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+} from '@mui/material';
+import FormContainer from '../../../Form/FormContainer';
+import { Controller, useForm } from 'react-hook-form';
+import { addDoc, WithFieldValue } from 'firebase/firestore';
+import { exercisesRef } from '../../../../firebase/fbRefs';
+import { Exercise } from './Exercises';
+import { Box } from '@mui/system';
+import TextFieldElement from '../../../Form/TextFieldElement';
+import { extractVideoID, videoUrlIsValid } from '../../../../utils/utils';
+import { TagsInput } from '../../../Form/TagsInput';
+import { storage } from '../../../../firebase/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Swal from 'sweetalert2'
 
 interface AddExerciseDialogProps {
@@ -42,7 +42,7 @@ export interface AddExerciseFormData {
   tags: string[] | null;
 }
 
-type MediaType = "video" | "image" | "none";
+type MediaType = 'video' | 'image' | 'none';
 
 interface Image {
   file: File;
@@ -53,21 +53,21 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
   const formContext = useForm<AddExerciseFormData>();
 
   const [isAdding, setIsAdding] = useState<boolean>(false);
-  const [mediaType, setMediaType] = useState<MediaType>("video");
+  const [mediaType, setMediaType] = useState<MediaType>('video');
   const [firstImage, setFirstImage] = useState<Image>();
   const [secondImage, setSecondImage] = useState<Image>();
   const [thirdImage, setThirdImage] = useState<Image>();
 
   let selectMediaTypeContent;
 
-  const videoUrl = formContext.watch("videoUrl");
+  const videoUrl = formContext.watch('videoUrl');
   let videoContainerContent;
 
   if (videoUrl) {
     if (videoUrlIsValid(videoUrl)) {
       videoContainerContent = (
         <iframe
-          style={{ marginTop: "16px" }}
+          style={{ marginTop: '16px' }}
           width="560"
           height="315"
           src={`https://www.youtube.com/embed/${extractVideoID(videoUrl)}`}
@@ -98,7 +98,7 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
 
   const onSubmit = async (exercise: AddExerciseFormData) => {
 
-    let newExercise: AddExerciseFormData & { imgUrls?: string[] | null } = {
+    const newExercise: AddExerciseFormData & { imgUrls?: string[] | null } = {
       ...exercise,
     };
 
@@ -139,19 +139,19 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
       return;
     }
     switch (id) {
-      case "first":
+      case 'first':
         setFirstImage({
           file: e.target.files[0],
           objectURL: URL.createObjectURL(e.target.files[0]),
         });
         return;
-      case "second":
+      case 'second':
         setSecondImage({
           file: e.target.files[0],
           objectURL: URL.createObjectURL(e.target.files[0]),
         });
         return;
-      case "third":
+      case 'third':
         setThirdImage({
           file: e.target.files[0],
           objectURL: URL.createObjectURL(e.target.files[0]),
@@ -162,7 +162,7 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
     }
   };
 
-  if (mediaType === "video") {
+  if (mediaType === 'video') {
     selectMediaTypeContent = (
       <Box
         mt={2}
@@ -175,10 +175,10 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
           name="videoUrl"
           label="URL del video"
           validation={{
-            required: "La URL del video es requerida",
+            required: 'La URL del video es requerida',
             pattern: {
               value: validVideoURLRegex,
-              message: "Debe introducir una URL de Youtube válida",
+              message: 'Debe introducir una URL de Youtube válida',
             },
           }}
           size="small"
@@ -187,7 +187,7 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
         <Box mt={2}>{videoContainerContent}</Box>
       </Box>
     );
-  } else if (mediaType === "image") {
+  } else if (mediaType === 'image') {
     selectMediaTypeContent = (
       <Box
         className="exerciseImgsContainer"
@@ -214,7 +214,7 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
               type="file"
               hidden
               accept="image/*"
-              onChange={(e) => onImageChange(e, "first")}
+              onChange={(e) => onImageChange(e, 'first')}
             />
           </Button>
         </Box>
@@ -234,7 +234,7 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
               name="imgUrl2"
               type="file"
               hidden
-              onChange={(e) => onImageChange(e, "second")}
+              onChange={(e) => onImageChange(e, 'second')}
             />
           </Button>
         </Box>
@@ -254,13 +254,13 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
               name="imgUrl3"
               type="file"
               hidden
-              onChange={(e) => onImageChange(e, "third")}
+              onChange={(e) => onImageChange(e, 'third')}
             />
           </Button>
         </Box>
       </Box>
     );
-  } else if (mediaType === "none") {
+  } else if (mediaType === 'none') {
     selectMediaTypeContent = <></>;
   }
 
@@ -271,7 +271,7 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
           formContext={formContext}
           handleSubmit={formContext.handleSubmit(onSubmit)}
           FormProps={{
-            style: { height: "100%", display: "flex", flexDirection: "column" },
+            style: { height: '100%', display: 'flex', flexDirection: 'column' },
           }}
         >
           <Box borderBottom="1px solid #e3e3e3">
@@ -293,7 +293,7 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
               <TextFieldElement
                 name="name"
                 label="Nombre"
-                validation={{ required: "El nombre es requerido" }}
+                validation={{ required: 'El nombre es requerido' }}
                 size="small"
                 fullWidth={true}
               />
@@ -335,10 +335,10 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
               />
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2, borderTop: "1px solid #e3e3e3" }}>
+          <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
             <Button onClick={onClose}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={isAdding}>
-              {isAdding ? "Creando Ejercicio" : "Crear Ejercicio"}
+              {isAdding ? 'Creando Ejercicio' : 'Crear Ejercicio'}
             </Button>
           </DialogActions>
         </FormContainer>
@@ -372,8 +372,8 @@ const validVideoURLRegex =
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 511.998 511.998"
     style={{
-      enableBackground: "new 0 0 511.998 511.998",
-      width: "130px",
+      enableBackground: 'new 0 0 511.998 511.998',
+      width: '130px',
     }}
     xmlSpace="preserve"
     {...props}
