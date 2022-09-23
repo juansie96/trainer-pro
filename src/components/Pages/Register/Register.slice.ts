@@ -26,8 +26,6 @@
 //     },
 //     extraReducers: (builder) => {
 //         builder.addCase(registerUser.fulfilled, (state, action) => {
-//             console.log('Builder case: state', state);
-//             console.log('Builder case: action', action);
 //         })
 //     }
 // });

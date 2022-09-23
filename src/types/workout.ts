@@ -1,4 +1,4 @@
-import { DocumentData, DocumentReference } from 'firebase/firestore'
+import { DocumentData, DocumentReference, FieldValue, Timestamp } from 'firebase/firestore'
 
 export interface SingleExercise {
   id: string
@@ -22,6 +22,8 @@ export interface Workout {
   id: string
   name: string
   description: string
+  createdAt: Timestamp
+  updatedAt: Timestamp
   workoutExercises: Array<WorkoutExercise>
   ref: DocumentReference<DocumentData>
 }

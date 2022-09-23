@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import { addDoc, WithFieldValue } from 'firebase/firestore'
+import { addDoc, serverTimestamp, Timestamp, WithFieldValue } from 'firebase/firestore'
 import React, { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form'
@@ -58,17 +58,12 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
   }
 
   const onSubmit = async (newWorkout: AddWorkoutFormData) => {
-    console.log('newWorkout', newWorkout)
-    // const finalWorkoutExercises = newWorkout.workoutExercises.map((e, idx) => {
-    //   return {
-    //     ...e,
-    //     id: fields[idx].id,
-    //   }
-    // })
-
     setIsAdding(true)
     try {
-      await addDoc(workoutsRef, newWorkout as WithFieldValue<Workout>)
+      await addDoc(workoutsRef, {
+        ...newWorkout,
+        createdAt: Timestamp.fromDate(new Date()),
+      } as WithFieldValue<Workout>)
       setIsAdding(false)
       onClose()
     } catch (err: unknown) {

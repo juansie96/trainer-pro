@@ -42,7 +42,6 @@ const WorkoutExercisesTable = ({
   }
 
   const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
-    console.log('id', id)
     const selectedIndex = selected.indexOf(id)
     let newSelected: readonly string[] = []
 

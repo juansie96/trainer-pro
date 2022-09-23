@@ -37,7 +37,7 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => (
               {workout.name}
             </TableCell>
             <TableCell>{workout.description}</TableCell>
-            <TableCell>06/06/06</TableCell>
+            <TableCell>{workout.createdAt.toDate().toLocaleDateString().split(' ')[0]}</TableCell>
           </TableRow>
         ))}
       </TableBody>

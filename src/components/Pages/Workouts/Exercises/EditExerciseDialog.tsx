@@ -96,16 +96,6 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
 
   const [imagesChanged, setImagesChanged] = useState(false)
 
-  // useEffect(() => {
-  //   if (exercise.imgUrls && exercise.imgUrls.length) {
-  //     exercise.imgUrls.forEach((imgUrl, idx) => {
-  //       if (idx === 0) {
-  //         console.log("imgUrl", imgUrl);
-  //       }
-  //     });
-  //   }
-  // }, []);
-
   let selectMediaTypeContent
   const exerciseChanged = formContext.formState.isDirty || imagesChanged || mediaTypeChanged
 
