@@ -10,7 +10,6 @@ import { RoutinesLayout } from './RoutinesLayout'
 const Routines = () => {
   let content
   const [workouts, loading, error] = useCollectionData(workoutsRef)
-
   const [addWorkoutDialogOpen, setAddWorkoutDialogOpen] = useState<boolean>(false)
 
   const openAddWorkoutDialog = () => {
@@ -45,7 +44,9 @@ const Routines = () => {
   return (
     <Box height={1}>
       {content}
-      <AddWorkoutDialog open={addWorkoutDialogOpen} onClose={closeAddWorkoutDialog} />
+      {addWorkoutDialogOpen && (
+        <AddWorkoutDialog open={addWorkoutDialogOpen} onClose={closeAddWorkoutDialog} />
+      )}
     </Box>
   )
 }
