@@ -239,7 +239,7 @@ const RightSideContent = ({
     <Box
       sx={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
+        gridTemplateColumns: 'repeat(2, 1fr)',
         width: 1,
         gridGap: 6,
         marginTop: 3,
@@ -289,15 +289,26 @@ const ExerciseCard = ({
   )
 
   return (
-    <Paper elevation={3} onClick={() => onClick(exercise.id)} sx={{ cursor: 'pointer' }}>
-      <Box sx={{ position: 'relative' }}>
-        <img src={getExerciseImgUrl(exercise)} alt={exercise.name} height='84px' width='100%' />
+    <Paper
+      elevation={3}
+      onClick={() => onClick(exercise.id)}
+      sx={{ cursor: 'pointer', borderRadius: '10px' }}
+    >
+      <Box position='relative' width={1} height='150px' sx={{ borderRadius: '10px' }}>
+        <img
+          src={getExerciseImgUrl(exercise)}
+          alt={exercise.name}
+          width='100%'
+          height='100%'
+          style={{ borderRadius: '10px 10px 0 0' }}
+        />
         <Box
           boxShadow='0px 0px 50px 11px rgba(0,0,0,0.75) inset'
           position='absolute'
           top={0}
           width={1}
           height={1}
+          borderRadius={'10px 10px 0 0'}
           // onClick={openEditExerciseDialog}
         ></Box>
         <Box position='absolute' bottom={5} left={5}>

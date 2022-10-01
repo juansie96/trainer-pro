@@ -2,14 +2,13 @@ import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { CenteredLayout } from '../../../UI/CenteredLayout'
-import { DocumentData, DocumentReference } from 'firebase/firestore'
 import AddWorkoutDialog from './AddWorkoutDialog'
 import { workoutsRef } from '../../../../firebase/fbRefs'
 import { RoutinesLayout } from './RoutinesLayout'
 
 const Routines = () => {
   let content
-  const [workouts, loading, error] = useCollectionData(workoutsRef)
+  const [workouts, loading] = useCollectionData(workoutsRef)
   const [addWorkoutDialogOpen, setAddWorkoutDialogOpen] = useState<boolean>(false)
 
   const openAddWorkoutDialog = () => {
