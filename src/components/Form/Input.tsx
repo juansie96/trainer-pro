@@ -1,21 +1,14 @@
-import { OutlinedTextFieldProps, TextField, TextFieldProps } from '@mui/material';
-import {
-  useController,
-  UseControllerProps,
-  useFormContext,
-} from 'react-hook-form';
+import { OutlinedTextFieldProps, TextField } from '@mui/material'
+import { useController, UseControllerProps, useFormContext } from 'react-hook-form'
 
 interface InputProps extends OutlinedTextFieldProps {
-  control: UseControllerProps<any> 
+  control: UseControllerProps<any>
 }
 
-export function Input( { control, ...props }: InputProps) {
-  
-  const { field, fieldState } = useController(control); // { formState }
-  const { onChange, onBlur, name, value, ref } = field;
-  const { invalid } = fieldState; 
-
-  const dt = useFormContext()
+export function Input({ control, ...props }: InputProps) {
+  const { field, fieldState } = useController(control) // { formState }
+  const { onChange, onBlur, name, value, ref } = field
+  const { invalid } = fieldState
 
   return (
     <TextField
@@ -29,5 +22,5 @@ export function Input( { control, ...props }: InputProps) {
       label={name}
       {...props}
     />
-  );
+  )
 }

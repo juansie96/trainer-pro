@@ -1,12 +1,9 @@
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import {
-  Autocomplete,
   Button,
-  Chip,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   FormControl,
   FormControlLabel,
@@ -14,19 +11,17 @@ import {
   Radio,
   RadioGroup,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material'
 import FormContainer from '../../../Form/FormContainer'
-import { Controller, useForm } from 'react-hook-form'
-import { addDoc, WithFieldValue, doc, updateDoc } from 'firebase/firestore'
-import { exercisesRef } from '../../../../firebase/fbRefs'
+import { useForm } from 'react-hook-form'
+import { updateDoc } from 'firebase/firestore'
 import { Exercise } from './Exercises'
 import { Box } from '@mui/system'
 import TextFieldElement from '../../../Form/TextFieldElement'
 import { extractVideoID, videoUrlIsValid } from '../../../../utils/utils'
 import { TagsInput } from '../../../Form/TagsInput'
-import { firestoreDB, storage } from '../../../../firebase/firebase'
+import { storage } from '../../../../firebase/firebase'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import Swal from 'sweetalert2'
 
@@ -172,7 +167,7 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
     }
 
     try {
-      const res = updateDoc(exercise.ref, { ...newExercise })
+      updateDoc(exercise.ref, { ...newExercise })
       setIsAdding(false)
       onClose()
       Swal.fire('¡Éxito!', 'El ejercicio se editó correctamente!', 'success')

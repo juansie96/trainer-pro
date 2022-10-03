@@ -3,7 +3,7 @@ import { alpha, Button, IconButton, Toolbar, Tooltip, Typography } from '@mui/ma
 import { IProps } from './types'
 
 const WorkoutExercisesTableToolbar = (props: IProps) => {
-  const { numSelected, onDeleteClick, selected, onSupersetClick } = props
+  const { numSelected, onDeleteClick, selected } = props
 
   return (
     <Toolbar
@@ -25,16 +25,16 @@ const WorkoutExercisesTableToolbar = (props: IProps) => {
           Ejercicios
         </Typography>
       )}
-      {numSelected > 1 && (
+      {/* {numSelected > 1 && (
         <Button
           variant='contained'
           size='small'
           sx={{ height: '30px', width: '150px', textTransform: 'none' }}
-          onClick={() => onSupersetClick(selected)}
+            onClick={() => onSupersetClick(selected)}
         >
           Superserie
         </Button>
-      )}
+      )} */}
       {numSelected > 0 ? (
         <Tooltip title='Delete' onClick={() => onDeleteClick(selected)}>
           <IconButton>

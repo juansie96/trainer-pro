@@ -9,21 +9,21 @@ export interface SingleExercise {
   exerciseId: string
 }
 
-export interface Superset {
-  id: string
-  sets: number
-  exercises: SingleExercise[]
-  type: 'superset'
-}
-
-export type WorkoutExercise = SingleExercise | Superset
-
 export interface Workout {
   id: string
   name: string
   description: string
   createdAt: Timestamp
   updatedAt: Timestamp
-  workoutExercises: Array<WorkoutExercise>
+  workoutExercises: Array<SingleExercise>
   ref: DocumentReference<DocumentData>
 }
+
+// export interface Superset {
+//   id: string
+//   sets: number
+//   exercises: SingleExercise[]
+//   type: 'superset'
+// }
+
+// export type WorkoutExercise = SingleExercise | Superset

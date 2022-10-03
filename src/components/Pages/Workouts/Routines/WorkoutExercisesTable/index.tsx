@@ -21,14 +21,14 @@ import WorkoutExercisesTableToolbar from './WorkoutExercisesTableToolbar'
 import WorkoutExercisesTableHead from '../WorkoutExercisesTableHead'
 import { restDropdownItems } from './data'
 import { Exercise } from '../../Exercises/Exercises'
-import { SingleExercise, Superset, WorkoutExercise } from '../../../../../types/workout'
+import { SingleExercise } from '../../../../../types/workout'
 
 const WorkoutExercisesTable = ({
   fields,
   exercises,
   onRemoveExercises,
-  onSupersetClick,
-}: IProps) => {
+}: // onSupersetClick,
+IProps) => {
   const { register, control } = useFormContext<AddWorkoutFormData>()
   const [selected, setSelected] = useState<readonly string[]>([])
 
@@ -75,7 +75,7 @@ const WorkoutExercisesTable = ({
           numSelected={selected.length}
           onDeleteClick={handleDeleteExercisesClick}
           selected={selected}
-          onSupersetClick={onSupersetClick}
+          // onSupersetClick={onSupersetClick}
         />
         <TableContainer>
           <Table sx={{ width: 1 }} aria-labelledby='workout-exercises' size='medium'>
@@ -88,33 +88,35 @@ const WorkoutExercisesTable = ({
               {fields.map((row, index) => {
                 const labelId = `enhanced-table-checkbox-${index}`
 
-                if (row.type === 'single') {
-                  const exerciseData = exercises.find((e) => e.id === row.exerciseId)
-                  if (!exerciseData) return <></>
-                  const isItemSelected = isSelected(row.id)
+                // if (row.type === 'single') {
+                const exerciseData = exercises.find((e) => e.id === row.exerciseId)
+                if (!exerciseData) return <></>
+                const isItemSelected = isSelected(row.id)
 
-                  return (
-                    <SingleExerciseRow
-                      isItemSelected={isItemSelected}
-                      row={row}
-                      exerciseData={exerciseData}
-                      labelId={labelId}
-                      index={index}
-                      handleClick={handleClick}
-                      key={row.id}
-                    />
-                  )
-                } else if (row.type === 'superset') {
-                  return (
-                    <SupersetRow
-                      row={row}
-                      labelId={labelId}
-                      index={index}
-                      exercises={exercises}
-                      key={row.id}
-                    />
-                  )
-                }
+                return (
+                  <SingleExerciseRow
+                    isItemSelected={isItemSelected}
+                    row={row}
+                    exerciseData={exerciseData}
+                    labelId={labelId}
+                    index={index}
+                    handleClick={handleClick}
+                    key={row.id}
+                  />
+                )
+                // }
+
+                // else if (row.type === 'superset') {
+                //   return (
+                //     <SupersetRow
+                //       row={row}
+                //       labelId={labelId}
+                //       index={index}
+                //       exercises={exercises}
+                //       key={row.id}
+                //     />
+                //   )
+                // }
               })}
             </TableBody>
           </Table>
@@ -213,136 +215,136 @@ const SingleExerciseRow = ({
   )
 }
 
-const SupersetRow = ({
-  row,
-  labelId,
-  index,
-  exercises,
-}: {
-  row: Superset & Record<'id', string>
-  labelId: string
-  index: number
-  exercises: Exercise[]
-}) => {
-  const { register, control } = useFormContext<AddWorkoutFormData>()
+// const SupersetRow = ({
+//   row,
+//   labelId,
+//   index,
+//   exercises,
+// }: {
+//   row: Superset & Record<'id', string>
+//   labelId: string
+//   index: number
+//   exercises: Exercise[]
+// }) => {
+//   const { register, control } = useFormContext<AddWorkoutFormData>()
 
-  const { fields, remove, append } = useFieldArray({
-    control,
-    name: `workoutExercises.${index}.exercises` as `workoutExercises.${number}.exercises`,
-  })
+//   const { fields, remove, append } = useFieldArray({
+//     control,
+//     name: `workoutExercises.${index}.exercises` as `workoutExercises.${number}.exercises`,
+//   })
 
-  return (
-    <TableRow
-      hover
-      role='checkbox'
-      tabIndex={-1}
-      // aria-checked={isItemSelected}
-      // selected={isItemSelected}
-    >
-      <TableCell padding='checkbox' colSpan={5}>
-        <Box display={'flex'} alignItems={'center'} pb={2} pt={2}>
-          <Checkbox
-            color='primary'
-            // checked={isItemSelected}
-            inputProps={{
-              'aria-labelledby': labelId,
-            }}
-            onClick={
-              (event) => null
-              // handleClick(event, exerciseData.id)
-            }
-          />
-          <Typography variant='caption' fontSize='0.85rem'>
-            Super serie de
-            <TextField
-              sx={{
-                ml: 1,
-                mr: 1,
-                '& .MuiInputBase-root': {
-                  height: 25,
-                  width: 35,
-                  fontSize: 12,
-                },
-              }}
-            />
-            rondas
-          </Typography>
-        </Box>
-        {fields.map((ssExercise, ssExerciseIdx) => {
-          const exerciseData = exercises.find(
-            (e) => e.id === (ssExercise as SingleExercise).exerciseId,
-          )
-          if (!exerciseData) return <></>
-          // const isItemSelected = isSelected(exerciseData.id);
-          return (
-            <Box
-              pl={2}
-              position='relative'
-              display='flex'
-              alignItems='center'
-              pb={2}
-              pt={2}
-              justifyContent='space-between'
-              key={ssExercise.id}
-            >
-              <Box display='flex' alignItems='center'>
-                <Checkbox
-                  color='primary'
-                  // checked={isItemSelected}
-                  inputProps={{
-                    'aria-labelledby': labelId,
-                  }}
-                  onClick={
-                    (event) => null
-                    // handleClick(event, exerciseData.id)
-                  }
-                />
-                <Box display='flex' alignItems='center' width='20%'>
-                  <img style={{ width: '100px' }} src={getExerciseImgUrl(exerciseData)} alt='' />
-                  <Typography fontSize='14px' sx={{ ml: 2 }}>
-                    {exerciseData.name}
-                  </Typography>
-                </Box>
-              </Box>
-              <Box display='flex' alignItems='center' justifyContent='space-between' pr={1}>
-                <Box width={130} sx={{ mr: 3 }}>
-                  <TextField
-                    placeholder='Reps/RIR/%RM'
-                    {...register(
-                      `workoutExercises.${index}.exercises.${ssExerciseIdx}.objective` as any,
-                    )}
-                    sx={smallTextFieldStyles}
-                    fullWidth
-                  />
-                </Box>
-                <Box width={90}>
-                  <Controller
-                    name={`workoutExercises.${index}.exercises.${ssExerciseIdx}.rest` as any}
-                    control={control}
-                    render={({ field }: { field: any }) => (
-                      <Select
-                        {...field}
-                        sx={{
-                          w: 1,
-                          height: '33px',
-                          fontSize: '12px',
-                        }}
-                        fullWidth
-                      >
-                        {restDropdownItems.map((item) => (
-                          <MenuItem value={item.value} key={item.value}>
-                            {item.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-                </Box>
-              </Box>
-            </Box>
-          )
-        })}
-      </TableCell>
-    </TableRow>
-  )
-}
+//   return (
+//     <TableRow
+//       hover
+//       role='checkbox'
+//       tabIndex={-1}
+//       // aria-checked={isItemSelected}
+//       // selected={isItemSelected}
+//     >
+//       <TableCell padding='checkbox' colSpan={5}>
+//         <Box display={'flex'} alignItems={'center'} pb={2} pt={2}>
+//           <Checkbox
+//             color='primary'
+//             // checked={isItemSelected}
+//             inputProps={{
+//               'aria-labelledby': labelId,
+//             }}
+//             onClick={
+//               (event) => null
+//               // handleClick(event, exerciseData.id)
+//             }
+//           />
+//           <Typography variant='caption' fontSize='0.85rem'>
+//             Super serie de
+//             <TextField
+//               sx={{
+//                 ml: 1,
+//                 mr: 1,
+//                 '& .MuiInputBase-root': {
+//                   height: 25,
+//                   width: 35,
+//                   fontSize: 12,
+//                 },
+//               }}
+//             />
+//             rondas
+//           </Typography>
+//         </Box>
+//         {fields.map((ssExercise, ssExerciseIdx) => {
+//           const exerciseData = exercises.find(
+//             (e) => e.id === (ssExercise as SingleExercise).exerciseId,
+//           )
+//           if (!exerciseData) return <></>
+//           // const isItemSelected = isSelected(exerciseData.id);
+//           return (
+//             <Box
+//               pl={2}
+//               position='relative'
+//               display='flex'
+//               alignItems='center'
+//               pb={2}
+//               pt={2}
+//               justifyContent='space-between'
+//               key={ssExercise.id}
+//             >
+//               <Box display='flex' alignItems='center'>
+//                 <Checkbox
+//                   color='primary'
+//                   // checked={isItemSelected}
+//                   inputProps={{
+//                     'aria-labelledby': labelId,
+//                   }}
+//                   onClick={
+//                     (event) => null
+//                     // handleClick(event, exerciseData.id)
+//                   }
+//                 />
+//                 <Box display='flex' alignItems='center' width='20%'>
+//                   <img style={{ width: '100px' }} src={getExerciseImgUrl(exerciseData)} alt='' />
+//                   <Typography fontSize='14px' sx={{ ml: 2 }}>
+//                     {exerciseData.name}
+//                   </Typography>
+//                 </Box>
+//               </Box>
+//               <Box display='flex' alignItems='center' justifyContent='space-between' pr={1}>
+//                 <Box width={130} sx={{ mr: 3 }}>
+//                   <TextField
+//                     placeholder='Reps/RIR/%RM'
+//                     {...register(
+//                       `workoutExercises.${index}.exercises.${ssExerciseIdx}.objective` as any,
+//                     )}
+//                     sx={smallTextFieldStyles}
+//                     fullWidth
+//                   />
+//                 </Box>
+//                 <Box width={90}>
+//                   <Controller
+//                     name={`workoutExercises.${index}.exercises.${ssExerciseIdx}.rest` as any}
+//                     control={control}
+//                     render={({ field }: { field: any }) => (
+//                       <Select
+//                         {...field}
+//                         sx={{
+//                           w: 1,
+//                           height: '33px',
+//                           fontSize: '12px',
+//                         }}
+//                         fullWidth
+//                       >
+//                         {restDropdownItems.map((item) => (
+//                           <MenuItem value={item.value} key={item.value}>
+//                             {item.label}
+//                           </MenuItem>
+//                         ))}
+//                       </Select>
+//                     )}
+//                   />
+//                 </Box>
+//               </Box>
+//             </Box>
+//           )
+//         })}
+//       </TableCell>
+//     </TableRow>
+//   )
+// }

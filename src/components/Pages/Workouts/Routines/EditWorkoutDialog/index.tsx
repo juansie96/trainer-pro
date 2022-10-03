@@ -11,39 +11,32 @@ import {
   Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import { addDoc, Timestamp, WithFieldValue } from 'firebase/firestore'
+import { Timestamp, updateDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form'
-import { exercisesRef, workoutsRef } from '../../../../../firebase/fbRefs'
-import { SingleExercise, Workout } from '../../../../../types/workout'
+import { exercisesRef } from '../../../../../firebase/fbRefs'
 import { getExerciseImgUrl } from '../../../../../utils/utils'
 import FormContainer from '../../../../Form/FormContainer'
 import TextFieldElement from '../../../../Form/TextFieldElement'
 import { Exercise } from '../../Exercises/Exercises'
 import WorkoutExercisesTable from '../WorkoutExercisesTable'
+import { EditWorkoutDialogProps, EditWorkoutFormData } from './types'
 
-interface AddWorkoutDialogProps {
-  open: boolean
-  onClose(): void
-}
-
-export interface AddWorkoutFormData {
-  name: string
-  description: string
-  // workoutExercises: Array<WorkoutExercise>
-  workoutExercises: Array<SingleExercise>
-}
-
-const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
+const EditWorkoutDialog = ({ onClose, workout }: EditWorkoutDialogProps) => {
   const [exercises] = useCollectionData(exercisesRef)
-  const formContext = useForm<AddWorkoutFormData>()
+  const formContext = useForm<EditWorkoutFormData>({
+    defaultValues: {
+      name: workout.name,
+      description: workout.description,
+      workoutExercises: workout.workoutExercises,
+    },
+  })
+
   const { fields, append, remove } = useFieldArray({
     control: formContext.control,
     name: 'workoutExercises', // unique name for your Field Array
   })
-
-  // console.info(formContext.watch())
 
   const [isAdding, setIsAdding] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
@@ -58,13 +51,13 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
     remove(idxs)
   }
 
-  const onSubmit = async (newWorkout: AddWorkoutFormData) => {
+  const onSubmit = async (newWorkout: EditWorkoutFormData) => {
     setIsAdding(true)
     try {
-      await addDoc(workoutsRef, {
+      await updateDoc(workout.ref, {
         ...newWorkout,
-        createdAt: Timestamp.fromDate(new Date()),
-      } as WithFieldValue<Workout>)
+        updatedAt: Timestamp.fromDate(new Date()),
+      })
       setIsAdding(false)
       onClose()
     } catch (err: unknown) {
@@ -80,48 +73,9 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
     setSearchTerm(e.target.value.toLowerCase())
   }
 
-  // const handleSupersetBuild = (selected: readonly string[]) => {
-  //   const workoutExercisesClone = formContext
-  //     .watch('workoutExercises')
-  //     .map((e, idx) => ({ ...e, id: fields[idx].id }))
-
-  //   const selectedIndexesAsc = selected
-  //     .map((id) =>
-  //       fields.findIndex((f) => {
-  //         if (f.type === 'single') {
-  //           return f.id === id
-  //         } else {
-  //           return false
-  //         }
-  //       }),
-  //     )
-  //     .sort((a, b) => a - b)
-
-  //   const supersetIdx = selectedIndexesAsc[0]
-
-  //   const supersetExercises = selectedIndexesAsc.map((idx) => ({
-  //     ...(workoutExercisesClone[idx] as SingleExercise),
-  //   }))
-
-  //   const supersetObj: Superset = {
-  //     id: Math.random().toString(), // ToDo
-  //     type: 'superset',
-  //     exercises: supersetExercises,
-  //     sets: 3,
-  //   }
-
-  //   workoutExercisesClone[supersetIdx] = supersetObj
-
-  //   const newWorkoutExercises = workoutExercisesClone.filter((_, idx) => {
-  //     return idx === supersetIdx || !selectedIndexesAsc.includes(idx)
-  //   })
-
-  //   formContext.reset({ ...formContext.watch(), workoutExercises: newWorkoutExercises })
-  // }
-
   return (
     <Dialog
-      open={open}
+      open={true}
       onClose={onClose}
       PaperProps={{ sx: { maxWidth: 0.95, width: 0.95, height: 0.95 } }}
     >
@@ -133,11 +87,9 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
         }}
       >
         <Box borderBottom='1px solid #e3e3e3'>
-          <DialogTitle>Agregar Rutina</DialogTitle>
+          <DialogTitle>Editar Rutina</DialogTitle>
         </Box>
         <DialogContent sx={{ pt: 3, pb: 4 }}>
-          <DialogContentText>Completa los datos de tu nuevo rutina</DialogContentText>
-
           <Stack
             width={1}
             direction='row'
@@ -150,7 +102,6 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
               exercises={exercises}
               fields={fields}
               deleteSelectedExercises={deleteSelectedExercises}
-              // onSupersetClick={handleSupersetBuild}
             />
             <UIVerticalSeparator />
             <RightSideContent
@@ -163,7 +114,7 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
         <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
           <Button onClick={onClose}>Cancelar</Button>
           <Button type='submit' variant='contained' disabled={isAdding}>
-            {isAdding ? 'Agregando Rutina' : 'Agregar Rutina'}
+            {isAdding ? 'Editando Rutina' : 'Editar Rutina'}
           </Button>
         </DialogActions>
       </FormContainer>
@@ -175,12 +126,10 @@ const LeftSideContent = ({
   exercises,
   fields,
   deleteSelectedExercises,
-}: // onSupersetClick,
-{
+}: {
   exercises: Exercise[] | undefined
-  fields: FieldArrayWithId<AddWorkoutFormData, 'workoutExercises', 'id'>[]
+  fields: FieldArrayWithId<EditWorkoutFormData, 'workoutExercises', 'id'>[]
   deleteSelectedExercises: (selected: readonly string[]) => void
-  // onSupersetClick: (selected: readonly string[]) => void
 }) => {
   return (
     <Box width={0.55}>
@@ -206,7 +155,6 @@ const LeftSideContent = ({
           fields={fields}
           exercises={exercises}
           onRemoveExercises={deleteSelectedExercises}
-          // onSupersetClick={onSupersetClick}
         />
       ) : (
         <p>Cargando tabla</p>
@@ -246,18 +194,9 @@ const RightSideContent = ({
         marginTop: 3,
       }}
     >
-      {exercises?.map((e) => {
-        return <ExerciseCard exercise={e} onClick={onExerciseClick} key={e.id} />
-        // return (
-        //   <p
-        //     key={e.id}
-        //     style={{ cursor: "pointer" }}
-        //     onClick={() => onExerciseClick(e.id)}
-        //   >
-        //     {e.name}
-        //   </p>
-        // );
-      })}
+      {exercises?.map((e) => (
+        <ExerciseCard exercise={e} onClick={onExerciseClick} key={e.id} />
+      ))}
     </Box>
   </Box>
 )
@@ -310,7 +249,6 @@ const ExerciseCard = ({
           width={1}
           height={1}
           borderRadius={'10px 10px 0 0'}
-          // onClick={openEditExerciseDialog}
         ></Box>
         <Box position='absolute' bottom={5} left={5}>
           <Typography variant='caption' color='white' fontWeight={600}>
@@ -318,10 +256,9 @@ const ExerciseCard = ({
           </Typography>
         </Box>
       </Box>
-
       <Tags />
     </Paper>
   )
 }
 
-export default AddWorkoutDialog
+export default EditWorkoutDialog
