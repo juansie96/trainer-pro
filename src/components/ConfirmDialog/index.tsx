@@ -2,15 +2,18 @@ import { Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/m
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh'
 import { IProps } from './types'
 
-const ConfirmDialog = ({ message, onConfirm, onClose }: IProps) => {
+const ConfirmDialog = ({ onConfirm, onClose }: IProps) => {
   return (
     <Dialog open={true} onClose={onClose} fullWidth>
       <DialogContent
         sx={{ pt: 3, pb: 4, display: 'flex', alignItems: 'center', flexDirection: 'column' }}
       >
         <PriorityHighIcon sx={{ fontSize: '7em' }} color='error' />
+        <Typography textAlign='center' variant='h4'>
+          ¿Estás seguro?
+        </Typography>
         <Typography textAlign='center' variant='h6'>
-          {message}
+          Esta acción no se puede deshacer
         </Typography>
       </DialogContent>
       <DialogActions>

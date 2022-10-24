@@ -1,118 +1,114 @@
-import { useContext, useState } from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import { useForm } from 'react-hook-form';
-import FormContainer from '../../Form/FormContainer';
-import TextFieldElement from '../../Form/TextFieldElement';
-import { Stack } from '@mui/material';
-import { Box } from '@mui/system';
-import { addDoc, FirestoreError, WithFieldValue } from 'firebase/firestore';
-import { UserContext } from '../../../contexts/UserContext';
-import { User } from 'firebase/auth';
-import { clientsRef } from '../../../firebase/fbRefs';
-import { Client } from './Clients';
-
-export interface AddClientFormData {
-  name: string;
-  lastname: string;
-  email: string;
-  age: number;
-}
+import { useState } from 'react'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import {
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  Typography,
+} from '@mui/material'
+import { Box } from '@mui/system'
+import LinkIcon from '@mui/icons-material/Link'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { getAuth } from 'firebase/auth'
+import { selectTrainer } from '../../../redux/slices/trainerSlice'
+import { useAppSelector } from '../../../state/storeHooks'
 
 interface AddClientDialogProps {
-  onClose(): void;
-  open: boolean;
+  onClose(): void
+  open: boolean
 }
 
+type AddClientOptions = 'link' | 'manual'
+
 export function AddClientDialog({ open, onClose }: AddClientDialogProps) {
-
-  const loggedInUser = useContext(UserContext)?.user as User
-  const formContext = useForm<AddClientFormData>();
-  const [isAdding, setIsAdding] = useState<boolean>(false)
-  
-  const onSubmit = async (newClient: AddClientFormData) => {
-    setIsAdding(true);
-    try {
-      await addDoc(clientsRef, {
-        ...newClient,
-        trainerId: loggedInUser.uid
-      } as WithFieldValue<Client>)
-      setIsAdding(false);
-      onClose();
-    } catch(err: any) {
-      setIsAdding(false);
-    }
-  };
-
+  const [step, setStep] = useState(1)
+  const [option, setOption] = useState<AddClientOptions>('link')
+  const [user] = useAuthState(getAuth())
   return (
     <div>
       <Dialog open={open} onClose={onClose}>
-        <FormContainer
-          formContext={formContext}
-          handleSubmit={formContext.handleSubmit(onSubmit)}
-        >
-          <Box borderBottom="1px solid #e3e3e3">
-            <DialogTitle>Agregar Cliente</DialogTitle>
-          </Box>
-          <DialogContent sx={{ pt: 3, pb: 4 }}>
-            <DialogContentText>
-              Completa los datos de tu nuevo cliente
-            </DialogContentText>
+        {/* <FormContainer formContext={formContext} handleSubmit={formContext.handleSubmit(onSubmit)}> */}
+        <Box borderBottom='1px solid #e3e3e3'>
+          <DialogTitle>Agregar Cliente</DialogTitle>
+        </Box>
+        <DialogContent sx={{ pt: 3, pb: 4 }}>
+          {step === 1 && <StepOne option={option} setOption={setOption} />}{' '}
+          {step === 2 && <div>{option === 'link' ? <ShareLinkContent /> : <AddClientForm />}</div>}
+        </DialogContent>
 
-            <Stack
-              width={1}
-              direction="row"
-              justifyContent="space-between"
-              flexWrap="wrap"
-              mt={2}
-            >
-              <TextFieldElement
-                name="name"
-                label="Nombre"
-                validation={{ required: 'El nombre es requerido' }}
-                sx={{ width: 0.475 }}
-                size="small"
-              />
-              <TextFieldElement
-                name="lastname"
-                label="Apellido"
-                validation={{ required: 'El apellido es requerido' }}
-                sx={{ width: 0.475 }}
-                size="small"
-              />
-              <TextFieldElement
-                name="email"
-                label="Email"
-                type="email"
-                sx={{ width: 0.475, mt: 2 }}
-                validation={{ required: 'El email es requerido' }}
-                size="small"
-              />
-              <TextFieldElement
-                name="age"
-                label="Edad"
-                type="number"
-                validation={{ required: 'La edad es requerida' }}
-                sx={{ width: 0.475, mt: 2 }}
-                size="small"
-                customOnChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  formContext.setValue('age', parseInt(e.target.value))
-                }
-              />
-            </Stack>
-          </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
-            <Button onClick={onClose}>Cancelar</Button>
-            <Button type="submit" variant="contained" disabled={isAdding}>
-              {isAdding ? 'Agregando Cliente' : 'Agregar Cliente'}
+        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
+          {!(step === 2 && option === 'link') && <Button onClick={onClose}>Cancelar</Button>}
+          {step === 1 && (
+            <Button variant='contained' onClick={() => setStep(2)}>
+              Continuar
             </Button>
-          </DialogActions>
-        </FormContainer>
+          )}
+          {step === 2 && option === 'link' && (
+            <Button variant='contained' onClick={() => onClose()}>
+              Finalizar
+            </Button>
+          )}
+        </DialogActions>
+        {/* </FormContainer> */}
       </Dialog>
     </div>
-  );
+  )
+}
+
+const StepOne = ({
+  option,
+  setOption,
+}: {
+  option: AddClientOptions
+  setOption: (value: AddClientOptions) => void
+}) => {
+  return (
+    <>
+      <Typography variant='body1'>¿Cómo quieres agregar a tu cliente a la App?</Typography>
+      <FormControl sx={{ mt: 3 }}>
+        <FormLabel>Opciones:</FormLabel>
+        <RadioGroup value={option} onChange={(e) => setOption(e.target.value as AddClientOptions)}>
+          <FormControlLabel value='link' control={<Radio />} label='A través de un link' />
+          <FormControlLabel value='manual' control={<Radio />} label='De forma manual' />
+        </RadioGroup>
+      </FormControl>
+    </>
+  )
+}
+
+const ShareLinkContent = () => {
+  const trainer = useAppSelector(selectTrainer)
+  return (
+    <>
+      <Typography variant='body1'>
+        Generamos un enlace para que compartas con tu/s cliente/s. Solo tienes que copiarlo y
+        mandarselos para que completen el registro.
+      </Typography>
+      <Box border='1px solid #ccc' borderRadius={5} display='flex' p={1} mt={2} alignItems='center'>
+        <LinkIcon />
+        <Typography sx={{ ml: 1 }} fontSize={13}>
+          {window.location.origin}/client-activation/{trainer.id}
+        </Typography>
+        <Button
+          size='small'
+          onClick={() =>
+            navigator.clipboard.writeText(
+              `${window.location.origin}/client-activation/${trainer.id}`,
+            )
+          }
+        >
+          Copiar enlace
+        </Button>
+      </Box>
+    </>
+  )
+}
+const AddClientForm = () => {
+  return <></>
 }

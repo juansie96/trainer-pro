@@ -2,25 +2,34 @@ import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
 import { AddClientDialog } from './AddClientDialog'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
-import { DocumentData, DocumentReference } from 'firebase/firestore'
-import { clientsRef } from '../../../firebase/fbRefs'
+import { DocumentData, DocumentReference, Timestamp } from 'firebase/firestore'
 import { CenteredLayout } from '../../UI/CenteredLayout'
 import { ClientsLayout } from './ClientsLayout'
+import { HealthFormQuestion } from '../ClientActivation/types'
+import { selectTrainer } from '../../../redux/slices/trainerSlice'
+import { useSelector } from 'react-redux'
+import { getClientsByTrainerIdRef } from '../../../firebase/fbRefs'
 
 export interface Client {
   name: string
   lastname: string
   email: string
-  age: number
-  id: string
   trainerId: string
-  ref: DocumentReference<DocumentData>
+  password: string
+  gender: string
+  objective: string
+  birthDate: Date | Timestamp
+  weight: number
+  height: number
+  healthFormQuestions: HealthFormQuestion[]
+  id?: string
+  ref?: DocumentReference<DocumentData>
 }
 
 const Clients = () => {
   let content
-
-  const [clients, loading, error] = useCollectionData(clientsRef)
+  const trainer = useSelector(selectTrainer)
+  const [clients, loading] = useCollectionData(getClientsByTrainerIdRef(trainer.id as string))
 
   const [addClientDialogOpen, setAddClientDialogOpen] = useState<boolean>(false)
 
@@ -56,7 +65,9 @@ const Clients = () => {
   return (
     <Box height={1}>
       {content}
-      <AddClientDialog open={addClientDialogOpen} onClose={closeAddClientDialog} />
+      {addClientDialogOpen && (
+        <AddClientDialog open={addClientDialogOpen} onClose={closeAddClientDialog} />
+      )}
     </Box>
   )
 }

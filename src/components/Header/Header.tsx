@@ -4,12 +4,12 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../state/storeHooks'
-import { logoutUser, selectLoggedInUser } from '../App/App.slice'
+import { useAppDispatch } from '../../state/storeHooks'
 import { useContext } from 'react'
 import { UserContext } from '../../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebase/firebase'
+import { userLoggedOut } from '../../redux/slices/trainerSlice'
 
 type Link = {
   label: string
@@ -24,11 +24,12 @@ export function Header() {
   let links
 
   const onLogout = () => {
+    dispatch(userLoggedOut())
     signOut(auth)
     navigate('/login')
   }
 
-  if (user) {
+  if (user?.user) {
     links = (
       <Button sx={{ color: 'white' }} onClick={onLogout}>
         Cerrar sesión

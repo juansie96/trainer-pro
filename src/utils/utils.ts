@@ -75,3 +75,12 @@ export function mapFirebaseErrorCodeToMsg(errorCode: string): string {
       return 'Ocurrió un error inesperado, por favor intente nuevamente'
   }
 }
+
+const objectives = ['gain', 'loss', 'fit'] as const
+export type TClientObjectives = typeof objectives[number]
+
+export const CLIENT_OBJECTIVES = {
+  loss: { short: 'Definición', long: 'Perder peso, quemar grasa y definir músculo' },
+  fit: { short: 'Ponerse en forma', long: 'Ponerme en forma de manera balanceada' },
+  gain: { short: 'Volumen y fuerza', long: 'Ganar músculo, volumen y fuerza' },
+}

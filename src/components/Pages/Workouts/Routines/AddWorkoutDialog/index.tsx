@@ -104,7 +104,7 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
   //   }))
 
   //   const supersetObj: Superset = {
-  //     id: Math.random().toString(), // ToDo
+  //     id: Math.random().toString(),
   //     type: 'superset',
   //     exercises: supersetExercises,
   //     sets: 3,

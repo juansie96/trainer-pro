@@ -15,7 +15,7 @@ import {
 } from '@mui/material'
 import FormContainer from '../../../Form/FormContainer'
 import { useForm } from 'react-hook-form'
-import { updateDoc } from 'firebase/firestore'
+import { deleteDoc, updateDoc } from 'firebase/firestore'
 import { Exercise } from './Exercises'
 import { Box } from '@mui/system'
 import TextFieldElement from '../../../Form/TextFieldElement'
@@ -24,6 +24,8 @@ import { TagsInput } from '../../../Form/TagsInput'
 import { storage } from '../../../../firebase/firebase'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import Swal from 'sweetalert2'
+import DeleteIcon from '@mui/icons-material/Delete'
+import ConfirmDialog from '../../../ConfirmDialog'
 
 interface EditExerciseDialogProps {
   open: boolean
@@ -76,6 +78,8 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
   const [mediaType, setMediaType] = useState<MediaType>(
     getMediaType(exercise.videoUrl, exercise.imgUrls),
   )
+
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
   const mediaTypeChanged = mediaType !== getMediaType(exercise.videoUrl, exercise.imgUrls)
 
@@ -179,6 +183,11 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMediaType(e.target.value as MediaType)
+  }
+
+  const handleDeleteClick = () => {
+    setConfirmDialogOpen(false)
+    deleteDoc(exercise.ref)
   }
 
   const onImageChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
@@ -359,14 +368,27 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
               />
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
-            <Button onClick={onClose}>Cancelar</Button>
-            <Button type='submit' variant='contained' disabled={isAdding}>
-              {isAdding ? 'Guardando Ejercicio' : 'Guardar Ejercicio'}
-            </Button>
+          <DialogActions
+            sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3', justifyContent: 'space-between' }}
+          >
+            <DeleteIcon
+              fontSize='large'
+              color='error'
+              sx={{ cursor: 'pointer' }}
+              onClick={() => setConfirmDialogOpen(true)}
+            />
+            <Box>
+              <Button onClick={onClose}>Cancelar</Button>
+              <Button type='submit' variant='contained' disabled={isAdding}>
+                {isAdding ? 'Guardando Ejercicio' : 'Guardar Ejercicio'}
+              </Button>
+            </Box>
           </DialogActions>
         </FormContainer>
       </Dialog>
+      {confirmDialogOpen && (
+        <ConfirmDialog onClose={() => setConfirmDialogOpen(false)} onConfirm={handleDeleteClick} />
+      )}
     </div>
   )
 }

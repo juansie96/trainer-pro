@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Navigate } from 'react-router-dom'
 import { Button, LinearProgress } from '@mui/material'
@@ -7,9 +7,13 @@ import { CustomSnackbar } from '../../UI/CustomSnackbar'
 import FormContainer from '../../Form/FormContainer'
 import TextFieldElement from '../../Form/TextFieldElement'
 import { auth } from '../../../firebase/firebase'
-import { UserContext } from '../../../contexts/UserContext'
-import { AuthError, signInWithEmailAndPassword } from 'firebase/auth'
+import { AuthError, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { mapFirebaseErrorCodeToMsg } from '../../../utils/utils'
+import { useAppDispatch } from '../../../state/storeHooks'
+import { userLoggedIn } from '../../../redux/slices/trainerSlice'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { getTrainerDataQueryRef } from '../../../firebase/fbRefs'
+import { getDocs } from 'firebase/firestore'
 
 type RegisterFormValues = {
   email: string
@@ -17,7 +21,8 @@ type RegisterFormValues = {
 }
 
 export const Login: React.FC = () => {
-  const user = useContext(UserContext)
+  const dispatch = useAppDispatch()
+  const [user] = useAuthState(auth)
 
   const formContext = useForm<RegisterFormValues>({
     mode: 'onBlur',
@@ -28,9 +33,9 @@ export const Login: React.FC = () => {
   })
 
   const [loading, setLoading] = useState<boolean>(false)
-  const [loginError, setLoginError] = useState<any>('')
+  const [loginError, setLoginError] = useState('')
 
-  if (user?.user) {
+  if (user && !loading) {
     return <Navigate to='/dashboard' />
   }
 
@@ -72,12 +77,34 @@ export const Login: React.FC = () => {
     setLoginError('')
   }
 
+  function loginValidationError() {
+    setLoading(false)
+    signOut(auth)
+    setLoginError('Por favor, ingrese a su cuenta de alumno desde la APP Movil')
+  }
+
   async function loginUser(user: RegisterFormValues) {
     setLoading(true)
     try {
       await signInWithEmailAndPassword(auth, user.email, user.password)
-      setLoading(false)
+
+      const querySnapshot = await getDocs(getTrainerDataQueryRef(user.email))
+      const userExists = querySnapshot.size > 0
+      if (userExists) {
+        querySnapshot.forEach((doc) => {
+          const trainerdb = doc.data()
+          if (trainerdb) {
+            dispatch(userLoggedIn({ ...trainerdb, id: doc.id }))
+            setLoading(false)
+          } else {
+            loginValidationError()
+          }
+        })
+      } else {
+        loginValidationError()
+      }
     } catch (err) {
+      signOut(auth)
       setLoading(false)
       const error = err as AuthError
       setLoginError(mapFirebaseErrorCodeToMsg(error.code))

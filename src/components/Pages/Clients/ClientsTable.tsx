@@ -6,27 +6,30 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { Client } from './Clients';
+} from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import { CLIENT_OBJECTIVES, TClientObjectives } from '../../../utils/utils'
+import { Client } from './Clients'
 
 export interface ClientsTableProps {
-  clients: Client[];
+  clients: Client[]
 }
 
 export const ClientsTable = ({ clients }: ClientsTableProps) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <TableContainer component={Paper} sx={{ width: 0.9, mx: 'auto' }}>
-      <Table sx={{ minWidth: 650 }} aria-label="clients table">
+      <Table sx={{ minWidth: 650 }} aria-label='clients table'>
         <TableHead>
           <TableRow>
             <TableCell>Nombre</TableCell>
-            <TableCell>Tipo de plan</TableCell>
-            <TableCell align="center">Vencimiento</TableCell>
-            <TableCell align="center">Cumplimiento semanal</TableCell>
-            <TableCell align="center">Cumplimiento mensual</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Objetivo</TableCell>
+            {/* TODO */}
+            {/* <TableCell align='center'>Vencimiento</TableCell>
+            <TableCell align='center'>Cumplimiento semanal</TableCell>
+            <TableCell align='center'>Cumplimiento mensual</TableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -37,19 +40,26 @@ export const ClientsTable = ({ clients }: ClientsTableProps) => {
                 cursor: 'pointer',
                 '&:last-child td, &:last-child th': { border: 0 },
               }}
-              onClick={() => navigate(`/dashboard/client/${client.id}`)}
+              onClick={() => {
+                navigate(`/dashboard/client/${client.id}`, {
+                  state: { client },
+                })
+              }}
             >
-              <TableCell component="th" scope="row">
-                {client.name}
+              <TableCell component='th' scope='row'>
+                {client.name} {client.lastname}
               </TableCell>
-              <TableCell>Sin plan asignado</TableCell>
-              <TableCell align="center">03/11</TableCell>
-              <TableCell align="center">100%</TableCell>
-              <TableCell align="center">50%</TableCell>
+              <TableCell>{client.email}</TableCell>
+              <TableCell>
+                {CLIENT_OBJECTIVES[client.objective as TClientObjectives].short}
+              </TableCell>
+              {/* <TableCell align='center'>03/11</TableCell>
+              <TableCell align='center'>50%</TableCell>
+              <TableCell align='center'>50%</TableCell> */}
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
-  );
-};
+  )
+}

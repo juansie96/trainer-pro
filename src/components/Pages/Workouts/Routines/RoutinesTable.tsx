@@ -126,7 +126,6 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
       )}
       {confirmDialog.open && (
         <ConfirmDialog
-          message={'¿Seguro quiere eliminar esta Rutina? Esta acción no se puede deshacer.'}
           onClose={() => setConfirmDialog({ open: false, workoutId: '' })}
           onConfirm={handleDeleteWorkout}
         />

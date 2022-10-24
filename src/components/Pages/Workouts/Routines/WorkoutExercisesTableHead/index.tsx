@@ -10,6 +10,7 @@ import {
   Typography,
   Box,
   tooltipClasses,
+  Theme,
 } from '@mui/material'
 import { headCells } from './data'
 import { IProps } from './types'
@@ -19,7 +20,7 @@ function WorkoutExercisesTableHead(props: IProps) {
 
   const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip {...props} classes={{ popper: className }} />
-  ))(({ theme }) => ({
+  ))(({ theme }: { theme: Theme }) => ({
     [`& .${tooltipClasses.tooltip}`]: {
       backgroundColor: '#f5f5f9',
       color: 'rgba(0, 0, 0, 0.87)',
