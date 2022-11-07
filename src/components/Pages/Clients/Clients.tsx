@@ -9,22 +9,7 @@ import { HealthFormQuestion } from '../ClientActivation/types'
 import { selectTrainer } from '../../../redux/slices/trainerSlice'
 import { useSelector } from 'react-redux'
 import { getClientsByTrainerIdRef } from '../../../firebase/fbRefs'
-
-export interface Client {
-  name: string
-  lastname: string
-  email: string
-  trainerId: string
-  password: string
-  gender: string
-  objective: string
-  birthDate: Date | Timestamp
-  weight: number
-  height: number
-  healthFormQuestions: HealthFormQuestion[]
-  id?: string
-  ref?: DocumentReference<DocumentData>
-}
+import { Task } from '../../../types/client'
 
 const Clients = () => {
   let content

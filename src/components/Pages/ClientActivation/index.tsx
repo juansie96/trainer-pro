@@ -31,7 +31,7 @@ import { AuthError, createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth, firestoreDB } from '../../../firebase/firebase'
 import { addDoc, doc, getDoc, WithFieldValue } from 'firebase/firestore'
 import { clientsRef, trainerConverter } from '../../../firebase/fbRefs'
-import { Client } from '../Clients/Clients'
+import type { Client } from '../../../types/client'
 import { mapFirebaseErrorCodeToMsg } from '../../../utils/utils'
 import { CustomSnackbar } from '../../UI/CustomSnackbar'
 import { useParams } from 'react-router-dom'
@@ -81,9 +81,10 @@ const ClientActivation = () => {
 
         const ref = await addDoc(clientsRef, {
           ...client,
-          birthDate: new Date(client.birthDate),
-          trainerId: (trainer as TrainerState).id, // TAKE A LOOK AT THIS, NOT WORKING
-        } as WithFieldValue<any>)
+          birthDate: new Date(client.birthDate).toISOString(),
+          trainerId: (trainer as TrainerState).id,
+          tasks: [], // TAKE A LOOK AT THIS, NOT WORKING
+        } as WithFieldValue<Client>)
         setSigningUp(false)
         setStep(step + 1)
         // dispatch(trainerRetrieved({ email, name: user.name, lastname: user.lastname, id: ref.id }))

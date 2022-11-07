@@ -1,9 +1,8 @@
 export const firebaseConfig = {
-    apiKey: 'AIzaSyAMaYi1kW82HXKJNuafOvJPFcSb77THiQU',
-    authDomain: 'trainer-pro-5d29f.firebaseapp.com',
-    projectId: 'trainer-pro-5d29f',
-    storageBucket: 'trainer-pro-5d29f.appspot.com',
-    messagingSenderId: '427550071516',
-    appId: '1:427550071516:web:71a8d30dbcc561c7aa7219',
-    measurementId: 'G-SDF1WM5C8P',
-};
+  apiKey: 'AIzaSyCQcwFXazbXkQdPK9jp4T7y4Hh9ikHawko',
+  authDomain: 'trainer-pro-app.firebaseapp.com',
+  projectId: 'trainer-pro-app',
+  storageBucket: 'trainer-pro-app.appspot.com',
+  messagingSenderId: '1084117845827',
+  appId: '1:1084117845827:web:6f2d10c2b97c66c05951f6',
+}

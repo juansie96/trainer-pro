@@ -1,6 +1,5 @@
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import React from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 const Sidebar: React.FC = ({ children }) => (
   <Box sx={sidebarStyles} className='client-sidebar'>
@@ -34,7 +33,7 @@ const sidebarStyles = {
   background: '#1976d2',
   boxShadow: '0px 3px 6px 4px rgb(0 0 0 / 20%)',
   color: 'white',
-  // height: 'calc(100% - 64px - 50px)',
+  textAlign: 'center',
 }
 
 export default Sidebar

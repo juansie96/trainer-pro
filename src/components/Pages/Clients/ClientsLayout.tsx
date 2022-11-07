@@ -1,7 +1,7 @@
 import { Box, Button, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
-import { Client } from './Clients'
+import type { Client } from '../../../types/client'
 import { CenteredLayout } from '../../UI/CenteredLayout'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { ClientsTable } from './ClientsTable'

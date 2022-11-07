@@ -18,6 +18,9 @@ export const Dashboard = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    if (user && !loading && !user.emailVerified) {
+      navigate('/verification')
+    }
     if (user && !trainer.id) {
       getTrainerData()
     } else if (!user && !loading) {
@@ -34,22 +37,25 @@ export const Dashboard = () => {
         if (trainerdb) {
           dispatch(userLoggedIn({ ...trainerdb, id: doc.id }))
         } else {
+          console.log('here, of course')
           signOut(auth)
         }
       })
     } else {
+      console.log('here, of very course')
       signOut(auth)
     }
   }
 
   return (
-    <Box className='dashboard' height={dashboardHeight}>
+    <Box className='dashboard'>
       <DashboardTabs />
       <Box
         className='dashboard-content'
         display='flex'
         flexDirection='column'
-        height={dashboardContentHeight}
+        height={'calc(100vh - 114px)'}
+        sx={{ overflowY: 'scroll' }}
       >
         <Outlet />
       </Box>
@@ -62,6 +68,3 @@ export const Dashboard = () => {
     // />
   )
 }
-
-const dashboardHeight = 'calc(100% - 64px)'
-const dashboardContentHeight = 'calc(100% - 50px)'

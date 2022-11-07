@@ -1,5 +1,6 @@
 import { Box } from '@mui/material'
 import { useEffect } from 'react'
+import { useDocumentData } from 'react-firebase-hooks/firestore'
 import { useDispatch } from 'react-redux'
 import { Outlet, useLocation, useParams } from 'react-router-dom'
 import { getClientDataDocById } from '../../../firebase/fbRefs'
@@ -11,6 +12,7 @@ const Client = () => {
   const { clientId } = useParams()
   const state = location.state as any
   const dispatch = useDispatch()
+  useDocumentData()
 
   useEffect(() => {
     if (state) {
@@ -18,13 +20,7 @@ const Client = () => {
     } else {
       getClientDataDocById(clientId as string).then((docSnap) => {
         if (docSnap.exists()) {
-          const clientData = docSnap.data()
-          dispatch(
-            clientDataRetrieved({
-              ...clientData,
-              birthDate: (clientData.birthDate as Date).toISOString(),
-            }),
-          )
+          dispatch(clientDataRetrieved(docSnap.data()))
         } else {
           console.log('No such document!')
         }
@@ -35,7 +31,7 @@ const Client = () => {
   return (
     <Box flex={1} className='client-layout' display='grid' gridTemplateColumns={'110px 1fr'}>
       <ClientSidebar />
-      <Box ml='110px' p={2} flex={1} height={1} overflow='scroll'>
+      <Box p={4} flex={1}>
         <Outlet />
       </Box>
     </Box>

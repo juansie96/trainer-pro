@@ -84,3 +84,22 @@ export const CLIENT_OBJECTIVES = {
   fit: { short: 'Ponerse en forma', long: 'Ponerme en forma de manera balanceada' },
   gain: { short: 'Volumen y fuerza', long: 'Ganar músculo, volumen y fuerza' },
 }
+
+export const getMonthName = (month: number) => {
+  const months = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ]
+
+  return months[month]
+}

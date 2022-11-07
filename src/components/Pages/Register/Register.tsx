@@ -7,7 +7,7 @@ import { CustomSnackbar } from '../../UI/CustomSnackbar'
 import FormContainer from '../../Form/FormContainer'
 import { UserContext } from '../../../contexts/UserContext'
 import TextFieldElement from '../../Form/TextFieldElement'
-import { AuthError, createUserWithEmailAndPassword } from 'firebase/auth'
+import { AuthError, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'
 import { auth } from '../../../firebase/firebase'
 import { mapFirebaseErrorCodeToMsg } from '../../../utils/utils'
 import { addDoc, WithFieldValue } from 'firebase/firestore'
@@ -16,7 +16,7 @@ import { TrainerState } from '../../../redux/slices/trainerSlice'
 import { useDispatch } from 'react-redux'
 
 type RegisterFormValues = {
-  email: string | null
+  email: string
   password: string
   name: string
   lastname: string
@@ -75,7 +75,7 @@ export const Register = () => {
         <TextFieldElement
           sx={{ mb: 2 }}
           fullWidth
-          label='Password'
+          label='Contraseña'
           name='password'
           type='password'
           validation={{ required: 'La contraseña es requerida' }}
@@ -98,26 +98,21 @@ export const Register = () => {
     setRegisterError('')
   }
 
-  async function onSignUp(user: RegisterFormValues) {
+  async function onSignUp({ email, password, name, lastname }: RegisterFormValues) {
     setSigningUp(true)
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        user.email as string,
-        user.password,
-      )
-      const email = userCredential.user.email as string
-      const ref = await addDoc(trainersRef, {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      await addDoc(trainersRef, {
         email,
-        name: user.name,
-        lastname: user.lastname,
+        name,
+        lastname,
       } as WithFieldValue<TrainerState>)
-      // dispatch(trainerRetrieved({ email, name: user.name, lastname: user.lastname, id: ref.id }))
+      await sendEmailVerification(userCredential.user)
       setSigningUp(false)
       setRegisterError('')
     } catch (err) {
       const error = err as AuthError
-      console.log('err', err)
+      console.error(err)
       setSigningUp(false)
       setRegisterError(mapFirebaseErrorCodeToMsg(error.code))
       formContext.setValue('password', '')

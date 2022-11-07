@@ -1,26 +1,36 @@
-import { Card, Typography } from '@mui/material';
-import { Box } from '@mui/system';
-import React from 'react';
-import { getMonth } from '../../../utils/utils';
-import CalendarDay from './CalendarDay';
+import { Card, Typography } from '@mui/material'
+import { Box } from '@mui/system'
+import React, { useState } from 'react'
+import { getMonth, getMonthName } from '../../../utils/utils'
+import AddNewTaskDialog from './AddNewTaskDialog'
+import CalendarDay from './CalendarDay'
 
 const Calendar = () => {
-  const month = getMonth();
+  const [taskDialog, setTaskDialog] = useState<{ open: boolean; day: Date | null }>({
+    open: false,
+    day: null,
+  })
+  const month = getMonth()
+
+  const handleDayClick = (day: Date) => {
+    console.log('entering this dialog task')
+    setTaskDialog({ open: true, day })
+  }
 
   return (
     <Card
       sx={{ height: 1, display: 'flex', flexDirection: 'column' }}
       elevation={10}
-      className="calendar-wrapper"
+      className='calendar-wrapper'
     >
-      <Typography variant="h4" textAlign="center" sx={{ my: 1.5 }}>
-        Mayo 2022
+      <Typography variant='h4' textAlign='center' sx={{ my: 1.5 }}>
+        {getMonthName(new Date().getMonth())} 2022
       </Typography>
       <Box
-        className="calendar-grid"
-        display="grid"
-        gridTemplateRows="repeat(5,1fr)"
-        gridTemplateColumns="repeat(7,1fr)"
+        className='calendar-grid'
+        display='grid'
+        gridTemplateRows='repeat(5,1fr)'
+        gridTemplateColumns='repeat(7,1fr)'
         flex={1}
         px={1}
         pb={2}
@@ -33,13 +43,20 @@ const Calendar = () => {
                 rowIdx={rowIdx}
                 colIdx={colIdx}
                 key={day.toISOString()}
+                onDayClick={handleDayClick}
               />
             ))}
           </React.Fragment>
         ))}
       </Box>
+      {taskDialog.open && (
+        <AddNewTaskDialog
+          onClose={() => setTaskDialog({ open: false, day: null })}
+          day={taskDialog.day as Date}
+        />
+      )}
     </Card>
-  );
-};
+  )
+}
 
-export default Calendar;
+export default Calendar

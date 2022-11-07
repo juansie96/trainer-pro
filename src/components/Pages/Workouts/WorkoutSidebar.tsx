@@ -1,14 +1,12 @@
 import { Typography } from '@mui/material'
-import EventNoteIcon from '@mui/icons-material/EventNote'
-import InfoIcon from '@mui/icons-material/Info'
-import RestaurantIcon from '@mui/icons-material/Restaurant'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar, { MenuItem } from '../../Sidebar'
+import { CgGym } from 'react-icons/cg'
+import { GiWeightLiftingUp } from 'react-icons/gi'
 
 const WorkoutSidebar = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  const { clientId } = useParams()
 
   return (
     <Sidebar>
@@ -16,15 +14,15 @@ const WorkoutSidebar = () => {
         active={!location.pathname.includes('exercises')}
         onClick={() => navigate('/dashboard/workouts')}
       >
-        <EventNoteIcon sx={{ p: 1 }} />
-        <Typography>Rutinas</Typography>
+        <CgGym size={30} />
+        <Typography sx={{ mt: 0.5 }}>Rutinas</Typography>
       </MenuItem>
       <MenuItem
         active={location.pathname.includes('exercises')}
         onClick={() => navigate('/dashboard/workouts/exercises')}
       >
-        <InfoIcon sx={{ p: 1 }} />
-        <Typography>Ejercicios</Typography>
+        <GiWeightLiftingUp size={30} />
+        <Typography sx={{ mt: 1 }}>Ejercicios</Typography>
       </MenuItem>
     </Sidebar>
   )

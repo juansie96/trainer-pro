@@ -1,19 +1,20 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Navigate } from 'react-router-dom'
-import { Button, LinearProgress } from '@mui/material'
+import { Link, Navigate } from 'react-router-dom'
+import { Box, Button, LinearProgress, Typography } from '@mui/material'
 import { MainContainer } from '../../MainContainer/MainContainer'
 import { CustomSnackbar } from '../../UI/CustomSnackbar'
 import FormContainer from '../../Form/FormContainer'
 import TextFieldElement from '../../Form/TextFieldElement'
-import { auth } from '../../../firebase/firebase'
-import { AuthError, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { mapFirebaseErrorCodeToMsg } from '../../../utils/utils'
 import { useAppDispatch } from '../../../state/storeHooks'
-import { userLoggedIn } from '../../../redux/slices/trainerSlice'
+import { TrainerState, userLoggedIn } from '../../../redux/slices/trainerSlice'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { getTrainerDataQueryRef } from '../../../firebase/fbRefs'
-import { getDocs } from 'firebase/firestore'
+import { getTrainerDataQueryRef, trainersRef } from '../../../firebase/fbRefs'
+import { addDoc, getDocs, WithFieldValue } from 'firebase/firestore'
+import { FcGoogle } from 'react-icons/fc'
+import { AuthError, signInWithPopup, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import { auth, googleProvider } from '../../../firebase/firebase'
 
 type RegisterFormValues = {
   email: string
@@ -39,9 +40,31 @@ export const Login: React.FC = () => {
     return <Navigate to='/dashboard' />
   }
 
+  const handleGoogleLogin = async () => {
+    setLoading(true)
+
+    try {
+      const { user } = await signInWithPopup(auth, googleProvider)
+      const querySnapshot = await getDocs(getTrainerDataQueryRef(user?.email as string))
+      const userExists = querySnapshot.size > 0
+      if (userExists) {
+        setLoading(false)
+      } else {
+        const name = user.displayName as string
+        await addDoc(trainersRef, {
+          email: user.email,
+          name,
+          lastname: '',
+        } as WithFieldValue<TrainerState>)
+        setLoading(false)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <MainContainer sx={{ mt: 4 }} maxWidth='xs'>
-      {/* <FormErrors errors={formErrors} /> */}
       <FormContainer formContext={formContext} handleSubmit={formContext.handleSubmit(loginUser)}>
         <TextFieldElement
           sx={{ mb: 2 }}
@@ -54,7 +77,7 @@ export const Login: React.FC = () => {
         <TextFieldElement
           sx={{ mb: 2 }}
           fullWidth
-          label='Password'
+          label='Contraseña'
           name='password'
           type='password'
           validation={{ required: 'La contraseña es requerida' }}
@@ -62,7 +85,32 @@ export const Login: React.FC = () => {
         <Button variant='contained' type='submit' fullWidth disabled={loading}>
           {loading ? 'INICIANDO SESIÓN' : 'INICIAR SESIÓN'}
         </Button>
+        <Link to='/reset-password'>
+          <Typography variant={'body2'} color={'#333'} sx={{ mt: 1.5, cursor: 'pointer' }}>
+            ¿Olvidaste tu contraseña?
+          </Typography>
+        </Link>
       </FormContainer>
+      <Typography textAlign={'center'} sx={{ my: 2 }}>
+        o
+      </Typography>
+      <Box
+        sx={{
+          border: '1px solid #ccc',
+          borderRadius: '0.2em',
+          display: 'flex',
+          padding: '0.5em',
+          justifyContent: 'center',
+          alignItems: 'center',
+          cursor: 'pointer',
+        }}
+        onClick={handleGoogleLogin}
+      >
+        <FcGoogle size={23} />
+        <Typography sx={{ ml: 1.3 }} variant='body1'>
+          Login con Google
+        </Typography>
+      </Box>
       <>{loading && <LinearProgress sx={{ my: 3 }} />}</>
       <CustomSnackbar
         open={!!loginError}

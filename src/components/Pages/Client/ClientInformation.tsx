@@ -1,13 +1,12 @@
 import { Card, Typography } from '@mui/material'
 import { Box } from '@mui/system'
+import dayjs from 'dayjs'
 import { useAppSelector } from '../../../state/storeHooks'
 import { CLIENT_OBJECTIVES, TClientObjectives } from '../../../utils/utils'
 import { selectClient } from './Client.slice'
 
 const ClientInformation = () => {
   const client = useAppSelector(selectClient)
-  console.log('client', client)
-
   if (!client?.email) return null
 
   const clientGeneralInfo = (
@@ -50,10 +49,10 @@ const ClientInformation = () => {
       </Box>
       <Box display='flex' mt={1}>
         <Typography fontWeight={600} variant='body1'>
-          Peso:
+          Fecha de Nacimiento:
         </Typography>
         <Typography variant='body1' sx={{ ml: 1 }}>
-          {client.weight} kg
+          {dayjs(client.birthDate).format('DD/MM/YYYY')}
         </Typography>
       </Box>
       <Box display='flex' mt={1}>

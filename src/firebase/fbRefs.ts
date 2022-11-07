@@ -7,15 +7,15 @@ import {
   query,
   QueryDocumentSnapshot,
   SnapshotOptions,
-  Timestamp,
   where,
   WithFieldValue,
 } from 'firebase/firestore'
-import { Client } from '../components/Pages/Clients/Clients'
-import { Exercise } from '../components/Pages/Workouts/Exercises/Exercises'
-import { TrainerState } from '../redux/slices/trainerSlice'
-import { Workout } from '../types/workout'
 import { firestoreDB } from './firebase'
+
+import type { Client } from '../types/client'
+import type { Exercise } from '../components/Pages/Workouts/Exercises/Exercises'
+import type { TrainerState } from '../redux/slices/trainerSlice'
+import type { Workout } from '../types/workout'
 
 export const trainerConverter: FirestoreDataConverter<Omit<TrainerState, 'id'>> = {
   toFirestore(trainer: WithFieldValue<Omit<TrainerState, 'id'>>): DocumentData {
@@ -46,10 +46,9 @@ const clientConverter: FirestoreDataConverter<Client> = {
   },
   fromFirestore(snapshot: QueryDocumentSnapshot<Client>, options: SnapshotOptions): Client {
     const data = snapshot.data(options)
-    const birthDate = (data.birthDate as Timestamp).toDate()
+
     return {
       ...data,
-      birthDate,
       id: snapshot.id,
     }
   },

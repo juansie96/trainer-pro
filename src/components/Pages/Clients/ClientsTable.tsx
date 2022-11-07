@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { CLIENT_OBJECTIVES, TClientObjectives } from '../../../utils/utils'
-import { Client } from './Clients'
+import type { Client } from '../../../types/client'
 
 export interface ClientsTableProps {
   clients: Client[]
