@@ -16,6 +16,8 @@ import React, { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form'
 import { exercisesRef, workoutsRef } from '../../../../../firebase/fbRefs'
+import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
+import { useAppSelector } from '../../../../../state/storeHooks'
 import { SingleExercise, Workout } from '../../../../../types/workout'
 import { getExerciseImgUrl } from '../../../../../utils/utils'
 import FormContainer from '../../../../Form/FormContainer'
@@ -43,6 +45,9 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
     name: 'workoutExercises', // unique name for your Field Array
   })
 
+  const trainer = useAppSelector(selectTrainer)
+  console.log('tttrainer', trainer)
+
   // console.info(formContext.watch())
 
   const [isAdding, setIsAdding] = useState<boolean>(false)
@@ -63,6 +68,7 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
     try {
       await addDoc(workoutsRef, {
         ...newWorkout,
+        trainerId: trainer.id,
         createdAt: Timestamp.fromDate(new Date()),
       } as WithFieldValue<Workout>)
       setIsAdding(false)

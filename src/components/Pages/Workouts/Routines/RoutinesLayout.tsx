@@ -2,13 +2,18 @@ import { Box, Button, IconButton, InputAdornment, TextField, Typography } from '
 import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
-import { workoutsRef } from '../../../../firebase/fbRefs'
+import { getWorkoutsByTrainerIdRef, workoutsRef } from '../../../../firebase/fbRefs'
 import RoutinesTable from './RoutinesTable'
 import { CenteredLayout } from '../../../UI/CenteredLayout'
 import { Workout } from '../../../../types/workout'
+import { selectTrainer } from '../../../../redux/slices/trainerSlice'
+import { useAppSelector } from '../../../../state/storeHooks'
 
 export const RoutinesLayout = ({ openAddWorkoutDialog }: { openAddWorkoutDialog(): void }) => {
-  const [workouts, loading] = useCollectionData(workoutsRef)
+  const trainer = useAppSelector(selectTrainer)
+  console.log('trainer.id', trainer.id)
+  const [workouts, loading] = useCollectionData(getWorkoutsByTrainerIdRef(trainer.id as string))
+  console.log('workouts', workouts)
   const [query, setQuery] = useState('')
 
   let filteredWorkouts = workouts?.slice(0)

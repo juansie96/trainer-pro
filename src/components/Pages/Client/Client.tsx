@@ -22,7 +22,7 @@ const Client = () => {
         if (docSnap.exists()) {
           dispatch(clientDataRetrieved(docSnap.data()))
         } else {
-          console.log('No such document!')
+          throw new Error()
         }
       })
     }

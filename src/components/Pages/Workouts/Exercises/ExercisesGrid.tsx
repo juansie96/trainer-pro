@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Card, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { getExerciseImgUrl } from '../../../../utils/utils'
 import EditExerciseDialog from './EditExerciseDialog'

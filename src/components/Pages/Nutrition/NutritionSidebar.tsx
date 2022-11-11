@@ -22,7 +22,7 @@ const NutritionSidebar = () => {
         onClick={() => navigate('/dashboard/nutrition/meals')}
       >
         <GiChickenOven size={30} />
-        <Typography>Comidas</Typography>
+        <Typography>Alimentos</Typography>
       </MenuItem>
     </Sidebar>
   )

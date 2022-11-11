@@ -183,7 +183,6 @@ const AddCardioForm = ({ onClose, day }: { onClose(): void; day: Date }) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit: SubmitHandler<typeof defaultValues> = async (data) => {
-    console.log('data', data)
     const docRef = doc(firestoreDB, 'clients', client.id as string)
     setIsLoading(true)
     try {

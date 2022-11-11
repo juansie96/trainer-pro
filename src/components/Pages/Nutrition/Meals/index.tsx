@@ -2,14 +2,13 @@ import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { CenteredLayout } from '../../../UI/CenteredLayout'
-import { DocumentData, DocumentReference } from 'firebase/firestore'
-// import { ExercisesLayout } from './ExercisesLayout'
 import AddMealDialog from './AddMealDialog'
-import { exercisesRef, workoutsRef } from '../../../../firebase/fbRefs'
+import { mealsRef } from '../../../../firebase/fbRefs'
+import MealsLayout from './MealsLayout'
 
 const Meals = () => {
   let content
-  const [exercises, loading, error] = useCollectionData(exercisesRef)
+  const [meals, loading] = useCollectionData(mealsRef)
 
   const [addExerciseDialogOpen, setAddMealDialogOpen] = useState<boolean>(false)
 
@@ -23,9 +22,8 @@ const Meals = () => {
 
   if (loading) {
     content = <p>Cargando..</p>
-  } else if (exercises && exercises.length > 0) {
-    // content = <ExercisesLayout openAddMealDialog={openAddMealDialog} />
-    content = null
+  } else if (meals && meals.length > 0) {
+    content = <MealsLayout openAddMealDialog={openAddMealDialog} />
   } else {
     content = (
       <CenteredLayout>
@@ -37,7 +35,7 @@ const Meals = () => {
           sx={{ cursor: 'pointer' }}
           onClick={openAddMealDialog}
         >
-          Crea uno nuevo
+          Crea una nueva
         </Typography>
       </CenteredLayout>
     )

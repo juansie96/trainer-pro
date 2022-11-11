@@ -13,7 +13,6 @@ const Calendar = () => {
   const month = getMonth()
 
   const handleDayClick = (day: Date) => {
-    console.log('entering this dialog task')
     setTaskDialog({ open: true, day })
   }
 

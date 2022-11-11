@@ -16,6 +16,7 @@ import type { Client } from '../types/client'
 import type { Exercise } from '../components/Pages/Workouts/Exercises/Exercises'
 import type { TrainerState } from '../redux/slices/trainerSlice'
 import type { Workout } from '../types/workout'
+import { Meal } from '../types/meals'
 
 export const trainerConverter: FirestoreDataConverter<Omit<TrainerState, 'id'>> = {
   toFirestore(trainer: WithFieldValue<Omit<TrainerState, 'id'>>): DocumentData {
@@ -40,9 +41,7 @@ export const trainerConverter: FirestoreDataConverter<Omit<TrainerState, 'id'>> 
 
 const clientConverter: FirestoreDataConverter<Client> = {
   toFirestore(client: WithFieldValue<Client>): DocumentData {
-    return {
-      ...client,
-    }
+    return client
   },
   fromFirestore(snapshot: QueryDocumentSnapshot<Client>, options: SnapshotOptions): Client {
     const data = snapshot.data(options)
@@ -56,7 +55,7 @@ const clientConverter: FirestoreDataConverter<Client> = {
 
 const workoutConverter: FirestoreDataConverter<Workout> = {
   toFirestore(workout: WithFieldValue<Workout>): DocumentData {
-    return { ...workout }
+    return workout
   },
   fromFirestore(snapshot: QueryDocumentSnapshot<Workout>, options: SnapshotOptions): Workout {
     const data = snapshot.data(options)
@@ -91,6 +90,15 @@ const exerciseConverter: FirestoreDataConverter<Exercise> = {
     }
   },
 }
+const mealConverter: FirestoreDataConverter<Meal> = {
+  toFirestore(meal: WithFieldValue<Meal>): DocumentData {
+    return meal
+  },
+  fromFirestore(snapshot: QueryDocumentSnapshot<Meal>, options: SnapshotOptions): Meal {
+    const data = snapshot.data(options)
+    return { ...data, id: snapshot.id }
+  },
+}
 
 export const clientsRef = collection(firestoreDB, 'clients').withConverter(clientConverter)
 
@@ -100,11 +108,34 @@ export const getClientDataDocById = (clientId: string) =>
 export const getClientsByTrainerIdRef = (trainerId: string) =>
   query(clientsRef, where('trainerId', '==', trainerId))
 
+export const getWorkoutsByTrainerIdRef = (trainerId: string) =>
+  query(workoutsRef, where('trainerId', '==', trainerId))
+
+export const getMealsByTrainerIdRef = (trainerId: string) =>
+  query(mealsRef, where('creatorId', 'in', [trainerId, '']))
+
 export const getTrainerDataQueryRef = (email: string) =>
   query(trainersRef, where('email', '==', email))
 
 export const workoutsRef = collection(firestoreDB, 'workouts').withConverter(workoutConverter)
 export const exercisesRef = collection(firestoreDB, 'exercises').withConverter(exerciseConverter)
 export const trainersRef = collection(firestoreDB, 'trainers').withConverter(trainerConverter)
+export const mealsRef = collection(firestoreDB, 'meals').withConverter(mealConverter)
+
+export const getDocumentRef = (table: string, id: string) =>
+  doc(firestoreDB, table, id).withConverter(getConverter(table) as FirestoreDataConverter<any>)
+
+function getConverter(table: string) {
+  switch (table) {
+    case 'meals':
+      return mealConverter
+    case 'exercises':
+      return exerciseConverter
+    case 'workouts':
+      return workoutConverter
+    case 'trainers':
+      return trainerConverter
+  }
+}
 
 export default null

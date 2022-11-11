@@ -4,7 +4,7 @@ import { getDocs } from 'firebase/firestore'
 import { useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useDispatch } from 'react-redux'
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { getTrainerDataQueryRef } from '../../../firebase/fbRefs'
 import { auth } from '../../../firebase/firebase'
 import { selectTrainer, userLoggedIn } from '../../../redux/slices/trainerSlice'
@@ -37,12 +37,10 @@ export const Dashboard = () => {
         if (trainerdb) {
           dispatch(userLoggedIn({ ...trainerdb, id: doc.id }))
         } else {
-          console.log('here, of course')
           signOut(auth)
         }
       })
     } else {
-      console.log('here, of very course')
       signOut(auth)
     }
   }
@@ -60,11 +58,5 @@ export const Dashboard = () => {
         <Outlet />
       </Box>
     </Box>
-    // <CustomSnackbar
-    //   open={!!registerError}
-    //   message={registerError}
-    //   severity="error"
-    //   onClose={onSnackbarClose}
-    // />
   )
 }
