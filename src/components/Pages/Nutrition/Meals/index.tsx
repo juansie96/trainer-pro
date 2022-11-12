@@ -2,13 +2,13 @@ import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { CenteredLayout } from '../../../UI/CenteredLayout'
-import AddMealDialog from './AddMealDialog'
-import { mealsRef } from '../../../../firebase/fbRefs'
-import MealsLayout from './MealsLayout'
+import AddMealDialog from './AddFoodDialog'
+import { foodsRef } from '../../../../firebase/fbRefs'
+import MealsLayout from './FoodsLayout'
 
 const Meals = () => {
   let content
-  const [meals, loading] = useCollectionData(mealsRef)
+  const [meals, loading] = useCollectionData(foodsRef)
 
   const [addExerciseDialogOpen, setAddMealDialogOpen] = useState<boolean>(false)
 

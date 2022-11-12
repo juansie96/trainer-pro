@@ -14,29 +14,29 @@ import {
 import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
-import { getMealsByTrainerIdRef } from '../../../../../firebase/fbRefs'
+import { getFoodsByTrainerIdRef } from '../../../../../firebase/fbRefs'
 import { CenteredLayout } from '../../../../UI/CenteredLayout'
-import MealsGrid from '../MealsGrid'
+import MealsGrid from '../FoodsTable'
 import { useAppSelector } from '../../../../../state/storeHooks'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 import { CreatedByTypes } from './types'
 
 const MealsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
   const trainer = useAppSelector(selectTrainer)
-  const [meals, loading] = useCollectionData(getMealsByTrainerIdRef(trainer.id as string))
+  const [foods, loading] = useCollectionData(getFoodsByTrainerIdRef(trainer.id as string))
   const [query, setQuery] = useState('')
   const [createdBy, setCreatedBy] = useState<CreatedByTypes>('all')
 
-  let filteredMeals = meals?.slice(0)
+  let filteredFoods = foods?.slice(0)
 
-  if (query && meals) {
-    filteredMeals = meals.filter((meal) => meal.name.toUpperCase().includes(query.toUpperCase()))
+  if (query && foods) {
+    filteredFoods = foods.filter((meal) => meal.name.toUpperCase().includes(query.toUpperCase()))
   }
 
   if (createdBy === 'custom') {
-    filteredMeals = filteredMeals?.filter((m) => m.creatorId === trainer.id)
+    filteredFoods = filteredFoods?.filter((m) => m.creatorId === trainer.id)
   } else if (createdBy === 'default') {
-    filteredMeals = filteredMeals?.filter((m) => m.creatorId === '')
+    filteredFoods = filteredFoods?.filter((m) => m.creatorId === '')
   }
 
   return (
@@ -66,8 +66,8 @@ const MealsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
         </RadioGroup>
       </Stack>
 
-      {filteredMeals && filteredMeals.length > 0 ? (
-        <MealsGrid meals={filteredMeals} />
+      {filteredFoods && filteredFoods.length > 0 ? (
+        <MealsGrid foods={filteredFoods} />
       ) : (
         <CenteredLayout>
           <Typography variant='h5' my={3}>

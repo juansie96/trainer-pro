@@ -18,6 +18,7 @@ export default function TextFieldElement({
   name,
   control,
   customOnChange,
+  size = 'small',
   ...rest
 }: TextFieldElementProps): JSX.Element {
   if (required) {
@@ -47,6 +48,7 @@ export default function TextFieldElement({
           required={required}
           type={type}
           error={invalid}
+          size={size}
           helperText={
             error
               ? typeof parseError === 'function'

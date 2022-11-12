@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import {
   Button,
   Dialog,
@@ -10,43 +10,60 @@ import {
   Box,
 } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { addDoc } from 'firebase/firestore'
 import Swal from 'sweetalert2'
 import FormContainer from '../../../../Form/FormContainer'
-import { Meal } from '../../../../../types/meals'
+import { Food } from '../../../../../types/meals'
+import { IProps } from './types'
 import TextFieldElement from '../../../../Form/TextFieldElement'
-import { updateDoc } from 'firebase/firestore'
-import { getDocumentRef } from '../../../../../firebase/fbRefs'
-import type { IProps } from './types'
+import { foodsRef } from '../../../../../firebase/fbRefs'
+import { useAppSelector } from '../../../../../state/storeHooks'
+import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 
-const EditMealDialog = ({ onClose, meal }: IProps) => {
-  const formContext = useForm<Meal>({
-    defaultValues: meal,
+const AddMealDialog = ({ open, onClose }: IProps) => {
+  const trainer = useAppSelector(selectTrainer)
+
+  const formContext = useForm<Food>({
+    defaultValues: {
+      name: '',
+      nutritionalValues: {
+        kcal: NaN,
+        proteins: NaN,
+        carbs: NaN,
+        fats: NaN,
+        fiber: NaN,
+      },
+    },
   })
+
   const [isAdding, setIsAdding] = useState<boolean>(false)
 
-  const onSubmit: SubmitHandler<Meal> = async (data) => {
+  const onSubmit: SubmitHandler<Food> = async (data) => {
     setIsAdding(true)
     try {
-      const mealRef = getDocumentRef('meals', meal.id as string)
-      await updateDoc(mealRef, data)
+      if (!trainer?.id) {
+        throw new Error('No se pudo encontrar la información del entrenador')
+      }
+
+      await addDoc(foodsRef, { ...data, creatorId: trainer.id })
       setIsAdding(false)
       onClose()
-      Swal.fire('¡Éxito!', 'El ejercicio se editó correctamente!', 'success')
+      Swal.fire('¡Éxito!', 'El ejercicio se creo correctamente!', 'success')
     } catch (error) {
       console.error(error)
       setIsAdding(false)
       onClose()
       Swal.fire({
         icon: 'error',
-        title: 'Error al editar',
-        text: 'Hubo un error al intentar editar el Alimento, por favor intente nuevamente o comuniquese con un administrador.',
+        title: 'Error al crear',
+        text: 'Hubo un error al intentar crear el Alimento, por favor intente nuevamente o comuniquese con un administrador.',
       })
     }
   }
 
   return (
     <div>
-      <Dialog open onClose={onClose} maxWidth='sm' fullWidth>
+      <Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
         <FormContainer
           formContext={formContext}
           handleSubmit={formContext.handleSubmit(onSubmit)}
@@ -55,7 +72,7 @@ const EditMealDialog = ({ onClose, meal }: IProps) => {
           }}
         >
           <Box borderBottom='1px solid #e3e3e3'>
-            <DialogTitle>Editar alimento</DialogTitle>
+            <DialogTitle>Crear alimento</DialogTitle>
           </Box>
           <DialogContent sx={{ pt: 3, pb: 4 }}>
             <DialogContentText>Completa los datos del alimento</DialogContentText>
@@ -67,7 +84,7 @@ const EditMealDialog = ({ onClose, meal }: IProps) => {
                   name='nutritionalValues.kcal'
                   type='number'
                   size='small'
-                  label='Calorías'
+                  label='Calorías (kcal)'
                   customOnChange={({ target: { value } }) =>
                     formContext.setValue('nutritionalValues.kcal', parseInt(value, 10))
                   }
@@ -81,7 +98,7 @@ const EditMealDialog = ({ onClose, meal }: IProps) => {
                   name='nutritionalValues.proteins'
                   type='number'
                   size='small'
-                  label='Proteinas'
+                  label='Proteinas (g)'
                   customOnChange={({ target: { value } }) =>
                     formContext.setValue('nutritionalValues.proteins', parseInt(value, 10))
                   }
@@ -97,7 +114,7 @@ const EditMealDialog = ({ onClose, meal }: IProps) => {
                   name='nutritionalValues.carbs'
                   type='number'
                   size='small'
-                  label='Carbohidratos'
+                  label='Carbohidratos (g)'
                   customOnChange={({ target: { value } }) =>
                     formContext.setValue('nutritionalValues.carbs', parseInt(value, 10))
                   }
@@ -110,7 +127,7 @@ const EditMealDialog = ({ onClose, meal }: IProps) => {
                   name='nutritionalValues.fats'
                   type='number'
                   size='small'
-                  label='Grasas'
+                  label='Grasas (g)'
                   customOnChange={({ target: { value } }) =>
                     formContext.setValue('nutritionalValues.fats', parseInt(value, 10))
                   }
@@ -123,7 +140,7 @@ const EditMealDialog = ({ onClose, meal }: IProps) => {
                   name='nutritionalValues.fiber'
                   type='number'
                   size='small'
-                  label='Fibra'
+                  label='Fibra (g)'
                   customOnChange={({ target: { value } }) =>
                     formContext.setValue('nutritionalValues.fiber', parseInt(value, 10))
                   }
@@ -138,7 +155,7 @@ const EditMealDialog = ({ onClose, meal }: IProps) => {
           <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
             <Button onClick={onClose}>Cancelar</Button>
             <Button type='submit' variant='contained' disabled={isAdding}>
-              {isAdding ? 'Editando Ejercicio' : 'Editar Ejercicio'}
+              {isAdding ? 'Creando Ejercicio' : 'Crear Ejercicio'}
             </Button>
           </DialogActions>
         </FormContainer>
@@ -147,4 +164,4 @@ const EditMealDialog = ({ onClose, meal }: IProps) => {
   )
 }
 
-export default EditMealDialog
+export default AddMealDialog

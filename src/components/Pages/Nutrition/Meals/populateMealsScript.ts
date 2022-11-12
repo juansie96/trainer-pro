@@ -1,5 +1,5 @@
 import { addDoc } from 'firebase/firestore'
-import { mealsRef } from '../../../../firebase/fbRefs'
+import { foodsRef } from '../../../../firebase/fbRefs'
 
 const example = {
   name: '',
@@ -13,7 +13,7 @@ const example = {
   },
 }
 
-const meals = [
+const foods = [
   {
     name: 'populateTest1',
     creatorId: '',
@@ -50,6 +50,6 @@ const meals = [
 ]
 
 export default async function () {
-  const promises = meals.map((meal) => addDoc(mealsRef, meal))
+  const promises = foods.map((food) => addDoc(foodsRef, food))
   Promise.all(promises).then(console.log).catch(console.error)
 }

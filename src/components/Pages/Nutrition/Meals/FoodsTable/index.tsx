@@ -11,59 +11,59 @@ import {
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { deleteDoc, DocumentReference } from 'firebase/firestore'
-import { Meal } from '../../../../../types/meals'
+import { Food } from '../../../../../types/meals'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 import { useAppSelector } from '../../../../../state/storeHooks'
-import EditMealDialog from '../EditMealDialog'
+import EditFoodDialog from '../EditFoodDialog'
 import ConfirmDialog from '../../../../ConfirmDialog'
-import type { IProps, MealDialogState } from './types'
+import type { IProps, FoodDialogState } from './types'
 import { getDocumentRef } from '../../../../../firebase/fbRefs'
 
-const MealsGrid = ({ meals }: IProps) => {
+const FoodsTable = ({ foods }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
   const trainerName = trainer.name?.split(' ')[0]
-  const [editMealDialog, setEditMealDialog] = useState<MealDialogState>({
+  const [editFoodDialog, setEditFoodDialog] = useState<FoodDialogState>({
     open: false,
-    mealId: '',
+    foodId: '',
   })
 
-  const [confirmDialog, setConfirmDialog] = useState<MealDialogState>({
+  const [confirmDialog, setConfirmDialog] = useState<FoodDialogState>({
     open: false,
-    mealId: '',
+    foodId: '',
   })
 
-  const openEditMealDialog = (mealId: string) => {
-    setEditMealDialog({ open: true, mealId: mealId })
+  const openEditFoodDialog = (foodId: string) => {
+    setEditFoodDialog({ open: true, foodId: foodId })
   }
 
-  const closeEditMealDialog = () => {
-    setEditMealDialog({ open: false, mealId: '' })
+  const closeEditFoodDialog = () => {
+    setEditFoodDialog({ open: false, foodId: '' })
   }
 
-  const handleDeleteMeal = () => {
-    const meal = meals.find((w) => w.id === confirmDialog.mealId) as Meal
-    const mealRef = getDocumentRef('meals', meal.id as string)
-    deleteDoc(mealRef as DocumentReference<Meal>)
-    setConfirmDialog({ open: false, mealId: '' })
+  const handleDeleteFood = () => {
+    const food = foods.find((w) => w.id === confirmDialog.foodId) as Food
+    const foodRef = getDocumentRef('foods', food.id as string)
+    deleteDoc(foodRef as DocumentReference<Food>)
+    setConfirmDialog({ open: false, foodId: '' })
   }
 
-  const handleIconClick = (action: string, meal: Meal) => {
-    if (meal.creatorId === '') return
+  const handleIconClick = (action: string, food: Food) => {
+    if (food.creatorId === '') return
 
     if (action === 'edit') {
-      console.log(meal.id)
-      openEditMealDialog(meal.id as string)
+      console.log(food.id)
+      openEditFoodDialog(food.id as string)
     }
 
     if (action === 'delete') {
-      setConfirmDialog({ open: true, mealId: meal.id as string })
+      setConfirmDialog({ open: true, foodId: food.id as string })
     }
   }
 
   return (
     <>
       <TableContainer component={Paper} sx={{ width: 0.9, mx: 'auto', my: 3 }}>
-        <Table sx={{ minWidth: 650 }} aria-label='meals table'>
+        <Table sx={{ minWidth: 650 }} aria-label='foods table'>
           <TableHead>
             <TableRow>
               <TableCell sx={{ width: 0.3 }}>Nombre</TableCell>
@@ -77,50 +77,50 @@ const MealsGrid = ({ meals }: IProps) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {meals.map((meal) => (
+            {foods.map((food) => (
               <TableRow
-                key={meal.id}
+                key={food.id}
                 sx={{
                   '&:last-child td, &:last-child th': { border: 0 },
                 }}
               >
                 <TableCell component='th' scope='row'>
-                  {meal.name}
+                  {food.name}
                 </TableCell>
                 <TableCell component='th' scope='row'>
-                  {meal.nutritionalValues.kcal} kcal
+                  {food.nutritionalValues.kcal} kcal
                 </TableCell>
                 <TableCell component='th' scope='row'>
-                  {meal.nutritionalValues.proteins} g
+                  {food.nutritionalValues.proteins} g
                 </TableCell>
                 <TableCell component='th' scope='row'>
-                  {meal.nutritionalValues.carbs} g
+                  {food.nutritionalValues.carbs} g
                 </TableCell>
                 <TableCell component='th' scope='row'>
-                  {meal.nutritionalValues.fats} g
+                  {food.nutritionalValues.fats} g
                 </TableCell>
                 <TableCell component='th' scope='row'>
-                  {meal.nutritionalValues.fiber} g
+                  {food.nutritionalValues.fiber} g
                 </TableCell>
                 <TableCell component='th' scope='row'>
-                  {meal.creatorId === trainer.id ? trainerName : 'TrainerPro'}
+                  {food.creatorId === trainer.id ? trainerName : 'TrainerPro'}
                 </TableCell>
                 <TableCell sx={{ display: 'flex', justifyContent: 'right' }}>
                   <EditIcon
                     fontSize='small'
-                    sx={{ ml: 0.7, cursor: meal.creatorId === '' ? 'default' : 'pointer' }}
-                    color={meal.creatorId === '' ? 'disabled' : 'primary'}
-                    onClick={() => handleIconClick('edit', meal)}
+                    sx={{ ml: 0.7, cursor: food.creatorId === '' ? 'default' : 'pointer' }}
+                    color={food.creatorId === '' ? 'disabled' : 'primary'}
+                    onClick={() => handleIconClick('edit', food)}
                   />
                   <DeleteIcon
-                    color={meal.creatorId === '' ? 'disabled' : 'error'}
+                    color={food.creatorId === '' ? 'disabled' : 'error'}
                     fontSize='small'
                     sx={{
                       ml: 0.7,
                       color: '',
-                      cursor: meal.creatorId === '' ? 'default' : 'pointer',
+                      cursor: food.creatorId === '' ? 'default' : 'pointer',
                     }}
-                    onClick={() => handleIconClick('delete', meal)}
+                    onClick={() => handleIconClick('delete', food)}
                   />
                 </TableCell>
               </TableRow>
@@ -128,20 +128,20 @@ const MealsGrid = ({ meals }: IProps) => {
           </TableBody>
         </Table>
       </TableContainer>
-      {editMealDialog.open && (
-        <EditMealDialog
-          meal={meals.find((w) => w.id === editMealDialog.mealId) as Meal}
-          onClose={closeEditMealDialog}
+      {editFoodDialog.open && (
+        <EditFoodDialog
+          food={foods.find((w) => w.id === editFoodDialog.foodId) as Food}
+          onClose={closeEditFoodDialog}
         />
       )}
       {confirmDialog.open && (
         <ConfirmDialog
-          onClose={() => setConfirmDialog({ open: false, mealId: '' })}
-          onConfirm={handleDeleteMeal}
+          onClose={() => setConfirmDialog({ open: false, foodId: '' })}
+          onConfirm={handleDeleteFood}
         />
       )}
     </>
   )
 }
 
-export default MealsGrid
+export default FoodsTable
