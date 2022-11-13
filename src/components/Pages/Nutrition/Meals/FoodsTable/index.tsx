@@ -26,19 +26,17 @@ import { CgAddR, CgCheckO } from 'react-icons/cg'
 const FoodsTable = ({ foods, onAddToPlan }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
   const trainerName = trainer.name?.split(' ')[0]
+
   const [editFoodDialog, setEditFoodDialog] = useState<FoodDialogState>({
     open: false,
     foodId: '',
   })
-
   const [confirmDialog, setConfirmDialog] = useState<FoodDialogState>({
     open: false,
     foodId: '',
   })
 
   const [addedIds, setAddedIds] = useState<string[]>([])
-  console.log('addedIds', addedIds)
-
   const [showSuccessIcon, setShowSuccessIcon] = useState({ value: false, id: '' })
 
   useEffect(() => {
@@ -68,7 +66,6 @@ const FoodsTable = ({ foods, onAddToPlan }: IProps) => {
     if (food.creatorId === '') return
 
     if (action === 'edit') {
-      console.log(food.id)
       openEditFoodDialog(food.id as string)
     }
 

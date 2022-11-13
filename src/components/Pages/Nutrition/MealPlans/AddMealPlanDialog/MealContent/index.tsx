@@ -11,8 +11,9 @@ import {
 } from '@mui/material'
 import { Box } from '@mui/system'
 import { useState } from 'react'
-import { useFieldArray } from 'react-hook-form'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 import { MdOutlineExpandLess, MdOutlineExpandMore } from 'react-icons/md'
+import { Food, Meal } from '../../../../../../types/meals'
 import TextFieldElement from '../../../../../Form/TextFieldElement'
 import AddFoodsToMeal from '../AddFoodsToMeal'
 import { Container, DefaultContent, JMTableRow, NoContentTableMessage } from './styles'
@@ -40,10 +41,19 @@ const MealContent = ({
   const [isContentExpanded, setisContentExpanded] = useState(false)
 
   const [addFoodDialogOpen, setAddFoodDialogOpen] = useState(true)
-  // const { fields, append, remove } = useFieldArray({
-  //   control: formContext.control,
-  //   name: 'meals', // unique name for your Field Array
-  // })
+
+  const fc = useFormContext<Meal>()
+
+  console.log('fc.watch(', fc.watch())
+
+  const { fields, append, remove } = useFieldArray({
+    control: fc.control,
+    name: 'foods', // unique name for your Field Array
+  })
+
+  const addFood = (food: Food) => {
+    append(food)
+  }
 
   const rows = []
 

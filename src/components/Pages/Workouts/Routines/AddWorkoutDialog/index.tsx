@@ -46,9 +46,6 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
   })
 
   const trainer = useAppSelector(selectTrainer)
-  console.log('tttrainer', trainer)
-
-  // console.info(formContext.watch())
 
   const [isAdding, setIsAdding] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')

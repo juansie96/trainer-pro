@@ -11,9 +11,7 @@ import { useAppSelector } from '../../../../state/storeHooks'
 
 export const RoutinesLayout = ({ openAddWorkoutDialog }: { openAddWorkoutDialog(): void }) => {
   const trainer = useAppSelector(selectTrainer)
-  console.log('trainer.id', trainer.id)
   const [workouts, loading] = useCollectionData(getWorkoutsByTrainerIdRef(trainer.id as string))
-  console.log('workouts', workouts)
   const [query, setQuery] = useState('')
 
   let filteredWorkouts = workouts?.slice(0)

@@ -25,14 +25,10 @@ const AddMealPlanDialog = ({ open, onClose }: IProps) => {
     },
   })
 
-  // console.log(formContext.watch())
-
   const { fields, append, remove } = useFieldArray({
     control: formContext.control,
     name: 'meals', // unique name for your Field Array
   })
-
-  console.log(fields)
 
   const onSubmit: SubmitHandler<MealPlan> = async (data) => {
     console.log(data)
