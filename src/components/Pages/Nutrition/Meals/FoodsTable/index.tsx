@@ -1,12 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
+  Box,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Fade,
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -18,8 +21,9 @@ import EditFoodDialog from '../EditFoodDialog'
 import ConfirmDialog from '../../../../ConfirmDialog'
 import type { IProps, FoodDialogState } from './types'
 import { getDocumentRef } from '../../../../../firebase/fbRefs'
+import { CgAddR, CgCheckO } from 'react-icons/cg'
 
-const FoodsTable = ({ foods }: IProps) => {
+const FoodsTable = ({ foods, onAddToPlan }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
   const trainerName = trainer.name?.split(' ')[0]
   const [editFoodDialog, setEditFoodDialog] = useState<FoodDialogState>({
@@ -31,6 +35,19 @@ const FoodsTable = ({ foods }: IProps) => {
     open: false,
     foodId: '',
   })
+
+  const [addedIds, setAddedIds] = useState<string[]>([])
+  console.log('addedIds', addedIds)
+
+  const [showSuccessIcon, setShowSuccessIcon] = useState({ value: false, id: '' })
+
+  useEffect(() => {
+    if (addedIds.length > 0) {
+      setTimeout(() => {
+        setAddedIds((prevState) => prevState.slice(1))
+      }, 3000)
+    }
+  }, [addedIds])
 
   const openEditFoodDialog = (foodId: string) => {
     setEditFoodDialog({ open: true, foodId: foodId })
@@ -62,7 +79,7 @@ const FoodsTable = ({ foods }: IProps) => {
 
   return (
     <>
-      <TableContainer component={Paper} sx={{ width: 0.9, mx: 'auto', my: 3 }}>
+      <TableContainer component={Paper} sx={{ width: 1, mx: 'auto', my: 3 }}>
         <Table sx={{ minWidth: 650 }} aria-label='foods table'>
           <TableHead>
             <TableRow>
@@ -84,44 +101,67 @@ const FoodsTable = ({ foods }: IProps) => {
                   '&:last-child td, &:last-child th': { border: 0 },
                 }}
               >
-                <TableCell component='th' scope='row'>
-                  {food.name}
-                </TableCell>
-                <TableCell component='th' scope='row'>
-                  {food.nutritionalValues.kcal} kcal
-                </TableCell>
-                <TableCell component='th' scope='row'>
-                  {food.nutritionalValues.proteins} g
-                </TableCell>
-                <TableCell component='th' scope='row'>
-                  {food.nutritionalValues.carbs} g
-                </TableCell>
-                <TableCell component='th' scope='row'>
-                  {food.nutritionalValues.fats} g
-                </TableCell>
-                <TableCell component='th' scope='row'>
-                  {food.nutritionalValues.fiber} g
-                </TableCell>
-                <TableCell component='th' scope='row'>
+                <TableCell scope='row'>{food.name}</TableCell>
+                <TableCell scope='row'>{food.nutritionalValues.kcal} kcal</TableCell>
+                <TableCell scope='row'>{food.nutritionalValues.proteins} g</TableCell>
+                <TableCell scope='row'>{food.nutritionalValues.carbs} g</TableCell>
+                <TableCell scope='row'>{food.nutritionalValues.fats} g</TableCell>
+                <TableCell scope='row'>{food.nutritionalValues.fiber} g</TableCell>
+                <TableCell scope='row'>
                   {food.creatorId === trainer.id ? trainerName : 'TrainerPro'}
                 </TableCell>
-                <TableCell sx={{ display: 'flex', justifyContent: 'right' }}>
-                  <EditIcon
-                    fontSize='small'
-                    sx={{ ml: 0.7, cursor: food.creatorId === '' ? 'default' : 'pointer' }}
-                    color={food.creatorId === '' ? 'disabled' : 'primary'}
-                    onClick={() => handleIconClick('edit', food)}
-                  />
-                  <DeleteIcon
-                    color={food.creatorId === '' ? 'disabled' : 'error'}
-                    fontSize='small'
-                    sx={{
-                      ml: 0.7,
-                      color: '',
-                      cursor: food.creatorId === '' ? 'default' : 'pointer',
-                    }}
-                    onClick={() => handleIconClick('delete', food)}
-                  />
+                <TableCell scope='row'>
+                  {onAddToPlan ? (
+                    <Stack direction='row' justifyContent='center' alignItems='center'>
+                      {addedIds.includes(food.id as string) ? (
+                        <Fade in={true} timeout={1600}>
+                          <Stack direction='row'>
+                            <CgCheckO size={24} cursor='pointer' color='green' />
+                          </Stack>
+                        </Fade>
+                      ) : (
+                        <Stack direction='row'>
+                          <CgAddR
+                            size={24}
+                            cursor='pointer'
+                            color='#1976d2'
+                            onClick={() => setAddedIds([...addedIds, food.id as string])}
+                          />
+                        </Stack>
+                      )}
+                      {/* <CgAddR
+                        size={24}
+                        cursor='pointer'
+                        color='#1976d2'
+                        style={{
+                          transition: 'opacity 1s ease-out',
+                          opacity: 0,
+                          height: 0,
+                          overflow: 'hidden',
+                        }}
+                      />
+                      <CgCheckO size={24} cursor='pointer' color='green' /> */}
+                    </Stack>
+                  ) : (
+                    <>
+                      <EditIcon
+                        fontSize='small'
+                        sx={{ ml: 0.7, cursor: food.creatorId === '' ? 'default' : 'pointer' }}
+                        color={food.creatorId === '' ? 'disabled' : 'primary'}
+                        onClick={() => handleIconClick('edit', food)}
+                      />
+                      <DeleteIcon
+                        color={food.creatorId === '' ? 'disabled' : 'error'}
+                        fontSize='small'
+                        sx={{
+                          ml: 0.7,
+                          color: '',
+                          cursor: food.creatorId === '' ? 'default' : 'pointer',
+                        }}
+                        onClick={() => handleIconClick('delete', food)}
+                      />
+                    </>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

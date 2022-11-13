@@ -10,7 +10,7 @@ const Meals = () => {
   let content
   const [meals, loading] = useCollectionData(foodsRef)
 
-  const [addExerciseDialogOpen, setAddMealDialogOpen] = useState<boolean>(false)
+  const [addMealDialogOpen, setAddMealDialogOpen] = useState<boolean>(false)
 
   const openAddMealDialog = () => {
     setAddMealDialogOpen(true)
@@ -44,9 +44,7 @@ const Meals = () => {
   return (
     <Box height={1}>
       {content}
-      {addExerciseDialogOpen && (
-        <AddMealDialog open={addExerciseDialogOpen} onClose={closeAddMealDialog} />
-      )}
+      {addMealDialogOpen && <AddMealDialog open={addMealDialogOpen} onClose={closeAddMealDialog} />}
     </Box>
   )
 }

@@ -1,4 +1,4 @@
-import { Foods } from '../../../../../types/meals'
+import { Food, Foods } from '../../../../../types/meals'
 
 export interface FoodDialogState {
   open: boolean
@@ -7,4 +7,5 @@ export interface FoodDialogState {
 
 export interface IProps {
   foods: Foods
+  onAddToPlan?(food: Food): void
 }

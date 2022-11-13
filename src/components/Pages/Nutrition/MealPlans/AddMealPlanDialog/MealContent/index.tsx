@@ -14,7 +14,7 @@ import { useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
 import { MdOutlineExpandLess, MdOutlineExpandMore } from 'react-icons/md'
 import TextFieldElement from '../../../../../Form/TextFieldElement'
-import AddMealsToPlanDialog from '../AddMealsToPlanDialog'
+import AddFoodsToMeal from '../AddFoodsToMeal'
 import { Container, DefaultContent, JMTableRow, NoContentTableMessage } from './styles'
 
 const tableHeaderCols = [
@@ -89,10 +89,7 @@ const MealContent = ({
       )}
 
       {addFoodDialogOpen && (
-        <AddMealsToPlanDialog
-          open={addFoodDialogOpen}
-          onClose={() => setAddFoodDialogOpen(false)}
-        />
+        <AddFoodsToMeal open={addFoodDialogOpen} onClose={() => setAddFoodDialogOpen(false)} />
       )}
     </Container>
   )

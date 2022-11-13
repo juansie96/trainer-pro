@@ -48,7 +48,7 @@ const AddMealDialog = ({ open, onClose }: IProps) => {
       await addDoc(foodsRef, { ...data, creatorId: trainer.id })
       setIsAdding(false)
       onClose()
-      Swal.fire('¡Éxito!', 'El ejercicio se creo correctamente!', 'success')
+      Swal.fire('¡Éxito!', 'El alimento se creó correctamente!', 'success')
     } catch (error) {
       console.error(error)
       setIsAdding(false)
@@ -155,7 +155,7 @@ const AddMealDialog = ({ open, onClose }: IProps) => {
           <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
             <Button onClick={onClose}>Cancelar</Button>
             <Button type='submit' variant='contained' disabled={isAdding}>
-              {isAdding ? 'Creando Ejercicio' : 'Crear Ejercicio'}
+              {isAdding ? 'Creando Alimento' : 'Crear alimento'}
             </Button>
           </DialogActions>
         </FormContainer>
