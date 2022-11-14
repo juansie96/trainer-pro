@@ -25,6 +25,8 @@ const AddMealPlanDialog = ({ open, onClose }: IProps) => {
     },
   })
 
+  console.log(formContext.watch().meals)
+
   const { fields, append, remove } = useFieldArray({
     control: formContext.control,
     name: 'meals', // unique name for your Field Array

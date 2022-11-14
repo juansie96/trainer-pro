@@ -23,13 +23,38 @@ export const Container = ({ children }: { children: ReactNode }) => (
 export const JMTableRow = ({ children }: { children: ReactNode }) => (
   <Box
     display='grid'
-    gridTemplateColumns='5fr 6fr 3fr 2fr 2fr 2fr 2fr 1fr '
+    gridTemplateColumns='3fr 7fr 3fr 2fr 2fr 2fr 2fr 2fr '
     p={2}
     borderRadius={1}
     color='#555'
+    alignItems='center'
+    justifyItems='center'
   >
     {children}
   </Box>
+)
+
+export const JMTableCell = ({
+  children,
+  withPoint,
+  pointColor,
+}: {
+  children: ReactNode
+  withPoint?: boolean
+  pointColor?: string
+}) => (
+  <Stack
+    justifyItems='center'
+    pt={1}
+    direction='row'
+    alignItems='CENTER'
+    // sx={{ borderTop: withBorderTop ? `2px solid ${borderColor}` : '' }}
+  >
+    {children}
+    {withPoint && (
+      <Box height={10} width={10} bgcolor={pointColor} borderRadius='50%' ml={0.7}></Box>
+    )}
+  </Stack>
 )
 
 export const NoContentTableMessage = ({ msg }: { msg: string }) => (
@@ -39,3 +64,5 @@ export const NoContentTableMessage = ({ msg }: { msg: string }) => (
     </Typography>
   </Box>
 )
+
+// protes #24e784

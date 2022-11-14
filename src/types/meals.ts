@@ -20,6 +20,7 @@ export interface Food {
   nutritionalValues: NutritionalValues
   id?: string
   creatorId?: string
+  grams?: number
 }
 
 export interface NutritionalValues {

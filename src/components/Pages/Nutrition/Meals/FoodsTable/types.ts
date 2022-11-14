@@ -8,4 +8,5 @@ export interface FoodDialogState {
 export interface IProps {
   foods: Foods
   onAddToPlan?(food: Food): void
+  mealIdx?: number
 }

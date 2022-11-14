@@ -4,6 +4,7 @@ import { useState } from 'react'
 // import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 
 import {
+  Alert,
   Button,
   Dialog,
   DialogContent,
@@ -19,7 +20,6 @@ import {
 } from '@mui/material'
 
 import { StyledDialogActions, StyledDialogHeader } from '../../../../../UI/Dialogs/styles'
-import FoodsTable from '../../../Meals/FoodsTable'
 import { useAppSelector } from '../../../../../../state/storeHooks'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getFoodsByTrainerIdRef } from '../../../../../../firebase/fbRefs'
@@ -30,8 +30,9 @@ import type { IProps } from './types'
 import type { Foods, Meals } from '../../../../../../types/meals'
 import AddMealDialog from '../../../Meals/AddFoodDialog'
 import { CreatedByTypes } from '../../../Meals/FoodsLayout/types'
+import FoodsTable from './FoodsTable'
 
-const AddFoodsToMeal = ({ open, onClose }: IProps) => {
+const AddFoodsToMeal = ({ open, onClose, mealIdx, numberOfFoodsInMeal }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
   const [foods, loading] = useCollectionData(getFoodsByTrainerIdRef(trainer.id as string))
   const [isAdding, setIsAdding] = useState<boolean>(false)
@@ -51,13 +52,19 @@ const AddFoodsToMeal = ({ open, onClose }: IProps) => {
     filteredFoods = filteredFoods?.filter((m) => m.creatorId === '')
   }
 
-  const addFoodToPlan = () => null
-
   return (
     <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
       <StyledDialogHeader title='Añadir alimentos' />
       <DialogContent sx={{ py: 3 }}>
         <Typography>Seleccione los alimentos que desea agregar a su comida</Typography>
+        {numberOfFoodsInMeal > 0 && (
+          <Alert severity='info' sx={{ mt: 1 }}>
+            {numberOfFoodsInMeal}{' '}
+            {numberOfFoodsInMeal === 1
+              ? 'Alimento fue agregado a esta comida'
+              : 'Alimentos fueron agregados a esta comida'}
+          </Alert>
+        )}
         <Stack direction='row' spacing={2} my={2}>
           <SearchClientInput
             value={query}
@@ -81,12 +88,11 @@ const AddFoodsToMeal = ({ open, onClose }: IProps) => {
             </Stack>
           </RadioGroup>
         </Stack>
-        {foods && <FoodsTable foods={filteredFoods as Foods} onAddToPlan={addFoodToPlan} />}
+        {foods && <FoodsTable foods={filteredFoods as Foods} mealIdx={mealIdx} />}
       </DialogContent>
       <StyledDialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button type='submit' variant='contained' disabled={isAdding}>
-          {isAdding ? 'Creando' : 'Crear'}
+        <Button onClick={onClose} variant='contained' disabled={isAdding}>
+          Aceptar
         </Button>
       </StyledDialogActions>
       {addMealDialogOpen && (

@@ -16,7 +16,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getFoodsByTrainerIdRef } from '../../../../../firebase/fbRefs'
 import { CenteredLayout } from '../../../../UI/CenteredLayout'
-import MealsGrid from '../FoodsTable'
+import FoodsTable from '../FoodsTable'
 import { useAppSelector } from '../../../../../state/storeHooks'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 import { CreatedByTypes } from './types'
@@ -67,7 +67,7 @@ const MealsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
       </Stack>
 
       {filteredFoods && filteredFoods.length > 0 ? (
-        <MealsGrid foods={filteredFoods} />
+        <FoodsTable foods={filteredFoods} />
       ) : (
         <CenteredLayout>
           <Typography variant='h5' my={3}>
