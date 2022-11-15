@@ -3,27 +3,26 @@ import { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { CenteredLayout } from '../../../UI/CenteredLayout'
 import AddMealPlanDialog from './AddMealPlanDialog'
-import { workoutsRef } from '../../../../firebase/fbRefs'
-// import { RoutinesLayout } from './RoutinesLayout'
+import { mealPlansRef } from '../../../../firebase/fbRefs'
+import MealPlansLayout from './MealPlansLayout'
 
 const MealPlans = () => {
-  let content
-  const [workouts, loading] = useCollectionData(workoutsRef)
+  const [mealPlans, loading] = useCollectionData(mealPlansRef)
   const [addMealPlanDialogOpen, setAddMealPlanDialogOpen] = useState<boolean>(false)
 
   const openAddMealPlanDialog = () => {
     setAddMealPlanDialogOpen(true)
   }
-
   const closeAddMealPlanDialog = () => {
     setAddMealPlanDialogOpen(false)
   }
 
+  let content
+
   if (loading) {
     content = <p>Cargando..</p>
-  } else if (workouts && workouts.length > 0) {
-    // content = <RoutinesLayout openAddMealPlanDialog={openAddMealPlanDialog} />
-    content = null
+  } else if (mealPlans && mealPlans.length > 0) {
+    content = <MealPlansLayout openAddMealPlanDialog={openAddMealPlanDialog} />
   } else {
     content = (
       <CenteredLayout>

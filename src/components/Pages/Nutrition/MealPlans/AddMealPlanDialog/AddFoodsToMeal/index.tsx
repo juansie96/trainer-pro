@@ -28,8 +28,8 @@ import SearchIcon from '@mui/icons-material/Search'
 
 import type { IProps } from './types'
 import type { Foods, Meals } from '../../../../../../types/meals'
-import AddMealDialog from '../../../Meals/AddFoodDialog'
-import { CreatedByTypes } from '../../../Meals/FoodsLayout/types'
+import AddMealDialog from '../../../Foods/AddFoodDialog'
+import { CreatedByTypes } from '../../../Foods/FoodsLayout/types'
 import FoodsTable from './FoodsTable'
 
 const AddFoodsToMeal = ({ open, onClose, mealIdx, numberOfFoodsInMeal }: IProps) => {

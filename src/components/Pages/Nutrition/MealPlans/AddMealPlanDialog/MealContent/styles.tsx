@@ -34,26 +34,9 @@ export const JMTableRow = ({ children }: { children: ReactNode }) => (
   </Box>
 )
 
-export const JMTableCell = ({
-  children,
-  withPoint,
-  pointColor,
-}: {
-  children: ReactNode
-  withPoint?: boolean
-  pointColor?: string
-}) => (
-  <Stack
-    justifyItems='center'
-    pt={1}
-    direction='row'
-    alignItems='CENTER'
-    // sx={{ borderTop: withBorderTop ? `2px solid ${borderColor}` : '' }}
-  >
+export const JMTableCell = ({ children }: { children: ReactNode }) => (
+  <Stack justifyItems='center' pt={1} direction='row' alignItems='center'>
     {children}
-    {withPoint && (
-      <Box height={10} width={10} bgcolor={pointColor} borderRadius='50%' ml={0.7}></Box>
-    )}
   </Stack>
 )
 
@@ -65,4 +48,6 @@ export const NoContentTableMessage = ({ msg }: { msg: string }) => (
   </Box>
 )
 
-// protes #24e784
+export const Separator = () => (
+  <Box width={0.95} bgcolor='#ddd' height='1px' alignSelf='center' my={0.5}></Box>
+)

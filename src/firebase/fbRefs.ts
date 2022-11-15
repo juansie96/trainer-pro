@@ -16,7 +16,7 @@ import type { Client } from '../types/client'
 import type { Exercise } from '../components/Pages/Workouts/Exercises/Exercises'
 import type { TrainerState } from '../redux/slices/trainerSlice'
 import type { Workout } from '../types/workout'
-import type { Food } from '../types/meals'
+import type { Food, MealPlan } from '../types/meals'
 
 export const trainerConverter: FirestoreDataConverter<Omit<TrainerState, 'id'>> = {
   toFirestore(trainer: WithFieldValue<Omit<TrainerState, 'id'>>): DocumentData {
@@ -100,6 +100,16 @@ const foodConverter: FirestoreDataConverter<Food> = {
   },
 }
 
+const mealPlanConverter: FirestoreDataConverter<MealPlan> = {
+  toFirestore(mealPlan: WithFieldValue<MealPlan>): DocumentData {
+    return mealPlan
+  },
+  fromFirestore(snapshot: QueryDocumentSnapshot<MealPlan>, options: SnapshotOptions): MealPlan {
+    const data = snapshot.data(options)
+    return { ...data, id: snapshot.id }
+  },
+}
+
 export const clientsRef = collection(firestoreDB, 'clients').withConverter(clientConverter)
 
 export const getClientDataDocById = (clientId: string) =>
@@ -114,6 +124,9 @@ export const getWorkoutsByTrainerIdRef = (trainerId: string) =>
 export const getFoodsByTrainerIdRef = (trainerId: string) =>
   query(foodsRef, where('creatorId', 'in', [trainerId, '']))
 
+export const getMealPlansByTrainerIdRef = (trainerId: string) =>
+  query(mealPlansRef, where('trainerId', '==', trainerId))
+
 export const getTrainerDataQueryRef = (email: string) =>
   query(trainersRef, where('email', '==', email))
 
@@ -121,6 +134,7 @@ export const workoutsRef = collection(firestoreDB, 'workouts').withConverter(wor
 export const exercisesRef = collection(firestoreDB, 'exercises').withConverter(exerciseConverter)
 export const trainersRef = collection(firestoreDB, 'trainers').withConverter(trainerConverter)
 export const foodsRef = collection(firestoreDB, 'foods').withConverter(foodConverter)
+export const mealPlansRef = collection(firestoreDB, 'mealPlans').withConverter(mealPlanConverter)
 
 export const getDocumentRef = (table: string, id: string) =>
   doc(firestoreDB, table, id).withConverter(getConverter(table) as FirestoreDataConverter<any>)
@@ -135,6 +149,8 @@ function getConverter(table: string) {
       return workoutConverter
     case 'trainers':
       return trainerConverter
+    case 'mealPlans':
+      return mealPlanConverter
   }
 }
 

@@ -18,7 +18,7 @@ import ClientActivation from '../Pages/ClientActivation'
 import EmailVerification from '../Pages/EmailVerification'
 import ResetPassword from '../ResetPassword'
 import MealPlans from '../Pages/Nutrition/MealPlans'
-import Meals from '../Pages/Nutrition/Meals'
+import Meals from '../Pages/Nutrition/Foods'
 
 const AppRoutes = () => {
   const user = useContext(UserContext)?.user

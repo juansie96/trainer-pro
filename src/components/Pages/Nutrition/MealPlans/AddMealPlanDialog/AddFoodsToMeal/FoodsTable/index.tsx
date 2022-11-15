@@ -36,7 +36,6 @@ const FoodsTable = ({ foods, mealIdx }: IProps) => {
   }, [addedIds])
 
   const addFood = (food: Food) => {
-    console.log('addFood')
     append(food)
   }
 
@@ -70,11 +69,11 @@ const FoodsTable = ({ foods, mealIdx }: IProps) => {
                 }}
               >
                 <TableCell scope='row'>{food.name}</TableCell>
-                <TableCell scope='row'>{food.nutritionalValues.kcal} kcal</TableCell>
-                <TableCell scope='row'>{food.nutritionalValues.proteins} g</TableCell>
-                <TableCell scope='row'>{food.nutritionalValues.carbs} g</TableCell>
-                <TableCell scope='row'>{food.nutritionalValues.fats} g</TableCell>
-                <TableCell scope='row'>{food.nutritionalValues.fiber} g</TableCell>
+                <TableCell scope='row'>{food.nutritionalValues.kcal.value} kcal</TableCell>
+                <TableCell scope='row'>{food.nutritionalValues.proteins.value} g</TableCell>
+                <TableCell scope='row'>{food.nutritionalValues.carbs.value} g</TableCell>
+                <TableCell scope='row'>{food.nutritionalValues.fats.value} g</TableCell>
+                <TableCell scope='row'>{food.nutritionalValues.fiber.value} g</TableCell>
                 <TableCell scope='row'>
                   {food.creatorId === trainer.id ? trainerName : 'TrainerPro'}
                 </TableCell>

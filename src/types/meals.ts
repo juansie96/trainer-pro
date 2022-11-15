@@ -4,6 +4,8 @@ export interface MealPlan {
   name: string
   description: string
   meals: Meals
+  id?: string
+  trainerId: string
 }
 
 export type Meals = Array<Meal>
@@ -24,9 +26,16 @@ export interface Food {
 }
 
 export interface NutritionalValues {
-  kcal: number
-  proteins: number
-  carbs: number
-  fats: number
-  fiber: number
+  kcal: NutritionalValue
+  proteins: NutritionalValue
+  carbs: NutritionalValue
+  fats: NutritionalValue
+  fiber: NutritionalValue
 }
+
+export interface NutritionalValue {
+  value: number
+  ratio: number
+}
+
+export type NutritionalValueKeys = 'kcal' | 'proteins' | 'carbs' | 'fats' | 'fiber'

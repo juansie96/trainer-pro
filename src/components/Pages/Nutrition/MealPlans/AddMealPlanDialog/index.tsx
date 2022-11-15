@@ -1,20 +1,25 @@
 import { useState } from 'react'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
-// import { useAppSelector } from '../../../../../state/storeHooks'
-// import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
+import { useAppSelector } from '../../../../../state/storeHooks'
+import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 
-import { Button, Dialog, DialogContent, Typography, Stack } from '@mui/material'
+import { Button, Dialog, DialogContent, Typography, Stack, Box } from '@mui/material'
 import FormContainer from '../../../../Form/FormContainer'
 import TextFieldElement from '../../../../Form/TextFieldElement'
 import MealContent from './MealContent'
 import { StyledDialogActions, StyledDialogHeader } from './styles'
 // import { addDoc, Timestamp, WithFieldValue } from 'firebase/firestore'
 
-import type { MealPlan } from '../../../../../types/meals'
+import type { MealPlan, Meals, NutritionalValueKeys } from '../../../../../types/meals'
 import type { IProps } from './types'
+import { changeGramsToFloat, getTotalNV } from './utils'
+import { totalNVItems } from './data'
+import { addDoc } from 'firebase/firestore'
+import { mealPlansRef } from '../../../../../firebase/fbRefs'
+import Swal from 'sweetalert2'
 
 const AddMealPlanDialog = ({ open, onClose }: IProps) => {
-  // const trainer = useAppSelector(selectTrainer)
+  const trainer = useAppSelector(selectTrainer)
   const [isAdding, setIsAdding] = useState<boolean>(false)
 
   const formContext = useForm<MealPlan>({
@@ -25,7 +30,7 @@ const AddMealPlanDialog = ({ open, onClose }: IProps) => {
     },
   })
 
-  console.log(formContext.watch().meals)
+  const meals = formContext.watch().meals
 
   const { fields, append, remove } = useFieldArray({
     control: formContext.control,
@@ -33,7 +38,23 @@ const AddMealPlanDialog = ({ open, onClose }: IProps) => {
   })
 
   const onSubmit: SubmitHandler<MealPlan> = async (data) => {
-    console.log(data)
+    const mealPlan = changeGramsToFloat(data)
+    setIsAdding(true)
+    try {
+      await addDoc(mealPlansRef, { ...mealPlan, trainerId: trainer.id })
+      setIsAdding(false)
+      onClose()
+      Swal.fire('¡Éxito!', 'El plan alimenticio se creó correctamente!', 'success')
+    } catch (error) {
+      console.error(error)
+      setIsAdding(false)
+      onClose()
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al crear',
+        text: 'Hubo un error al intentar crear el plan alimenticio, por favor intente nuevamente o comuniquese con un administrador.',
+      })
+    }
   }
 
   const addMeal = () => {
@@ -57,6 +78,24 @@ const AddMealPlanDialog = ({ open, onClose }: IProps) => {
               multiline
               rows={3}
             />
+            {fields.length > 0 && (
+              <Box>
+                <Typography fontSize={17} fontWeight={700} sx={{ mb: 1 }}>
+                  Información nutricional del plan
+                </Typography>
+                <Stack direction='row' spacing={3}>
+                  {totalNVItems.map((i) => (
+                    <TotalNutritionalValue
+                      meals={meals}
+                      nvKey={i.key}
+                      pointColor={i.color}
+                      label={i.label}
+                      key={i.key}
+                    />
+                  ))}
+                </Stack>
+              </Box>
+            )}
             {fields.map((meal, idx) => (
               <MealContent key={meal.id} idx={idx} onDeleteMeal={() => deleteMeal(idx)} {...meal} />
             ))}
@@ -83,6 +122,27 @@ const AddMealButton = ({ onClick }: { onClick(): void }) => (
   >
     Agregar nueva comida
   </Button>
+)
+
+const TotalNutritionalValue = ({
+  meals,
+  label,
+  nvKey,
+  pointColor,
+}: {
+  meals: Meals
+  label: string
+  nvKey: string
+  pointColor: string
+}) => (
+  <Stack direction='row' alignItems='center' spacing={1}>
+    <Box height={10} width={10} bgcolor={pointColor} borderRadius='50%' ml={0.7}></Box>
+    <Typography fontWeight={700}>{label}:</Typography>
+    <Typography>
+      {getTotalNV(nvKey as NutritionalValueKeys, meals).toFixed(2)}{' '}
+      {nvKey === 'kcal' ? 'kcal' : 'g'}
+    </Typography>
+  </Stack>
 )
 
 export default AddMealPlanDialog
