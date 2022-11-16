@@ -1,8 +1,8 @@
 import { MealPlans } from '../../../../../types/meals'
 
-export interface FoodDialogState {
+export interface MealPlanDialogState {
   open: boolean
-  foodId: string
+  mealPlanId: string
 }
 
 export interface IProps {

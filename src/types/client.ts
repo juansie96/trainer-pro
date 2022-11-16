@@ -18,13 +18,20 @@ export interface Client {
   ref?: DocumentReference<Client>
 }
 
-export type Task = CardioTask | WorkoutTask
+export type Task = CardioTask | WorkoutTask | MealPlanTask
 
 export interface WorkoutTask {
   type: 'workout'
   date: string
   title: string
   workoutId: string
+}
+
+export interface MealPlanTask {
+  type: 'mealPlan'
+  date: string
+  title: string
+  mealPlanId: string
 }
 
 export type CardioTypes = 'correr' | 'caminar' | 'ciclismo' | 'elíptico' | 'nadar' | 'otro' | ''

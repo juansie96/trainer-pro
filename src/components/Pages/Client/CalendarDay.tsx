@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import CircleIcon from '@mui/icons-material/Circle'
 import { useSelector } from 'react-redux'
 import { selectClient } from './Client.slice'
-import { CardioTask, Task, WorkoutTask } from '../../../types/client'
+import { CardioTask, MealPlanTask, Task, WorkoutTask } from '../../../types/client'
 import WorkoutEventDialog from './WorkoutEventDialog'
 import CardioEventDialog from './CardioEventDialog'
 
@@ -49,11 +49,49 @@ const CalendarDay: React.FC<CalendarDayProps> = ({ day, rowIdx, colIdx, onDayCli
 const DayEvent = ({ event }: { event: Task }) => {
   const [detailsDialog, setDetailsDialog] = useState<{
     open: boolean
-    data: WorkoutTask | CardioTask | null
+    data: WorkoutTask | CardioTask | MealPlanTask | null
   }>({
     open: false,
     data: null,
   })
+
+  let title
+  let dialogContainer
+  let bgcolor
+
+  switch (event.type) {
+    case 'workout':
+      title = event.title
+      dialogContainer = (
+        <WorkoutEventDialog
+          onClose={() => setDetailsDialog({ open: true, data: event })}
+          data={event}
+        />
+      )
+      bgcolor = '#b19316'
+      break
+    case 'cardio':
+      title = event.cardioType[0].toUpperCase() + event.cardioType.substring(1)
+      dialogContainer = (
+        <CardioEventDialog
+          onClose={() => setDetailsDialog({ open: true, data: event })}
+          data={event}
+        />
+      )
+      bgcolor = '#1976d2'
+      break
+    case 'mealPlan':
+      title = event.title
+      dialogContainer = null
+      bgcolor = '#1b9e3c'
+      // (
+      // <WorkoutEventDialog
+      //   onClose={() => setDetailsDialog({ open: true, data: event })}
+      //   data={event}
+      // />
+      // )
+      break
+  }
 
   const handleEventClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setDetailsDialog({ open: true, data: event })
@@ -65,7 +103,7 @@ const DayEvent = ({ event }: { event: Task }) => {
       display='flex'
       alignItems='center'
       borderRadius='2px'
-      bgcolor={event.type === 'workout' ? '#b19316' : '#1976d2'}
+      bgcolor={bgcolor}
       color='white'
       mx={0.25}
       sx={{ cursor: 'pointer', my: 0.25 }}
@@ -73,23 +111,9 @@ const DayEvent = ({ event }: { event: Task }) => {
     >
       <CircleIcon sx={{ fontSize: 12, pl: 0.5 }} />
       <Typography variant='caption' fontSize={10} ml={0.5}>
-        {event.type === 'workout'
-          ? event.title
-          : event.cardioType[0].toUpperCase() + event.cardioType.substring(1)}
+        {title}
       </Typography>
-      {detailsDialog.open ? (
-        event.type === 'workout' ? (
-          <WorkoutEventDialog
-            onClose={() => setDetailsDialog({ open: true, data: event })}
-            data={event}
-          />
-        ) : (
-          <CardioEventDialog
-            onClose={() => setDetailsDialog({ open: true, data: event })}
-            data={event}
-          />
-        )
-      ) : null}
+      {detailsDialog.open && dialogContainer}
     </Box>
   )
 }

@@ -15,6 +15,7 @@ import { addDoc, Timestamp, WithFieldValue } from 'firebase/firestore'
 import React, { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form'
+import Swal from 'sweetalert2'
 import { exercisesRef, workoutsRef } from '../../../../../firebase/fbRefs'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 import { useAppSelector } from '../../../../../state/storeHooks'
@@ -28,16 +29,16 @@ import WorkoutExercisesTable from '../WorkoutExercisesTable'
 interface AddWorkoutDialogProps {
   open: boolean
   onClose(): void
+  fromAddTask?: boolean
 }
 
 export interface AddWorkoutFormData {
   name: string
   description: string
-  // workoutExercises: Array<WorkoutExercise>
   workoutExercises: Array<SingleExercise>
 }
 
-const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
+const AddWorkoutDialog = ({ open, onClose, fromAddTask }: AddWorkoutDialogProps) => {
   const [exercises] = useCollectionData(exercisesRef)
   const formContext = useForm<AddWorkoutFormData>()
   const { fields, append, remove } = useFieldArray({
@@ -69,6 +70,9 @@ const AddWorkoutDialog = ({ open, onClose }: AddWorkoutDialogProps) => {
         createdAt: Timestamp.fromDate(new Date()),
       } as WithFieldValue<Workout>)
       setIsAdding(false)
+      if (!fromAddTask) {
+        Swal.fire('¡Éxito!', 'El plan alimenticio se creó correctamente!', 'success')
+      }
       onClose()
     } catch (err: unknown) {
       setIsAdding(false)
@@ -249,18 +253,9 @@ const RightSideContent = ({
         marginTop: 3,
       }}
     >
-      {exercises?.map((e) => {
-        return <ExerciseCard exercise={e} onClick={onExerciseClick} key={e.id} />
-        // return (
-        //   <p
-        //     key={e.id}
-        //     style={{ cursor: "pointer" }}
-        //     onClick={() => onExerciseClick(e.id)}
-        //   >
-        //     {e.name}
-        //   </p>
-        // );
-      })}
+      {exercises?.map((e) => (
+        <ExerciseCard exercise={e} onClick={onExerciseClick} key={e.id} />
+      ))}
     </Box>
   </Box>
 )
@@ -313,7 +308,6 @@ const ExerciseCard = ({
           width={1}
           height={1}
           borderRadius={'10px 10px 0 0'}
-          // onClick={openEditExerciseDialog}
         ></Box>
         <Box position='absolute' bottom={5} left={5}>
           <Typography variant='caption' color='white' fontWeight={600}>

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Fade,
   Paper,
@@ -10,20 +10,18 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material'
-import type { IProps } from './types'
 import { useAppSelector } from '../../../../../../../state/storeHooks'
 import { selectTrainer } from '../../../../../../../redux/slices/trainerSlice'
-import { useFieldArray, useFormContext } from 'react-hook-form'
 import { Food, MealPlan } from '../../../../../../../types/meals'
 import { CgAddR, CgCheckO } from 'react-icons/cg'
 import { useFieldArrayFormContext } from '../../../../../../../contexts/FieldArrayFormProvider'
+import type { IProps } from './types'
 
-const FoodsTable = ({ foods, mealIdx }: IProps) => {
+const FoodsTable = ({ foods }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
   const trainerName = trainer.name?.split(' ')[0]
   const [addedIds, setAddedIds] = useState<string[]>([])
   const { append } = useFieldArrayFormContext<MealPlan>()
-
   useEffect(() => {
     let timeout: number
     if (addedIds.length > 0) {

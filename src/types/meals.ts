@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore'
+
 export type MealPlans = Array<MealPlan>
 
 export interface MealPlan {
@@ -6,6 +8,8 @@ export interface MealPlan {
   meals: Meals
   id?: string
   trainerId: string
+  kcal: number
+  createdAt?: Timestamp
 }
 
 export type Meals = Array<Meal>

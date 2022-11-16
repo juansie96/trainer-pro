@@ -80,7 +80,6 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
               <TableRow
                 key={workout.id}
                 sx={{
-                  cursor: 'pointer',
                   '&:last-child td, &:last-child th': { border: 0 },
                 }}
               >
@@ -95,15 +94,16 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
                   <VisibilityIcon
                     color='action'
                     onClick={() => openPreviewWorkoutDialog(workout.id)}
+                    sx={{ cursor: 'pointer' }}
                   />
                   <EditIcon
                     color='primary'
-                    sx={{ ml: 2 }}
+                    sx={{ ml: 2, cursor: 'pointer' }}
                     onClick={() => openEditWorkoutDialog(workout.id)}
                   />
                   <DeleteIcon
                     color='error'
-                    sx={{ ml: 2, color: '' }}
+                    sx={{ ml: 2, cursor: 'pointer' }}
                     onClick={() => setConfirmDialog({ open: true, workoutId: workout.id })}
                   />
                 </TableCell>

@@ -1,4 +1,4 @@
-import { Meal, MealPlan, Meals, NutritionalValueKeys } from '../../../../../types/meals'
+import { MealPlan, Meals, NutritionalValueKeys } from '../../../../../types/meals'
 
 export const getTotalNV = (key: NutritionalValueKeys, meals: Meals) =>
   meals.reduce((total, m) => {

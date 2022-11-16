@@ -34,8 +34,14 @@ export const JMTableRow = ({ children }: { children: ReactNode }) => (
   </Box>
 )
 
-export const JMTableCell = ({ children }: { children: ReactNode }) => (
-  <Stack justifyItems='center' pt={1} direction='row' alignItems='center'>
+export const JMTableCell = ({
+  children,
+  justifyItems = 'center',
+}: {
+  children: ReactNode
+  justifyItems?: string
+}) => (
+  <Stack justifyItems={justifyItems} pt={1} direction='row' alignItems='center'>
     {children}
   </Stack>
 )

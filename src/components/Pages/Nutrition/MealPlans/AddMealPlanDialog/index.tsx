@@ -2,32 +2,32 @@ import { useState } from 'react'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import { useAppSelector } from '../../../../../state/storeHooks'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
-
 import { Button, Dialog, DialogContent, Typography, Stack, Box } from '@mui/material'
 import FormContainer from '../../../../Form/FormContainer'
 import TextFieldElement from '../../../../Form/TextFieldElement'
 import MealContent from './MealContent'
 import { StyledDialogActions, StyledDialogHeader } from './styles'
-// import { addDoc, Timestamp, WithFieldValue } from 'firebase/firestore'
-
-import type { MealPlan, Meals, NutritionalValueKeys } from '../../../../../types/meals'
-import type { IProps } from './types'
 import { changeGramsToFloat, getTotalNV } from './utils'
 import { totalNVItems } from './data'
-import { addDoc } from 'firebase/firestore'
-import { mealPlansRef } from '../../../../../firebase/fbRefs'
+import { addDoc, Timestamp, updateDoc } from 'firebase/firestore'
+import { getDocumentRef, mealPlansRef } from '../../../../../firebase/fbRefs'
 import Swal from 'sweetalert2'
+import type { MealPlan, Meals, NutritionalValueKeys } from '../../../../../types/meals'
+import type { IProps } from './types'
 
-const AddMealPlanDialog = ({ open, onClose }: IProps) => {
+const AddMealPlanDialog = ({ open, onClose, mealPlan, fromAddTask }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
   const [isAdding, setIsAdding] = useState<boolean>(false)
 
   const formContext = useForm<MealPlan>({
-    defaultValues: {
-      name: '',
-      description: '',
-      meals: [{ name: 'Comida 1' }],
-    },
+    defaultValues: mealPlan
+      ? mealPlan
+      : {
+          name: '',
+          description: '',
+          meals: [{ name: 'Comida 1' }],
+          kcal: 0,
+        },
   })
 
   const meals = formContext.watch().meals
@@ -38,13 +38,30 @@ const AddMealPlanDialog = ({ open, onClose }: IProps) => {
   })
 
   const onSubmit: SubmitHandler<MealPlan> = async (data) => {
-    const mealPlan = changeGramsToFloat(data)
     setIsAdding(true)
     try {
-      await addDoc(mealPlansRef, { ...mealPlan, trainerId: trainer.id })
+      if (mealPlan) {
+        const newMealPlan = changeGramsToFloat({ ...data, createdAt: mealPlan.createdAt! })
+        await updateDoc(getDocumentRef('mealPlans', newMealPlan.id!), {
+          ...newMealPlan,
+          kcal: parseFloat(getTotalNV('kcal' as NutritionalValueKeys, data.meals).toFixed(2)),
+        })
+      } else {
+        const newMealPlan = changeGramsToFloat({
+          ...data,
+          createdAt: Timestamp.fromDate(new Date()),
+        })
+        await addDoc(mealPlansRef, {
+          ...newMealPlan,
+          trainerId: trainer.id,
+          kcal: parseFloat(getTotalNV('kcal' as NutritionalValueKeys, data.meals).toFixed(2)),
+        })
+      }
       setIsAdding(false)
       onClose()
-      Swal.fire('¡Éxito!', 'El plan alimenticio se creó correctamente!', 'success')
+      if (!fromAddTask) {
+        Swal.fire('¡Éxito!', 'El plan alimenticio se creó correctamente!', 'success')
+      }
     } catch (error) {
       console.error(error)
       setIsAdding(false)
@@ -105,7 +122,7 @@ const AddMealPlanDialog = ({ open, onClose }: IProps) => {
         <StyledDialogActions>
           <Button onClick={onClose}>Cancelar</Button>
           <Button type='submit' variant='contained' disabled={isAdding}>
-            {isAdding ? 'Creando' : 'Crear'}
+            {mealPlan ? (isAdding ? 'Editando' : 'Editar') : isAdding ? 'Creando' : 'Crear'}
           </Button>
         </StyledDialogActions>
       </FormContainer>
