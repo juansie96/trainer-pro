@@ -11,16 +11,8 @@ import {
 } from '@mui/material'
 import { Box } from '@mui/system'
 import { useEffect, useState } from 'react'
-import {
-  SubmitHandler,
-  useForm,
-  Controller,
-  useFormContext,
-  useFieldArray,
-  FieldError,
-} from 'react-hook-form'
-import { selectTrainer, TrainerState } from '../../../redux/slices/trainerSlice'
-import { useAppSelector } from '../../../state/storeHooks'
+import { SubmitHandler, useForm, Controller, useFormContext, useFieldArray } from 'react-hook-form'
+import { TrainerState } from '../../../redux/slices/trainerSlice'
 import FormContainer from '../../Form/FormContainer'
 import TextFieldElement from '../../Form/TextFieldElement'
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'
@@ -35,7 +27,6 @@ import type { Client } from '../../../types/client'
 import { mapFirebaseErrorCodeToMsg } from '../../../utils/utils'
 import { CustomSnackbar } from '../../UI/CustomSnackbar'
 import { useParams } from 'react-router-dom'
-import { ref } from 'firebase/database'
 
 const ClientActivation = () => {
   const { trainerId } = useParams()
@@ -78,8 +69,7 @@ const ClientActivation = () => {
       try {
         setSigningUp(true)
         await createUserWithEmailAndPassword(auth, client.email, client.password)
-
-        const ref = await addDoc(clientsRef, {
+        await addDoc(clientsRef, {
           ...client,
           birthDate: new Date(client.birthDate).toISOString(),
           trainerId: (trainer as TrainerState).id,
@@ -87,7 +77,6 @@ const ClientActivation = () => {
         } as WithFieldValue<Client>)
         setSigningUp(false)
         setStep(step + 1)
-        // dispatch(trainerRetrieved({ email, name: user.name, lastname: user.lastname, id: ref.id }))
       } catch (err) {
         console.error(err)
         setSigningUp(false)

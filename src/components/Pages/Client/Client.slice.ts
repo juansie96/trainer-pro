@@ -15,6 +15,7 @@ export interface ClientState {
   height: number
   healthFormQuestions: Array<HealthFormQuestion>
   tasks: Array<Task>
+  id?: string
 }
 
 type SliceState = ClientState | null

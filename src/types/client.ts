@@ -1,6 +1,8 @@
 import { DocumentReference } from 'firebase/firestore'
 import { HealthFormQuestion } from '../components/Pages/ClientActivation/types'
 
+export type Clients = Array<Client>
+
 export interface Client {
   name: string
   lastname: string

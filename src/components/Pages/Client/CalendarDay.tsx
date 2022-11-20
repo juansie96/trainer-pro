@@ -8,6 +8,8 @@ import { selectClient } from './Client.slice'
 import { CardioTask, MealPlanTask, Task, WorkoutTask } from '../../../types/client'
 import WorkoutEventDialog from './WorkoutEventDialog'
 import CardioEventDialog from './CardioEventDialog'
+import PreviewWorkoutDialog from '../Workouts/Routines/PreviewWorkoutDialog'
+import PreviewMealPlanDialog from '../Nutrition/MealPlans/PreviewMealPlanDialog'
 
 interface CalendarDayProps {
   rowIdx: number
@@ -62,34 +64,33 @@ const DayEvent = ({ event }: { event: Task }) => {
   switch (event.type) {
     case 'workout':
       title = event.title
+      bgcolor = '#b19316'
       dialogContainer = (
-        <WorkoutEventDialog
-          onClose={() => setDetailsDialog({ open: true, data: event })}
-          data={event}
+        <PreviewWorkoutDialog
+          onClose={() => setDetailsDialog({ open: false, data: null })}
+          workoutId={event.workoutId}
         />
       )
-      bgcolor = '#b19316'
       break
     case 'cardio':
       title = event.cardioType[0].toUpperCase() + event.cardioType.substring(1)
+      bgcolor = '#1976d2'
       dialogContainer = (
         <CardioEventDialog
-          onClose={() => setDetailsDialog({ open: true, data: event })}
+          onClose={() => setDetailsDialog({ open: false, data: null })}
           data={event}
         />
       )
-      bgcolor = '#1976d2'
       break
     case 'mealPlan':
       title = event.title
-      dialogContainer = null
       bgcolor = '#1b9e3c'
-      // (
-      // <WorkoutEventDialog
-      //   onClose={() => setDetailsDialog({ open: true, data: event })}
-      //   data={event}
-      // />
-      // )
+      dialogContainer = (
+        <PreviewMealPlanDialog
+          onClose={() => setDetailsDialog({ open: false, data: null })}
+          mealPlanId={event.mealPlanId}
+        />
+      )
       break
   }
 

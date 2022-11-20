@@ -20,7 +20,7 @@ import { foodsRef } from '../../../../../firebase/fbRefs'
 import { useAppSelector } from '../../../../../state/storeHooks'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 
-const AddMealDialog = ({ open, onClose }: IProps) => {
+const AddFoodDialog = ({ open, onClose }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
 
   const formContext = useForm<Food>({
@@ -138,4 +138,4 @@ const AddMealDialog = ({ open, onClose }: IProps) => {
   )
 }
 
-export default AddMealDialog
+export default AddFoodDialog

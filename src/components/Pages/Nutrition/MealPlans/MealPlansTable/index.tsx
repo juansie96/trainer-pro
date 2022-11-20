@@ -7,6 +7,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from '@mui/material'
 import { deleteDoc, DocumentReference } from 'firebase/firestore'
 import { MealPlan } from '../../../../../types/meals'
@@ -21,6 +22,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import type { IProps, MealPlanDialogState } from './types'
 import PreviewMealPlanDialog from '../PreviewMealPlanDialog'
 import { Stack } from '@mui/system'
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
+import AssignDialog from '../../../../UI/Dialogs/AssignDialog'
 
 const MealPlansTable = ({ mealPlans }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
@@ -34,6 +37,11 @@ const MealPlansTable = ({ mealPlans }: IProps) => {
     mealPlanId: '',
   })
   const [confirmDialog, setConfirmDialog] = useState<MealPlanDialogState>({
+    open: false,
+    mealPlanId: '',
+  })
+
+  const [assignDialog, setAssignDialog] = useState<MealPlanDialogState>({
     open: false,
     mealPlanId: '',
   })
@@ -52,6 +60,14 @@ const MealPlansTable = ({ mealPlans }: IProps) => {
 
   const closeEditMealPlanDialog = () => {
     setEditMealPlanDialog({ open: false, mealPlanId: '' })
+  }
+
+  const openAssignDialog = (mealPlanId: string) => {
+    setAssignDialog({ open: true, mealPlanId: mealPlanId })
+  }
+
+  const closeAssignDialog = () => {
+    setAssignDialog({ open: false, mealPlanId: '' })
   }
 
   const handleDeleteMealPlan = () => {
@@ -102,25 +118,38 @@ const MealPlansTable = ({ mealPlans }: IProps) => {
                 </TableCell>
                 <TableCell>
                   <Stack direction='row' spacing={1.5}>
-                    <VisibilityIcon
-                      color='action'
-                      onClick={() => openPreviewMealPlanDialog(mealPlan.id as string)}
-                      sx={{ cursor: 'pointer' }}
-                    />
-                    <EditIcon
-                      fontSize='small'
-                      color='primary'
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => handleIconClick('edit', mealPlan)}
-                    />
-                    <DeleteIcon
-                      color='error'
-                      fontSize='small'
-                      sx={{
-                        cursor: 'pointer',
-                      }}
-                      onClick={() => handleIconClick('delete', mealPlan)}
-                    />
+                    <Tooltip title='asignar plan'>
+                      <PersonAddAlt1Icon
+                        onClick={() => openAssignDialog(mealPlan.id as string)}
+                        color='success'
+                        sx={{ cursor: 'pointer' }}
+                      />
+                    </Tooltip>
+                    <Tooltip title='visualizar plan'>
+                      <VisibilityIcon
+                        color='action'
+                        onClick={() => openPreviewMealPlanDialog(mealPlan.id as string)}
+                        sx={{ cursor: 'pointer' }}
+                      />
+                    </Tooltip>
+                    <Tooltip title='editar plan'>
+                      <EditIcon
+                        fontSize='small'
+                        color='primary'
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() => handleIconClick('edit', mealPlan)}
+                      />
+                    </Tooltip>
+                    <Tooltip title='eliminar plan'>
+                      <DeleteIcon
+                        color='error'
+                        fontSize='small'
+                        sx={{
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => handleIconClick('delete', mealPlan)}
+                      />
+                    </Tooltip>
                   </Stack>
                 </TableCell>
               </TableRow>
@@ -144,7 +173,16 @@ const MealPlansTable = ({ mealPlans }: IProps) => {
       {previewMealPlanDialog.open && (
         <PreviewMealPlanDialog
           onClose={() => setPreviewMealPlanDialog({ open: false, mealPlanId: '' })}
-          mealPlan={mealPlans.find((mp) => mp.id === previewMealPlanDialog.mealPlanId) as MealPlan}
+          data={mealPlans.find((mp) => mp.id === previewMealPlanDialog.mealPlanId) as MealPlan}
+        />
+      )}
+      {assignDialog.open && (
+        <AssignDialog
+          onClose={() => setAssignDialog({ open: false, mealPlanId: '' })}
+          data={{
+            type: 'mealPlan',
+            data: mealPlans.find((mp) => mp.id === assignDialog.mealPlanId) as MealPlan,
+          }}
         />
       )}
     </>

@@ -11,6 +11,7 @@ import {
   Box,
 } from '@mui/material'
 import FormContainer from '../../Form/FormContainer'
+import { StyledDialogActions, StyledDialogHeader } from './styles'
 
 // import type { MealPlan } from '../../../../../types/meals'
 // import type { IProps } from './types'
@@ -44,24 +45,16 @@ const AddDialogExample = ({ open, onClose }: any) => {
   }
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      // PaperProps={{ sx: { maxWidth: 0.95, width: 0.95, height: 0.95 } }}
-    >
-      <FormContainer formContext={formContext} handleSubmit={formContext.handleSubmit(onSubmit)}>
-        <Box borderBottom='1px solid #e3e3e3'>
-          <DialogTitle>Nuevo plan nutricional</DialogTitle>
-        </Box>
-        <DialogContent sx={{ pt: 3, pb: 4 }}>
-          {/* <DialogContentText>Completa los datos de tu nuevo plan nutricional</DialogContentText> */}
-        </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
+    <Dialog open={open} onClose={onClose}>
+      <FormContainer formContext={formContext} onSuccess={onSubmit}>
+        <StyledDialogHeader title='test' />
+        <DialogContent sx={{ pt: 3, pb: 4 }}></DialogContent>
+        <StyledDialogActions>
           <Button onClick={onClose}>Cancelar</Button>
           <Button type='submit' variant='contained' disabled={isAdding}>
             {isAdding ? 'Creando' : 'Crear'}
           </Button>
-        </DialogActions>
+        </StyledDialogActions>
       </FormContainer>
     </Dialog>
   )

@@ -6,6 +6,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from '@mui/material'
 import { Workout } from '../../../../types/workout'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -16,12 +17,14 @@ import PreviewWorkoutDialog from './PreviewWorkoutDialog'
 import EditWorkoutDialog from './EditWorkoutDialog'
 import { deleteDoc } from 'firebase/firestore'
 import ConfirmDialog from '../../../ConfirmDialog'
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
+import AssignDialog from '../../../UI/Dialogs/AssignDialog'
 
 export interface WorkoutsTableProps {
   workouts: Workout[]
 }
 
-interface WorkoutDialogState {
+export interface WorkoutDialogState {
   open: boolean
   workoutId: string
 }
@@ -41,6 +44,11 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
     workoutId: '',
   })
 
+  const [assignDialog, setAssignDialog] = useState<WorkoutDialogState>({
+    open: false,
+    workoutId: '',
+  })
+
   const openPreviewWorkoutDialog = (workoutId: string) => {
     setPreviewWorkoutDialog({ open: true, workoutId: workoutId })
   }
@@ -55,6 +63,14 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
 
   const closeEditWorkoutDialog = () => {
     setEditWorkoutDialog({ open: false, workoutId: '' })
+  }
+
+  const openAssignDialog = (workoutId: string) => {
+    setAssignDialog({ open: true, workoutId: workoutId })
+  }
+
+  const closeAssignDialog = () => {
+    setAssignDialog({ open: false, workoutId: '' })
   }
 
   const handleDeleteWorkout = () => {
@@ -91,21 +107,34 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
                   {workout.createdAt.toDate().toLocaleDateString().split(' ')[0]}
                 </TableCell>
                 <TableCell>
-                  <VisibilityIcon
-                    color='action'
-                    onClick={() => openPreviewWorkoutDialog(workout.id)}
-                    sx={{ cursor: 'pointer' }}
-                  />
-                  <EditIcon
-                    color='primary'
-                    sx={{ ml: 2, cursor: 'pointer' }}
-                    onClick={() => openEditWorkoutDialog(workout.id)}
-                  />
-                  <DeleteIcon
-                    color='error'
-                    sx={{ ml: 2, cursor: 'pointer' }}
-                    onClick={() => setConfirmDialog({ open: true, workoutId: workout.id })}
-                  />
+                  <Tooltip title='asignar rutina'>
+                    <PersonAddAlt1Icon
+                      color='success'
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => openAssignDialog(workout.id)}
+                    />
+                  </Tooltip>
+                  <Tooltip title='visualizar rutina'>
+                    <VisibilityIcon
+                      color='action'
+                      onClick={() => openPreviewWorkoutDialog(workout.id)}
+                      sx={{ ml: 1, cursor: 'pointer' }}
+                    />
+                  </Tooltip>
+                  <Tooltip title='editar rutina'>
+                    <EditIcon
+                      color='primary'
+                      sx={{ ml: 1, cursor: 'pointer' }}
+                      onClick={() => openEditWorkoutDialog(workout.id)}
+                    />
+                  </Tooltip>
+                  <Tooltip title='eliminar rutina'>
+                    <DeleteIcon
+                      color='error'
+                      sx={{ ml: 1, cursor: 'pointer' }}
+                      onClick={() => setConfirmDialog({ open: true, workoutId: workout.id })}
+                    />
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
@@ -114,7 +143,7 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
       </TableContainer>
       {previewWorkoutDialog.open && (
         <PreviewWorkoutDialog
-          workout={workouts.find((w) => w.id === previewWorkoutDialog.workoutId) as Workout}
+          data={workouts.find((w) => w.id === previewWorkoutDialog.workoutId) as Workout}
           onClose={closePreviewWorkoutDialog}
         />
       )}
@@ -128,6 +157,15 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
         <ConfirmDialog
           onClose={() => setConfirmDialog({ open: false, workoutId: '' })}
           onConfirm={handleDeleteWorkout}
+        />
+      )}
+      {assignDialog.open && (
+        <AssignDialog
+          onClose={() => setAssignDialog({ open: false, workoutId: '' })}
+          data={{
+            type: 'workout',
+            data: workouts.find((w) => w.id === assignDialog.workoutId) as Workout,
+          }}
         />
       )}
     </>

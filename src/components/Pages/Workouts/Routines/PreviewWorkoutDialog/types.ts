@@ -2,5 +2,6 @@ import { Workout } from '../../../../../types/workout'
 
 export interface IProps {
   onClose(): void
-  workout: Workout
+  data?: Workout
+  workoutId?: string
 }

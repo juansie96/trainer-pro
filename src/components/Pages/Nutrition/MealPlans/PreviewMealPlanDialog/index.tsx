@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import { IProps } from './types'
 import { StyledDialogActions } from '../../../../UI/Dialogs/styles'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import {
   FoodsTableContainer,
   JMTableRow,
@@ -20,12 +20,29 @@ import {
   Separator,
 } from './styles'
 import { getTotalNV } from '../AddMealPlanDialog/utils'
-import { Food, Meal, NutritionalValueKeys } from '../../../../../types/meals'
+import { Food, Meal, MealPlan, NutritionalValueKeys } from '../../../../../types/meals'
 import { macroItems, tableHeaderCols } from './data'
 import { AiOutlineClose } from 'react-icons/ai'
 import { JMTableCell } from '../AddMealPlanDialog/MealContent/styles'
+import { getDocumentRef } from '../../../../../firebase/fbRefs'
+import { getDoc } from 'firebase/firestore'
 
-const PreviewMealPlanDialog = ({ onClose, mealPlan }: IProps) => {
+const PreviewMealPlanDialog = ({ onClose, data, mealPlanId }: IProps) => {
+  const [mealPlan, setMealPlan] = useState<MealPlan | undefined>(data)
+  useEffect(() => {
+    if (!data && mealPlanId) {
+      getDoc(getDocumentRef('mealPlans', mealPlanId as string)).then((res) => {
+        setMealPlan(res.data())
+      })
+    }
+  }, [])
+  if (!mealPlan) return null
+
+  const handleClose = (e: any) => {
+    e.stopPropagation()
+    onClose()
+  }
+
   const MacroItem = ({
     title,
     nvKey,
@@ -51,7 +68,7 @@ const PreviewMealPlanDialog = ({ onClose, mealPlan }: IProps) => {
 
   return (
     <div>
-      <Dialog open onClose={onClose} maxWidth='md' fullWidth>
+      <Dialog open onClose={handleClose} maxWidth='md' fullWidth>
         <Box
           borderBottom='1px solid #e3e3e3'
           display='flex'
@@ -83,15 +100,15 @@ const PreviewMealPlanDialog = ({ onClose, mealPlan }: IProps) => {
             </Section>
             <Section title='Planificación de comidas'>
               <Stack spacing={2}>
-                {mealPlan.meals.map((m) => (
-                  <MealSection meal={m} key={m.name} />
+                {mealPlan.meals.map((m, i) => (
+                  <MealSection meal={m} key={m.name + i} />
                 ))}
               </Stack>
             </Section>
           </Stack>
         </DialogContent>
         <StyledDialogActions>
-          <Button type='submit' variant='contained' onClick={onClose}>
+          <Button type='submit' variant='contained' onClick={handleClose}>
             Aceptar
           </Button>
         </StyledDialogActions>
@@ -126,10 +143,10 @@ const MealSection = ({ meal }: { meal: Meal }) => (
         ))}
       </JMTableRow>
 
-      {meal.foods.map((f, foodIdx) => {
+      {meal.foods.map((f) => {
         const food = f as Food
         return (
-          <JMTableRow key={food.id}>
+          <JMTableRow key={food.name}>
             <JMTableCell>
               <Typography sx={{ pl: 0.7 }}>{food.grams} g</Typography>
             </JMTableCell>
