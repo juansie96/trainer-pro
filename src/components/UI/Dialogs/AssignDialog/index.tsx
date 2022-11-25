@@ -23,9 +23,11 @@ import { useAppSelector } from '../../../../state/storeHooks'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getClientsByTrainerIdRef, getDocumentRef } from '../../../../firebase/fbRefs'
 import { selectTrainer } from '../../../../redux/slices/trainerSlice'
-import { Client, Task } from '../../../../types/client'
 import { updateDoc } from 'firebase/firestore'
 import Swal from 'sweetalert2'
+import { v4 as uuidv4 } from 'uuid'
+import type { Client } from '../../../../types/client'
+import type { MealPlanTask, WorkoutTask } from '../../../../types/task'
 
 const AssignDialog = ({ onClose, data }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
@@ -59,10 +61,14 @@ const AssignDialog = ({ onClose, data }: IProps) => {
     const date = selectedDate ? new Date(selectedDate).toISOString() : new Date().toISOString()
     setIsAdding(true)
 
-    const task: Task =
-      data.type === 'workout'
-        ? { date, title: data.data.name, type: 'workout', workoutId: data.data.id as string }
-        : { date, title: data.data.name, type: 'mealPlan', mealPlanId: data.data.id as string }
+    const task: WorkoutTask | MealPlanTask = {
+      id: uuidv4(),
+      date,
+      title: data.data.name,
+      type: data.type === 'workout' ? 'workout' : 'mealPlan',
+      entityId: data.data.id as string,
+      completed: false,
+    }
 
     const promises = selectedClients.map((c) =>
       updateDoc<Client>(getDocumentRef('clients', c.id as string), { tasks: [...c.tasks, task] }),

@@ -1,5 +1,6 @@
 import { DocumentReference } from 'firebase/firestore'
 import { HealthFormQuestion } from '../components/Pages/ClientActivation/types'
+import { GeneralTask } from './task'
 
 export type Clients = Array<Client>
 
@@ -15,31 +16,7 @@ export interface Client {
   weight: number
   height: number
   healthFormQuestions: HealthFormQuestion[]
-  tasks: Task[]
+  tasks: GeneralTask[]
   id?: string
   ref?: DocumentReference<Client>
-}
-
-export type Task = CardioTask | WorkoutTask | MealPlanTask
-
-export interface WorkoutTask {
-  type: 'workout'
-  date: string
-  title: string
-  workoutId: string
-}
-
-export interface MealPlanTask {
-  type: 'mealPlan'
-  date: string
-  title: string
-  mealPlanId: string
-}
-
-export type CardioTypes = 'correr' | 'caminar' | 'ciclismo' | 'elíptico' | 'nadar' | 'otro' | ''
-export interface CardioTask {
-  type: 'cardio'
-  date: string
-  cardioType: CardioTypes
-  distance: string
 }

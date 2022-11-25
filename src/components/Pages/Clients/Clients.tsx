@@ -2,14 +2,11 @@ import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
 import { AddClientDialog } from './AddClientDialog'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
-import { DocumentData, DocumentReference, Timestamp } from 'firebase/firestore'
 import { CenteredLayout } from '../../UI/CenteredLayout'
 import { ClientsLayout } from './ClientsLayout'
-import { HealthFormQuestion } from '../ClientActivation/types'
 import { selectTrainer } from '../../../redux/slices/trainerSlice'
 import { useSelector } from 'react-redux'
 import { getClientsByTrainerIdRef } from '../../../firebase/fbRefs'
-import { Task } from '../../../types/client'
 
 const Clients = () => {
   let content

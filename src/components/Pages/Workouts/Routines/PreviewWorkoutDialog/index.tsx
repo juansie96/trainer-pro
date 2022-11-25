@@ -22,28 +22,28 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { Stack } from '@mui/system'
 import CloseIcon from '@mui/icons-material/Close'
-import EventIcon from '@mui/icons-material/Event'
-import { ClientState, selectClient } from '../../../Client/Client.slice'
-import { useAppSelector } from '../../../../../state/storeHooks'
-import { Client } from '../../../../../types/client'
+import { selectClient, tasksChanged } from '../../../Client/Client.slice'
+import { useAppDispatch, useAppSelector } from '../../../../../state/storeHooks'
 import Swal from 'sweetalert2'
+import type { Client } from '../../../../../types/client'
 
-const PreviewWorkoutDialog = ({ onClose, data, workoutId }: IProps) => {
+const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
+  const client = useAppSelector(selectClient) as Client
+  const dispatch = useAppDispatch()
   const [exercises] = useCollectionData(exercisesRef)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [workout, setWorkout] = useState<Workout | undefined>(data)
-  const client = useAppSelector(selectClient)
-
-  const openEditDialog = () => setEditDialogOpen(true)
-  const closeEditDialog = () => setEditDialogOpen(false)
 
   useEffect(() => {
-    if (!data && workoutId) {
-      getDoc(getDocumentRef('workouts', workoutId as string)).then((res) => {
+    if (eventData) {
+      getDoc(getDocumentRef('workouts', eventData.entityId)).then((res) => {
         setWorkout(res.data())
       })
     }
   }, [])
+
+  const openEditDialog = () => setEditDialogOpen(true)
+  const closeEditDialog = () => setEditDialogOpen(false)
 
   const handleClose = (e: any) => {
     e.stopPropagation()
@@ -51,18 +51,20 @@ const PreviewWorkoutDialog = ({ onClose, data, workoutId }: IProps) => {
   }
 
   const handleDeleteEvent = async () => {
-    const docRef = getDocumentRef('clients', client!.id as string)
-    const newTasks = (client as ClientState).tasks.filter(
-      (t) => t.type === 'workout' && t.workoutId === (data as Workout).id,
-    )
-
+    const docRef = getDocumentRef('clients', client.id as string)
+    const newTasks = client.tasks.filter((t) => !(t.id === eventData?.id))
     try {
       await updateDoc<Client>(docRef, { tasks: newTasks })
+      dispatch(tasksChanged(newTasks))
       Swal.fire('¡Éxito!', 'El evento se eliminó correctamente', 'success')
       onClose()
     } catch (error) {
       console.error(error)
     }
+  }
+
+  const handleWorkoutEdit = (newWorkout: Workout) => {
+    setWorkout({ ...workout, ...newWorkout })
   }
 
   if (!workout) return null
@@ -86,10 +88,10 @@ const PreviewWorkoutDialog = ({ onClose, data, workoutId }: IProps) => {
         <Box margin='auto' mt={2} width='fit-content'>
           {workout.workoutExercises.map((exercise) => {
             const exerciseData = exercises?.find((e) => e.id === exercise.exerciseId)
-            if (!exerciseData) return <React.Fragment key={exercise.id}></React.Fragment>
+            if (!exerciseData) return <React.Fragment key={exercise.exerciseId}></React.Fragment>
             return (
               <Box
-                key={exercise.id}
+                key={exercise.exerciseId}
                 display='flex'
                 p={2}
                 borderBottom='1px solid #ccc'
@@ -129,40 +131,66 @@ const PreviewWorkoutDialog = ({ onClose, data, workoutId }: IProps) => {
         </Box>
       </DialogContent>
       <DialogActions
-        sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3', justifyContent: 'space-between' }}
+        sx={{
+          px: 3,
+          py: 2,
+          borderTop: '1px solid #e3e3e3',
+          justifyContent: 'space-between',
+        }}
       >
         <Stack direction='row' spacing={2}>
           <Tooltip title='editar rutina' onClick={openEditDialog}>
             <EditIcon color='primary' fontSize='large' sx={{ cursor: 'pointer' }} />
           </Tooltip>
         </Stack>
-        <Box>
+        <Box display='flex' alignItems='center'>
           {data ? (
-            <>
-              <Button onClick={handleClose}>Cancelar</Button>
-              <Button type='submit' variant='contained'>
-                Aceptar
-              </Button>
-            </>
+            <Button onClick={handleClose} variant='contained'>
+              Aceptar
+            </Button>
           ) : (
             <>
-              <Button variant='contained' color='error' sx={{ height: 38 }}>
+              <Button
+                variant='contained'
+                color='error'
+                sx={{ height: 38 }}
+                onClick={handleDeleteEvent}
+              >
                 <DeleteForeverIcon
                   fontSize='large'
                   sx={{ cursor: 'pointer', color: 'white', mr: 1 }}
-                  onClick={handleDeleteEvent}
                 />
                 Borrar evento
               </Button>
-              <Button variant='contained' color='primary' sx={{ height: 38, ml: 2 }}>
-                <EventIcon fontSize='large' sx={{ cursor: 'pointer', color: 'white', mr: 1 }} />
-                Cambiar fecha
-              </Button>
+              {/* {showDateInput ? (
+                <Button variant='contained' color='primary' sx={{ height: 38, ml: 2 }}>
+                  <EventIcon fontSize='large' sx={{ cursor: 'pointer', color: 'white', mr: 1 }} />
+                  Cambiar fecha
+                </Button>
+              ) : (
+                <Box ml={2}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DesktopDatePicker
+                      label='Fecha de nacimiento'
+                      inputFormat='DD/MM/YYYY'
+                      renderInput={(params) => <TextField {...params} sx={{ width: 250 }} />}
+                      value={selectedDate}
+                      onChange={setSelectedDate}
+                    />
+                  </LocalizationProvider>
+                </Box>
+              )} */}
             </>
           )}
         </Box>
       </DialogActions>
-      {editDialogOpen && <EditWorkoutDialog onClose={closeEditDialog} workout={workout} />}
+      {editDialogOpen && (
+        <EditWorkoutDialog
+          onClose={closeEditDialog}
+          workout={workout}
+          onSubmit={handleWorkoutEdit}
+        />
+      )}
     </Dialog>
   )
 }

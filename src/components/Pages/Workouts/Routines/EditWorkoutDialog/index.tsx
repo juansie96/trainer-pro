@@ -11,27 +11,51 @@ import {
   Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import { Timestamp, updateDoc } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  DocumentReference,
+  getDocs,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
 import React, { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form'
-import { exercisesRef } from '../../../../../firebase/fbRefs'
+import { exercisesRef, getClientDataDocById, clientsRef } from '../../../../../firebase/fbRefs'
+import { firestoreDB } from '../../../../../firebase/firebase'
+import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
+import { useAppDispatch, useAppSelector } from '../../../../../state/storeHooks'
+import { Client } from '../../../../../types/client'
+import { GeneralTask } from '../../../../../types/task'
+import { Workout } from '../../../../../types/workout'
 import { getExerciseImgUrl } from '../../../../../utils/utils'
 import FormContainer from '../../../../Form/FormContainer'
 import TextFieldElement from '../../../../Form/TextFieldElement'
+import { clientDataRetrieved, selectClient, tasksChanged } from '../../../Client/Client.slice'
 import { Exercise } from '../../Exercises/Exercises'
 import WorkoutExercisesTable from '../WorkoutExercisesTable'
 import { EditWorkoutDialogProps, EditWorkoutFormData } from './types'
 
-const EditWorkoutDialog = ({ onClose, workout }: EditWorkoutDialogProps) => {
+const EditWorkoutDialog = ({
+  onClose,
+  workout,
+  onSubmit: onEditSuccess,
+}: EditWorkoutDialogProps) => {
+  const client = useAppSelector(selectClient)
+  const dispatch = useAppDispatch()
   const [exercises] = useCollectionData(exercisesRef)
   const formContext = useForm<EditWorkoutFormData>({
     defaultValues: {
       name: workout.name,
       description: workout.description,
       workoutExercises: workout.workoutExercises,
+      id: workout.id,
     },
   })
+  const trainer = useAppSelector(selectTrainer)
 
   const { fields, append, remove } = useFieldArray({
     control: formContext.control,
@@ -58,12 +82,52 @@ const EditWorkoutDialog = ({ onClose, workout }: EditWorkoutDialogProps) => {
         ...newWorkout,
         updatedAt: Timestamp.fromDate(new Date()),
       })
+      if (formContext.formState.dirtyFields.name) {
+        const q = query<Client>(clientsRef, where('trainerId', '==', trainer.id as string))
+        const querySnapshot = await getDocs<Client>(q)
+        const clientsQuery: Client[] = []
+        querySnapshot.forEach((doc) => clientsQuery.push(doc.data()))
+
+        const promises: Promise<void>[] = []
+
+        clientsQuery.forEach((c) => {
+          const clientDoc = c as Client
+          const containsWorkoutTask = c.tasks.some(
+            (t) => t.type === 'workout' && t.entityId == newWorkout.id,
+          )
+          if (containsWorkoutTask) {
+            const newTasks = changeTasksTitle(
+              clientDoc.tasks,
+              newWorkout.id as string,
+              newWorkout.name,
+            )
+            const docRef = doc(firestoreDB, 'clients', clientDoc.id as string)
+            promises.push(
+              updateDoc<Client>(docRef as DocumentReference<Client>, { tasks: newTasks }),
+            )
+          }
+        })
+
+        await Promise.all(promises)
+
+        if (client) {
+          const newTasks = changeTasksTitle(client.tasks, newWorkout.id as string, newWorkout.name)
+          dispatch(tasksChanged(newTasks))
+        }
+      }
+      if (onEditSuccess) {
+        onEditSuccess(newWorkout as Workout)
+      }
       setIsAdding(false)
       onClose()
     } catch (err: unknown) {
+      console.error(err)
       setIsAdding(false)
     }
   }
+
+  const changeTasksTitle = (tasks: GeneralTask[], id: string, name: string) =>
+    tasks.map((t) => (t.type === 'workout' && t.entityId === id ? { ...t, title: name } : t))
 
   const handleAddExercise = (id: string) => {
     append({ rest: 0, type: 'single', exerciseId: id })
@@ -113,7 +177,11 @@ const EditWorkoutDialog = ({ onClose, workout }: EditWorkoutDialogProps) => {
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
           <Button onClick={onClose}>Cancelar</Button>
-          <Button type='submit' variant='contained' disabled={isAdding}>
+          <Button
+            type='submit'
+            variant='contained'
+            disabled={isAdding || !formContext.formState.isDirty}
+          >
             {isAdding ? 'Editando Rutina' : 'Editar Rutina'}
           </Button>
         </DialogActions>

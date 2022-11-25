@@ -5,11 +5,10 @@ import dayjs from 'dayjs'
 import CircleIcon from '@mui/icons-material/Circle'
 import { useSelector } from 'react-redux'
 import { selectClient } from './Client.slice'
-import { CardioTask, MealPlanTask, Task, WorkoutTask } from '../../../types/client'
-import WorkoutEventDialog from './WorkoutEventDialog'
-import CardioEventDialog from './CardioEventDialog'
+import { CardioTask, GeneralTask, MealPlanTask, WorkoutTask } from '../../../types/task'
 import PreviewWorkoutDialog from '../Workouts/Routines/PreviewWorkoutDialog'
 import PreviewMealPlanDialog from '../Nutrition/MealPlans/PreviewMealPlanDialog'
+import PreviewCardioDialog from '../../UI/Dialogs/PreviewCardioDialog'
 
 interface CalendarDayProps {
   rowIdx: number
@@ -48,7 +47,7 @@ const CalendarDay: React.FC<CalendarDayProps> = ({ day, rowIdx, colIdx, onDayCli
   )
 }
 
-const DayEvent = ({ event }: { event: Task }) => {
+const DayEvent = ({ event }: { event: GeneralTask }) => {
   const [detailsDialog, setDetailsDialog] = useState<{
     open: boolean
     data: WorkoutTask | CardioTask | MealPlanTask | null
@@ -57,38 +56,34 @@ const DayEvent = ({ event }: { event: Task }) => {
     data: null,
   })
 
-  let title
   let dialogContainer
   let bgcolor
 
   switch (event.type) {
     case 'workout':
-      title = event.title
       bgcolor = '#b19316'
       dialogContainer = (
         <PreviewWorkoutDialog
           onClose={() => setDetailsDialog({ open: false, data: null })}
-          workoutId={event.workoutId}
+          eventData={event}
         />
       )
       break
     case 'cardio':
-      title = event.cardioType[0].toUpperCase() + event.cardioType.substring(1)
       bgcolor = '#1976d2'
       dialogContainer = (
-        <CardioEventDialog
+        <PreviewCardioDialog
           onClose={() => setDetailsDialog({ open: false, data: null })}
           data={event}
         />
       )
       break
     case 'mealPlan':
-      title = event.title
       bgcolor = '#1b9e3c'
       dialogContainer = (
         <PreviewMealPlanDialog
           onClose={() => setDetailsDialog({ open: false, data: null })}
-          mealPlanId={event.mealPlanId}
+          eventData={event}
         />
       )
       break
@@ -112,7 +107,7 @@ const DayEvent = ({ event }: { event: Task }) => {
     >
       <CircleIcon sx={{ fontSize: 12, pl: 0.5 }} />
       <Typography variant='caption' fontSize={10} ml={0.5}>
-        {title}
+        {event.title}
       </Typography>
       {detailsDialog.open && dialogContainer}
     </Box>

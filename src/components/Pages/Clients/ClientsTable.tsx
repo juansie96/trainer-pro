@@ -21,11 +21,11 @@ export const ClientsTable = ({ clients }: ClientsTableProps) => {
   return (
     <TableContainer component={Paper} sx={{ width: 0.9, mx: 'auto' }}>
       <Table sx={{ minWidth: 650 }} aria-label='clients table'>
-        <TableHead>
+        <TableHead sx={{ bgcolor: '#1677d2' }}>
           <TableRow>
-            <TableCell>Nombre</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Objetivo</TableCell>
+            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Nombre</TableCell>
+            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Email</TableCell>
+            <TableCell sx={{ fontWeight: 700, color: 'white' }}>Objetivo</TableCell>
             {/* TODO */}
             {/* <TableCell align='center'>Vencimiento</TableCell>
             <TableCell align='center'>Cumplimiento semanal</TableCell>

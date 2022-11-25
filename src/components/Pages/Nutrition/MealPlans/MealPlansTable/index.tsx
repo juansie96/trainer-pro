@@ -6,16 +6,25 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Tooltip,
 } from '@mui/material'
-import { deleteDoc, DocumentReference } from 'firebase/firestore'
+import {
+  deleteDoc,
+  doc,
+  DocumentReference,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
 import { MealPlan } from '../../../../../types/meals'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
-import { useAppSelector } from '../../../../../state/storeHooks'
+import { useAppDispatch, useAppSelector } from '../../../../../state/storeHooks'
 import AddMealPlanDialog from '../AddMealPlanDialog'
 import ConfirmDialog from '../../../../ConfirmDialog'
-import { getDocumentRef } from '../../../../../firebase/fbRefs'
+import { clientsRef, getDocumentRef } from '../../../../../firebase/fbRefs'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -24,9 +33,15 @@ import PreviewMealPlanDialog from '../PreviewMealPlanDialog'
 import { Stack } from '@mui/system'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
 import AssignDialog from '../../../../UI/Dialogs/AssignDialog'
+import { Client } from '../../../../../types/client'
+import { firestoreDB } from '../../../../../firebase/firebase'
+import { selectClient, tasksChanged } from '../../../Client/Client.slice'
 
 const MealPlansTable = ({ mealPlans }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
+  const client = useAppSelector(selectClient)
+  const dispatch = useAppDispatch()
+  const [page, setPage] = useState(0)
 
   const [previewMealPlanDialog, setPreviewMealPlanDialog] = useState<MealPlanDialogState>({
     open: false,
@@ -70,10 +85,42 @@ const MealPlansTable = ({ mealPlans }: IProps) => {
     setAssignDialog({ open: false, mealPlanId: '' })
   }
 
-  const handleDeleteMealPlan = () => {
+  const handleDeleteMealPlan = async () => {
     const mealPlan = mealPlans.find((mp) => mp.id === confirmDialog.mealPlanId) as MealPlan
     const mealPlanRef = getDocumentRef('mealPlans', mealPlan.id as string)
     deleteDoc(mealPlanRef as DocumentReference<MealPlan>)
+    const q = query<Client>(clientsRef, where('trainerId', '==', trainer.id as string))
+    const querySnapshot = await getDocs<Client>(q)
+    const clientsQuery: Client[] = []
+    querySnapshot.forEach((doc) => clientsQuery.push(doc.data()))
+
+    const promises: Promise<void>[] = []
+
+    clientsQuery.forEach((c) => {
+      const clientDoc = c as Client
+      const containsMealPlanTask = c.tasks.some(
+        (t) => t.type === 'mealPlan' && t.entityId == confirmDialog.mealPlanId,
+      )
+      if (containsMealPlanTask) {
+        const newTasks = c.tasks.filter(
+          (t) => t.type === 'mealPlan' && t.entityId !== confirmDialog.mealPlanId,
+        )
+        const docRef = doc(firestoreDB, 'clients', clientDoc.id as string)
+        promises.push(updateDoc<Client>(docRef as DocumentReference<Client>, { tasks: newTasks }))
+      }
+    })
+
+    await Promise.all(promises)
+
+    if (client) {
+      dispatch(
+        tasksChanged(
+          client.tasks.filter(
+            (t) => t.type === 'mealPlan' && t.entityId !== confirmDialog.mealPlanId,
+          ),
+        ),
+      )
+    }
     setConfirmDialog({ open: false, mealPlanId: '' })
   }
 
@@ -93,13 +140,15 @@ const MealPlansTable = ({ mealPlans }: IProps) => {
     <>
       <TableContainer component={Paper} sx={{ width: 1, mx: 'auto', my: 3 }}>
         <Table sx={{ minWidth: 650 }} aria-label='mealPlans table'>
-          <TableHead>
+          <TableHead sx={{ bgcolor: '#1677d2' }}>
             <TableRow>
-              <TableCell sx={{ width: 0.2 }}>Nombre</TableCell>
-              <TableCell sx={{ width: 0.45 }}>Descripción</TableCell>
-              <TableCell sx={{ width: 0.15 }}>Energía</TableCell>
-              <TableCell sx={{ width: 0.1 }}>Creación</TableCell>
-              <TableCell sx={{ width: 0.1 }}></TableCell>
+              <TableCell sx={{ width: 0.2, fontWeight: 700, color: 'white' }}>Nombre</TableCell>
+              <TableCell sx={{ width: 0.45, fontWeight: 700, color: 'white' }}>
+                Descripción
+              </TableCell>
+              <TableCell sx={{ width: 0.15, fontWeight: 700, color: 'white' }}>Energía</TableCell>
+              <TableCell sx={{ width: 0.1, fontWeight: 700, color: 'white' }}>Creación</TableCell>
+              <TableCell sx={{ width: 0.1, fontWeight: 700, color: 'white' }}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -157,6 +206,15 @@ const MealPlansTable = ({ mealPlans }: IProps) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[]}
+        component='div'
+        count={mealPlans.length}
+        rowsPerPage={10}
+        page={page}
+        onPageChange={(_, n) => setPage(n)}
+        // onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       {editMealPlanDialog.open && (
         <AddMealPlanDialog
           mealPlan={mealPlans.find((w) => w.id === editMealPlanDialog.mealPlanId) as MealPlan}

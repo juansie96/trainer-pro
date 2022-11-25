@@ -5,6 +5,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Tooltip,
 } from '@mui/material'
@@ -15,10 +16,24 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useState } from 'react'
 import PreviewWorkoutDialog from './PreviewWorkoutDialog'
 import EditWorkoutDialog from './EditWorkoutDialog'
-import { deleteDoc } from 'firebase/firestore'
+import {
+  deleteDoc,
+  doc,
+  DocumentReference,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
 import ConfirmDialog from '../../../ConfirmDialog'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
 import AssignDialog from '../../../UI/Dialogs/AssignDialog'
+import { Client } from '../../../../types/client'
+import { clientsRef } from '../../../../firebase/fbRefs'
+import { firestoreDB } from '../../../../firebase/firebase'
+import { selectClient, tasksChanged } from '../../Client/Client.slice'
+import { selectTrainer } from '../../../../redux/slices/trainerSlice'
+import { useAppDispatch, useAppSelector } from '../../../../state/storeHooks'
 
 export interface WorkoutsTableProps {
   workouts: Workout[]
@@ -30,6 +45,11 @@ export interface WorkoutDialogState {
 }
 
 const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
+  const dispatch = useAppDispatch()
+  const trainer = useAppSelector(selectTrainer)
+  const client = useAppSelector(selectClient)
+  const [page, setPage] = useState(0)
+
   const [previewWorkoutDialog, setPreviewWorkoutDialog] = useState<WorkoutDialogState>({
     open: false,
     workoutId: '',
@@ -73,9 +93,41 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
     setAssignDialog({ open: false, workoutId: '' })
   }
 
-  const handleDeleteWorkout = () => {
+  const handleDeleteWorkout = async () => {
     const workout = workouts.find((w) => w.id === confirmDialog.workoutId) as Workout
     deleteDoc(workout.ref)
+    const q = query<Client>(clientsRef, where('trainerId', '==', trainer.id as string))
+    const querySnapshot = await getDocs<Client>(q)
+    const clientsQuery: Client[] = []
+    querySnapshot.forEach((doc) => clientsQuery.push(doc.data()))
+
+    const promises: Promise<void>[] = []
+
+    clientsQuery.forEach((c) => {
+      const clientDoc = c as Client
+      const containsWorkoutTask = c.tasks.some(
+        (t) => t.type === 'workout' && t.entityId == confirmDialog.workoutId,
+      )
+      if (containsWorkoutTask) {
+        const newTasks = c.tasks.filter(
+          (t) => t.type === 'workout' && t.entityId !== confirmDialog.workoutId,
+        )
+        const docRef = doc(firestoreDB, 'clients', clientDoc.id as string)
+        promises.push(updateDoc<Client>(docRef as DocumentReference<Client>, { tasks: newTasks }))
+      }
+    })
+
+    await Promise.all(promises)
+
+    if (client) {
+      dispatch(
+        tasksChanged(
+          client.tasks.filter(
+            (t) => t.type === 'workout' && t.entityId !== confirmDialog.workoutId,
+          ),
+        ),
+      )
+    }
     setConfirmDialog({ open: false, workoutId: '' })
   }
 
@@ -83,16 +135,20 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
     <>
       <TableContainer component={Paper} sx={{ width: 0.9, mx: 'auto' }}>
         <Table sx={{ minWidth: 650 }} aria-label='workouts table'>
-          <TableHead>
+          <TableHead sx={{ bgcolor: '#1677d2' }}>
             <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Descripción</TableCell>
-              <TableCell>Fecha de creación</TableCell>
-              <TableCell sx={{ width: 150 }}></TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700, width: 0.28 }}>Nombre</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700, width: 0.48 }}>
+                Descripción
+              </TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700, width: 0.13 }}>
+                Fecha de creación
+              </TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700, width: 0.13 }}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {workouts.map((workout) => (
+            {workouts.slice(page * 10, page * 10 + 10).map((workout) => (
               <TableRow
                 key={workout.id}
                 sx={{
@@ -141,6 +197,15 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[]}
+        component='div'
+        count={workouts.length}
+        rowsPerPage={10}
+        page={page}
+        onPageChange={(_, n) => setPage(n)}
+        // onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       {previewWorkoutDialog.open && (
         <PreviewWorkoutDialog
           data={workouts.find((w) => w.id === previewWorkoutDialog.workoutId) as Workout}

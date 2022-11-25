@@ -6,6 +6,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
@@ -22,6 +23,7 @@ import type { IProps, FoodDialogState } from './types'
 const FoodsTable = ({ foods }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
   const trainerName = trainer.name?.split(' ')[0]
+  const [page, setPage] = useState(0)
 
   const [editFoodDialog, setEditFoodDialog] = useState<FoodDialogState>({
     open: false,
@@ -63,20 +65,20 @@ const FoodsTable = ({ foods }: IProps) => {
     <>
       <TableContainer component={Paper} sx={{ width: 1, mx: 'auto', my: 3 }}>
         <Table sx={{ minWidth: 650 }} aria-label='foods table'>
-          <TableHead>
+          <TableHead sx={{ bgcolor: '#1677d2' }}>
             <TableRow>
-              <TableCell sx={{ width: 0.3 }}>Nombre</TableCell>
-              <TableCell sx={{ width: 0.1 }}>Calorías</TableCell>
-              <TableCell sx={{ width: 0.1 }}>Proteínas</TableCell>
-              <TableCell sx={{ width: 0.09 }}>Carbs</TableCell>
-              <TableCell sx={{ width: 0.09 }}>Grasas</TableCell>
-              <TableCell sx={{ width: 0.09 }}>Fibra</TableCell>
-              <TableCell sx={{ width: 0.1 }}>Creado por</TableCell>
-              <TableCell sx={{ width: 0.13 }}></TableCell>
+              <TableCell sx={{ width: 0.3, color: 'white', fontWeight: 700 }}>Nombre</TableCell>
+              <TableCell sx={{ width: 0.1, color: 'white', fontWeight: 700 }}>Calorías</TableCell>
+              <TableCell sx={{ width: 0.1, color: 'white', fontWeight: 700 }}>Proteínas</TableCell>
+              <TableCell sx={{ width: 0.09, color: 'white', fontWeight: 700 }}>Carbs</TableCell>
+              <TableCell sx={{ width: 0.09, color: 'white', fontWeight: 700 }}>Grasas</TableCell>
+              <TableCell sx={{ width: 0.09, color: 'white', fontWeight: 700 }}>Fibra</TableCell>
+              <TableCell sx={{ width: 0.1, color: 'white', fontWeight: 700 }}>Creado por</TableCell>
+              <TableCell sx={{ width: 0.13, color: 'white', fontWeight: 700 }}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {foods.map((food) => (
+            {foods.slice(page * 10, page * 10 + 10).map((food) => (
               <TableRow
                 key={food.id}
                 sx={{
@@ -117,6 +119,16 @@ const FoodsTable = ({ foods }: IProps) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[10]}
+        component='div'
+        count={foods.length}
+        rowsPerPage={10}
+        page={page}
+        onPageChange={(_, n) => setPage(n)}
+        labelRowsPerPage={'Filas por página'}
+        // onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       {editFoodDialog.open && (
         <EditFoodDialog
           food={foods.find((w) => w.id === editFoodDialog.foodId) as Food}

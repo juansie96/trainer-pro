@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
-import { useAppSelector } from '../../../../../state/storeHooks'
+import { useAppDispatch, useAppSelector } from '../../../../../state/storeHooks'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 import { Button, Dialog, DialogContent, Typography, Stack, Box } from '@mui/material'
 import FormContainer from '../../../../Form/FormContainer'
@@ -9,14 +9,35 @@ import MealContent from './MealContent'
 import { StyledDialogActions, StyledDialogHeader } from './styles'
 import { changeGramsToFloat, getTotalNV } from './utils'
 import { totalNVItems } from './data'
-import { addDoc, Timestamp, updateDoc } from 'firebase/firestore'
-import { getDocumentRef, mealPlansRef } from '../../../../../firebase/fbRefs'
+import {
+  addDoc,
+  doc,
+  DocumentReference,
+  getDocs,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
+import { clientsRef, getDocumentRef, mealPlansRef } from '../../../../../firebase/fbRefs'
 import Swal from 'sweetalert2'
 import type { MealPlan, Meals, NutritionalValueKeys } from '../../../../../types/meals'
 import type { IProps } from './types'
+import { selectClient, tasksChanged } from '../../../Client/Client.slice'
+import { Client } from '../../../../../types/client'
+import { firestoreDB } from '../../../../../firebase/firebase'
+import { GeneralTask, MealPlanTask } from '../../../../../types/task'
 
-const AddMealPlanDialog = ({ open, onClose, mealPlan, fromAddTask }: IProps) => {
+const AddMealPlanDialog = ({
+  open,
+  onClose,
+  mealPlan,
+  fromAddTask,
+  onSubmit: onEditSuccess,
+}: IProps) => {
   const trainer = useAppSelector(selectTrainer)
+  const client = useAppSelector(selectClient)
+  const dispatch = useAppDispatch()
   const [isAdding, setIsAdding] = useState<boolean>(false)
 
   const formContext = useForm<MealPlan>({
@@ -46,6 +67,38 @@ const AddMealPlanDialog = ({ open, onClose, mealPlan, fromAddTask }: IProps) => 
           ...newMealPlan,
           kcal: parseFloat(getTotalNV('kcal' as NutritionalValueKeys, data.meals).toFixed(2)),
         })
+        if (formContext.formState.dirtyFields.name) {
+          const q = query<Client>(clientsRef, where('trainerId', '==', trainer.id as string))
+          const querySnapshot = await getDocs<Client>(q)
+          const clientsQuery: Client[] = []
+          querySnapshot.forEach((doc) => clientsQuery.push(doc.data()))
+
+          const promises: Promise<void>[] = []
+
+          clientsQuery.forEach((c) => {
+            const clientDoc = c as Client
+            const containsMealPlanTask = c.tasks.some(
+              (t) => t.type === 'mealPlan' && t.entityId == data.id,
+            )
+            if (containsMealPlanTask) {
+              const newTasks = changeTasksTitle(clientDoc.tasks, mealPlan.id as string, data.name)
+              const docRef = doc(firestoreDB, 'clients', clientDoc.id as string)
+              promises.push(
+                updateDoc<Client>(docRef as DocumentReference<Client>, { tasks: newTasks }),
+              )
+            }
+          })
+
+          await Promise.all(promises)
+
+          if (client) {
+            const newTasks = changeTasksTitle(client.tasks, mealPlan.id as string, data.name)
+            dispatch(tasksChanged(newTasks))
+          }
+        }
+        if (onEditSuccess) {
+          onEditSuccess(data as MealPlan)
+        }
       } else {
         const newMealPlan = changeGramsToFloat({
           ...data,
@@ -73,6 +126,9 @@ const AddMealPlanDialog = ({ open, onClose, mealPlan, fromAddTask }: IProps) => 
       })
     }
   }
+
+  const changeTasksTitle = (tasks: GeneralTask[], id: string, name: string) =>
+    tasks.map((t) => (t.type === 'mealPlan' && t.entityId === id ? { ...t, title: name } : t))
 
   const addMeal = () => {
     const mealNumber = fields.length + 1

@@ -1,24 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../../../state/store'
-import { Task } from '../../../types/client'
-import { HealthFormQuestion } from '../ClientActivation/types'
+import { Client } from '../../../types/client'
+import { CardioTask, GeneralTask } from '../../../types/task'
 
-export interface ClientState {
-  name: string
-  lastname: string
-  email: string
-  password: string
-  gender: string
-  objective: string
-  birthDate: Date | string
-  weight: number
-  height: number
-  healthFormQuestions: Array<HealthFormQuestion>
-  tasks: Array<Task>
-  id?: string
-}
-
-type SliceState = ClientState | null
+type SliceState = Client | null
 
 const initialState: SliceState = null as SliceState
 
@@ -26,18 +11,31 @@ const clientSlice = createSlice({
   name: 'clients',
   initialState,
   reducers: {
-    clientDataRetrieved(state, action: PayloadAction<ClientState>) {
+    clientDataRetrieved(state, action: PayloadAction<Client>) {
       return action.payload
     },
-    taskAdded(state, action: PayloadAction<Task>) {
-      if (!state) return null
-      return { ...state, tasks: [...state.tasks, action.payload] }
+    taskAdded(state, action: PayloadAction<GeneralTask>) {
+      return state ? { ...state, tasks: [...state.tasks, action.payload] } : null
+    },
+    cardioTaskModified(state, action: PayloadAction<CardioTask>) {
+      return state
+        ? {
+            ...state,
+            tasks: state.tasks.map((t) =>
+              t.type === 'cardio' && t.id === action.payload.id ? action.payload : t,
+            ),
+          }
+        : null
+    },
+    tasksChanged(state, action: PayloadAction<GeneralTask[]>) {
+      return state ? { ...state, tasks: action.payload } : null
     },
   },
 })
 
 export const selectClient = (state: RootState) => state.client
 
-export const { clientDataRetrieved, taskAdded } = clientSlice.actions
+export const { clientDataRetrieved, taskAdded, tasksChanged, cardioTaskModified } =
+  clientSlice.actions
 
 export default clientSlice.reducer

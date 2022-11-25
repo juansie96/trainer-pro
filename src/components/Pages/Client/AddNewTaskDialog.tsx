@@ -20,19 +20,14 @@ import {
 import { useState } from 'react'
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
-import {
-  getMealPlansByTrainerIdRef,
-  getWorkoutsByTrainerIdRef,
-  workoutsRef,
-} from '../../../firebase/fbRefs'
+import { getMealPlansByTrainerIdRef, getWorkoutsByTrainerIdRef } from '../../../firebase/fbRefs'
 import { Workout } from '../../../types/workout'
 import Swal from 'sweetalert2'
 import { doc, updateDoc } from 'firebase/firestore'
 import { selectClient, taskAdded } from './Client.slice'
 import { useAppDispatch, useAppSelector } from '../../../state/storeHooks'
 import { firestoreDB } from '../../../firebase/firebase'
-import type { CardioTask, CardioTypes, Client, Task } from '../../../types/client'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { Controller, SubmitHandler } from 'react-hook-form'
 import TextFieldElement from '../../Form/TextFieldElement'
 import FormContainer from '../../Form/FormContainer'
 import { useDispatch } from 'react-redux'
@@ -41,6 +36,9 @@ import { selectTrainer } from '../../../redux/slices/trainerSlice'
 import { MealPlan } from '../../../types/meals'
 import AddMealPlanDialog from '../Nutrition/MealPlans/AddMealPlanDialog'
 import AddWorkoutDialog from '../Workouts/Routines/AddWorkoutDialog'
+import { v4 as uuidv4 } from 'uuid'
+import type { CardioTask, CardioTypes, MealPlanTask, WorkoutTask } from '../../../types/task'
+import { Client } from '../../../types/client'
 
 interface AddNewTaskDialogProps {
   onClose(): void
@@ -159,11 +157,13 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
   const handleSubmit = () => {
     const docRef = doc(firestoreDB, 'clients', client.id as string)
 
-    const task: Task = {
+    const task: WorkoutTask = {
+      id: uuidv4(),
       type: 'workout',
-      workoutId: selectedWorkoutId,
+      entityId: selectedWorkoutId,
       date: day.toISOString(),
       title: (workouts as Workout[]).find((w) => w.id === selectedWorkoutId)?.name as string,
+      completed: false,
     }
 
     updateDoc(docRef, {
@@ -245,11 +245,13 @@ const SelectMealPlanContent = ({ onClose, day }: { onClose(): void; day: Date })
   const handleSubmit = () => {
     const docRef = doc(firestoreDB, 'clients', client.id as string)
 
-    const task: Task = {
+    const task: MealPlanTask = {
+      id: uuidv4(),
       type: 'mealPlan',
-      mealPlanId: selectedMealPlanId,
+      entityId: selectedMealPlanId,
       date: day.toISOString(),
       title: (mealPlans as MealPlan[]).find((w) => w.id === selectedMealPlanId)?.name as string,
+      completed: false,
     }
 
     updateDoc(docRef, {
@@ -318,22 +320,31 @@ const AddCardioForm = ({ onClose, day }: { onClose(): void; day: Date }) => {
 
   const cardioTypes = ['correr', 'caminar', 'ciclismo', 'elíptico', 'nadar', 'otro']
   const defaultValues: CardioTask & { cardioType: CardioTypes } = {
+    id: uuidv4(),
     cardioType: '',
     distance: '',
     type: 'cardio',
     date: day.toISOString(),
+    title: '',
+    entityId: '',
+    completed: false,
   }
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit: SubmitHandler<typeof defaultValues> = async (data) => {
     const docRef = doc(firestoreDB, 'clients', client.id as string)
+    const finalTask = {
+      ...data,
+      title: data.cardioType[0].toUpperCase() + data.cardioType.substring(1),
+    }
     setIsLoading(true)
+
     try {
       await updateDoc(docRef, {
-        tasks: [...client.tasks, data],
+        tasks: [...client.tasks, finalTask],
       })
       Swal.fire('¡Éxito!', 'El cardio se asignó correctamente!', 'success')
-      dispatch(taskAdded(data))
+      dispatch(taskAdded(finalTask))
       onClose()
     } catch (error) {
       onClose()

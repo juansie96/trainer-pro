@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import { IProps } from './types'
 import { StyledDialogActions } from '../../../../UI/Dialogs/styles'
-import { ReactNode, useEffect, useState } from 'react'
+import { MouseEvent, ReactNode, useEffect, useState } from 'react'
 import {
   FoodsTableContainer,
   JMTableRow,
@@ -22,25 +22,59 @@ import {
 import { getTotalNV } from '../AddMealPlanDialog/utils'
 import { Food, Meal, MealPlan, NutritionalValueKeys } from '../../../../../types/meals'
 import { macroItems, tableHeaderCols } from './data'
-import { AiOutlineClose } from 'react-icons/ai'
 import { JMTableCell } from '../AddMealPlanDialog/MealContent/styles'
 import { getDocumentRef } from '../../../../../firebase/fbRefs'
-import { getDoc } from 'firebase/firestore'
+import { getDoc, updateDoc } from 'firebase/firestore'
+import { useAppDispatch, useAppSelector } from '../../../../../state/storeHooks'
+import { selectClient, tasksChanged } from '../../../Client/Client.slice'
+import Swal from 'sweetalert2'
+import CloseIcon from '@mui/icons-material/Close'
+import EditIcon from '@mui/icons-material/Edit'
+import AddMealPlanDialog from '../AddMealPlanDialog'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import type { Client } from '../../../../../types/client'
 
-const PreviewMealPlanDialog = ({ onClose, data, mealPlanId }: IProps) => {
+const PreviewMealPlanDialog = ({ onClose, data, eventData }: IProps) => {
+  const client = useAppSelector(selectClient) as Client
+  const dispatch = useAppDispatch()
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [mealPlan, setMealPlan] = useState<MealPlan | undefined>(data)
+
   useEffect(() => {
-    if (!data && mealPlanId) {
-      getDoc(getDocumentRef('mealPlans', mealPlanId as string)).then((res) => {
+    if (eventData) {
+      getDoc(getDocumentRef('mealPlans', eventData.entityId)).then((res) => {
         setMealPlan(res.data())
       })
     }
   }, [])
-  if (!mealPlan) return null
 
-  const handleClose = (e: any) => {
+  const openEditDialog = () => setEditDialogOpen(true)
+  const closeEditDialog = () => setEditDialogOpen(false)
+
+  const handleClose = (e: MouseEvent) => {
     e.stopPropagation()
     onClose()
+  }
+
+  if (!mealPlan) return null
+
+  const handleDeleteEvent = async () => {
+    const docRef = getDocumentRef('clients', client.id as string)
+    const newTasks = (client as Client).tasks.filter(
+      (t) => !(t.type === 'mealPlan' && t.entityId === (mealPlan as MealPlan).id),
+    )
+    try {
+      await updateDoc<Client>(docRef, { tasks: newTasks })
+      dispatch(tasksChanged(newTasks))
+      Swal.fire('¡Éxito!', 'El evento se eliminó correctamente', 'success')
+      onClose()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleMealPlanEdit = (newMealPlan: MealPlan) => {
+    setMealPlan({ ...mealPlan, ...newMealPlan })
   }
 
   const MacroItem = ({
@@ -74,15 +108,12 @@ const PreviewMealPlanDialog = ({ onClose, data, mealPlanId }: IProps) => {
           display='flex'
           alignItems='center'
           justifyContent='space-between'
+          pr={3}
         >
           <DialogTitle>{mealPlan.name}</DialogTitle>
-          <Box m='1em 1.5em'>
-            <AiOutlineClose
-              size={20}
-              style={{ display: 'block', cursor: 'pointer' }}
-              onClick={onClose}
-            />
-          </Box>
+          <Tooltip title='cerrar ventana'>
+            <CloseIcon fontSize='medium' cursor='pointer' onClick={handleClose} />
+          </Tooltip>
         </Box>
         <DialogContent sx={{ pt: 3, pb: 4 }}>
           <Stack spacing={4}>
@@ -107,17 +138,49 @@ const PreviewMealPlanDialog = ({ onClose, data, mealPlanId }: IProps) => {
             </Section>
           </Stack>
         </DialogContent>
-        <StyledDialogActions>
-          <Button type='submit' variant='contained' onClick={handleClose}>
-            Aceptar
-          </Button>
+        <StyledDialogActions justifyContent='space-between'>
+          <Stack direction='row' spacing={2}>
+            <Tooltip title='editar rutina' onClick={openEditDialog}>
+              <EditIcon color='primary' fontSize='large' sx={{ cursor: 'pointer' }} />
+            </Tooltip>
+          </Stack>
+          <Box display='flex' alignItems='center'>
+            {data ? (
+              <Button onClick={handleClose} variant='contained'>
+                Aceptar
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant='contained'
+                  color='error'
+                  sx={{ height: 38 }}
+                  onClick={handleDeleteEvent}
+                >
+                  <DeleteForeverIcon
+                    fontSize='large'
+                    sx={{ cursor: 'pointer', color: 'white', mr: 1 }}
+                  />
+                  Borrar evento
+                </Button>
+              </>
+            )}
+          </Box>
         </StyledDialogActions>
+        {editDialogOpen && (
+          <AddMealPlanDialog
+            open
+            onClose={closeEditDialog}
+            mealPlan={mealPlan}
+            onSubmit={handleMealPlanEdit}
+          />
+        )}
       </Dialog>
     </div>
   )
 }
 
-const Section = ({ title, children }: { title: string; children: ReactNode }) => (
+export const Section = ({ title, children }: { title: string; children: ReactNode }) => (
   <Stack spacing={1.5}>
     <Typography fontWeight={600} fontSize={17}>
       {title}
