@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { CLIENT_OBJECTIVES, TClientObjectives } from '../../../utils/utils'
+import { CLIENT_OBJECTIVES, TClientObjectives } from '../../../utils'
 import type { Client } from '../../../types/client'
 
 export interface ClientsTableProps {

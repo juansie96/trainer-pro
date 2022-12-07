@@ -59,7 +59,6 @@ const AddNewTaskDialog = ({ onClose, day }: AddNewTaskDialogProps) => {
         <DialogContent sx={{ p: 0 }}>
           {status === 'initial' && <InitialContent setStatus={setStatus} />}
           {status === 'workout' && <SelectWorkoutContent onClose={onClose} day={day} />}
-          {status === 'mealPlan' && <SelectMealPlanContent onClose={onClose} day={day} />}
           {status === 'cardio' && <AddCardioForm onClose={onClose} day={day} />}
         </DialogContent>
       </Dialog>
@@ -72,9 +71,9 @@ const InitialContent = ({
 }: {
   setStatus: React.Dispatch<React.SetStateAction<Status>>
 }) => (
-  <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2em', p: 2 }}>
+  <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2em', p: 2 }}>
     <WorkoutCard onClick={() => setStatus('workout')} />
-    <MealPlanCard onClick={() => setStatus('mealPlan')} />
+    {/* <MealPlanCard onClick={() => setStatus('mealPlan')} /> */}
     <CardioCard onClick={() => setStatus('cardio')} />
   </Box>
 )
@@ -163,11 +162,12 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
       entityId: selectedWorkoutId,
       date: day.toISOString(),
       title: (workouts as Workout[]).find((w) => w.id === selectedWorkoutId)?.name as string,
-      completed: false,
+      completed: { value: false, date: null },
     }
 
+    const newTasks = client.tasks ? [...client.tasks, task] : [task]
     updateDoc(docRef, {
-      tasks: [...client.tasks, task],
+      tasks: newTasks,
     })
     dispatch(taskAdded(task))
     Swal.fire('¡Éxito!', 'La rutina se asignó correctamente!', 'success')
@@ -182,7 +182,7 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
           Crear rutina
         </Button>
       </Stack>
-      {workouts!.length > 0 ? (
+      {workouts && workouts.length > 0 ? (
         <RadioGroup
           sx={{ px: 3, py: 1 }}
           onChange={(e) => setSelectedWorkoutId(e.target.value)}
@@ -219,100 +219,100 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
     </Box>
   )
 }
-const SelectMealPlanContent = ({ onClose, day }: { onClose(): void; day: Date }) => {
-  const client = useAppSelector(selectClient) as Client
-  const trainer = useAppSelector(selectTrainer)
-  const dispatch = useAppDispatch()
-  const [mealPlans, loading] = useCollectionData(getMealPlansByTrainerIdRef(trainer.id as string))
-  const [selectedMealPlanId, setSelectedMealPlanId] = useState('')
-  const [addMealPlanDialogOpen, setAddMealPlanDialogOpen] = useState<boolean>(false)
+// const SelectMealPlanContent = ({ onClose, day }: { onClose(): void; day: Date }) => {
+//   const client = useAppSelector(selectClient) as Client
+//   const trainer = useAppSelector(selectTrainer)
+//   const dispatch = useAppDispatch()
+//   const [mealPlans, loading] = useCollectionData(getMealPlansByTrainerIdRef(trainer.id as string))
+//   const [selectedMealPlanId, setSelectedMealPlanId] = useState('')
+//   const [addMealPlanDialogOpen, setAddMealPlanDialogOpen] = useState<boolean>(false)
 
-  const openAddMealPlanDialog = () => {
-    setAddMealPlanDialogOpen(true)
-  }
-  const closeAddMealPlanDialog = () => {
-    setAddMealPlanDialogOpen(false)
-  }
-  const hasError = false
-  if (loading) {
-    return (
-      <Box p={3} display='flex' justifyContent={'center'} alignItems='center'>
-        <CircularProgress />
-      </Box>
-    )
-  }
+//   const openAddMealPlanDialog = () => {
+//     setAddMealPlanDialogOpen(true)
+//   }
+//   const closeAddMealPlanDialog = () => {
+//     setAddMealPlanDialogOpen(false)
+//   }
+//   const hasError = false
+//   if (loading) {
+//     return (
+//       <Box p={3} display='flex' justifyContent={'center'} alignItems='center'>
+//         <CircularProgress />
+//       </Box>
+//     )
+//   }
 
-  const handleSubmit = () => {
-    const docRef = doc(firestoreDB, 'clients', client.id as string)
+//   const handleSubmit = () => {
+//     const docRef = doc(firestoreDB, 'clients', client.id as string)
 
-    const task: MealPlanTask = {
-      id: uuidv4(),
-      type: 'mealPlan',
-      entityId: selectedMealPlanId,
-      date: day.toISOString(),
-      title: (mealPlans as MealPlan[]).find((w) => w.id === selectedMealPlanId)?.name as string,
-      completed: false,
-    }
+//     const task: MealPlanTask = {
+//       id: uuidv4(),
+//       type: 'mealPlan',
+//       entityId: selectedMealPlanId,
+//       date: day.toISOString(),
+//       title: (mealPlans as MealPlan[]).find((w) => w.id === selectedMealPlanId)?.name as string,
+//       completed: false,
+//     }
 
-    updateDoc(docRef, {
-      tasks: [...client.tasks, task],
-    })
-    dispatch(taskAdded(task))
-    dispatch
-    Swal.fire('¡Éxito!', 'El plan nutricional se asignó correctamente!', 'success')
-    onClose()
-  }
+//     updateDoc(docRef, {
+//       tasks: [...client.tasks, task],
+//     })
+//     dispatch(taskAdded(task))
+//     dispatch
+//     Swal.fire('¡Éxito!', 'El plan nutricional se asignó correctamente!', 'success')
+//     onClose()
+//   }
 
-  return (
-    <Box>
-      <Stack direction='row' alignItems='center' px={3} pt={2} justifyContent='space-between'>
-        <Typography fontWeight={700}>Seleccione el plan nutricional</Typography>
-        <Button variant='contained' onClick={openAddMealPlanDialog}>
-          Crear plan
-        </Button>
-      </Stack>
-      {mealPlans!.length > 0 ? (
-        <RadioGroup
-          sx={{ px: 3, pb: 1 }}
-          onChange={(e) => setSelectedMealPlanId(e.target.value)}
-          defaultChecked={false}
-        >
-          {hasError && (
-            <Typography variant='caption' fontWeight={600} color='error'>
-              Debe seleccionar una de las opciones
-            </Typography>
-          )}
-          {(mealPlans as MealPlan[]).map((mealPlan) => (
-            <FormControlLabel
-              key={mealPlan.id}
-              value={mealPlan.id}
-              control={<Radio />}
-              label={mealPlan.name}
-            />
-          ))}
-        </RadioGroup>
-      ) : (
-        <Typography sx={{ px: 3, py: 2 }}>Todavía no se creó ningún plan</Typography>
-      )}
+//   return (
+//     <Box>
+//       <Stack direction='row' alignItems='center' px={3} pt={2} justifyContent='space-between'>
+//         <Typography fontWeight={700}>Seleccione el plan nutricional</Typography>
+//         <Button variant='contained' onClick={openAddMealPlanDialog}>
+//           Crear plan
+//         </Button>
+//       </Stack>
+//       {mealPlans!.length > 0 ? (
+//         <RadioGroup
+//           sx={{ px: 3, pb: 1 }}
+//           onChange={(e) => setSelectedMealPlanId(e.target.value)}
+//           defaultChecked={false}
+//         >
+//           {hasError && (
+//             <Typography variant='caption' fontWeight={600} color='error'>
+//               Debe seleccionar una de las opciones
+//             </Typography>
+//           )}
+//           {(mealPlans as MealPlan[]).map((mealPlan) => (
+//             <FormControlLabel
+//               key={mealPlan.id}
+//               value={mealPlan.id}
+//               control={<Radio />}
+//               label={mealPlan.name}
+//             />
+//           ))}
+//         </RadioGroup>
+//       ) : (
+//         <Typography sx={{ px: 3, py: 2 }}>Todavía no se creó ningún plan</Typography>
+//       )}
 
-      <Box sx={{ borderTop: '1px solid #e3e3e3', p: 2 }} display='flex' justifyContent={'end'}>
-        <Button onClick={onClose} sx={{ mr: 1 }}>
-          Cancelar
-        </Button>
-        <Button variant='contained' onClick={handleSubmit}>
-          Asignar
-        </Button>
-      </Box>
-      {addMealPlanDialogOpen && (
-        <AddMealPlanDialog
-          open={addMealPlanDialogOpen}
-          onClose={closeAddMealPlanDialog}
-          fromAddTask
-        />
-      )}
-    </Box>
-  )
-}
+//       <Box sx={{ borderTop: '1px solid #e3e3e3', p: 2 }} display='flex' justifyContent={'end'}>
+//         <Button onClick={onClose} sx={{ mr: 1 }}>
+//           Cancelar
+//         </Button>
+//         <Button variant='contained' onClick={handleSubmit}>
+//           Asignar
+//         </Button>
+//       </Box>
+//       {addMealPlanDialogOpen && (
+//         <AddMealPlanDialog
+//           open={addMealPlanDialogOpen}
+//           onClose={closeAddMealPlanDialog}
+//           fromAddTask
+//         />
+//       )}
+//     </Box>
+//   )
+// }
 
 const AddCardioForm = ({ onClose, day }: { onClose(): void; day: Date }) => {
   const client = useAppSelector(selectClient) as Client
@@ -327,7 +327,7 @@ const AddCardioForm = ({ onClose, day }: { onClose(): void; day: Date }) => {
     date: day.toISOString(),
     title: '',
     entityId: '',
-    completed: false,
+    completed: { value: false, date: null },
   }
   const [isLoading, setIsLoading] = useState(false)
 

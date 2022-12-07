@@ -16,7 +16,7 @@ import {
   Select,
   MenuItem,
 } from '@mui/material'
-import { getExerciseImgUrl } from '../../../../../utils/utils'
+import { getExerciseImgUrl } from '../../../../../utils'
 import WorkoutExercisesTableToolbar from './WorkoutExercisesTableToolbar'
 import WorkoutExercisesTableHead from '../WorkoutExercisesTableHead'
 import { restDropdownItems } from './data'

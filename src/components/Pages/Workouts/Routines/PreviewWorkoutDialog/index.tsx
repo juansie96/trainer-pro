@@ -14,7 +14,7 @@ import React, { useEffect, useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { exercisesRef, getDocumentRef } from '../../../../../firebase/fbRefs'
 import { Workout } from '../../../../../types/workout'
-import { getExerciseImgUrl } from '../../../../../utils/utils'
+import { getExerciseImgUrl } from '../../../../../utils'
 import EditWorkoutDialog from '../EditWorkoutDialog'
 import { restDropdownItems } from '../WorkoutExercisesTable/data'
 import { IProps } from './types'
@@ -25,7 +25,10 @@ import CloseIcon from '@mui/icons-material/Close'
 import { selectClient, tasksChanged } from '../../../Client/Client.slice'
 import { useAppDispatch, useAppSelector } from '../../../../../state/storeHooks'
 import Swal from 'sweetalert2'
+import TaskAltIcon from '@mui/icons-material/TaskAlt'
+import CheckIcon from '@mui/icons-material/Check'
 import type { Client } from '../../../../../types/client'
+import { WorkoutTask } from '../../../../../types/task'
 
 const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
   const client = useAppSelector(selectClient) as Client
@@ -58,6 +61,19 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
       dispatch(tasksChanged(newTasks))
       Swal.fire('¡Éxito!', 'El evento se eliminó correctamente', 'success')
       onClose()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleCompleteEvent = async () => {
+    const docRef = getDocumentRef('clients', client.id as string)
+    const newTasks = client.tasks.map((t) =>
+      t.id === eventData?.id ? { ...t, completed: { value: true, date: new Date() } } : t,
+    )
+    try {
+      await updateDoc<Client>(docRef, { tasks: newTasks })
+      dispatch(tasksChanged(newTasks))
     } catch (error) {
       console.error(error)
     }
@@ -143,13 +159,22 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
             <EditIcon color='primary' fontSize='large' sx={{ cursor: 'pointer' }} />
           </Tooltip>
         </Stack>
-        <Box display='flex' alignItems='center'>
-          {data ? (
+        <Stack direction='row' spacing={2} alignItems='center'>
+          {!eventData ? (
             <Button onClick={handleClose} variant='contained'>
               Aceptar
             </Button>
           ) : (
             <>
+              <Button
+                variant='contained'
+                sx={{ height: 38 }}
+                onClick={() => (eventData.completed.value ? null : handleCompleteEvent())}
+                color={eventData.completed.value ? 'success' : 'primary'}
+              >
+                <CheckIcon sx={{ mr: 1 }} />
+                {eventData.completed.value ? 'Tarea completada' : 'Completar tarea'}
+              </Button>
               <Button
                 variant='contained'
                 color='error'
@@ -160,7 +185,7 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
                   fontSize='large'
                   sx={{ cursor: 'pointer', color: 'white', mr: 1 }}
                 />
-                Borrar evento
+                Borrar tarea
               </Button>
               {/* {showDateInput ? (
                 <Button variant='contained' color='primary' sx={{ height: 38, ml: 2 }}>
@@ -182,7 +207,7 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
               )} */}
             </>
           )}
-        </Box>
+        </Stack>
       </DialogActions>
       {editDialogOpen && (
         <EditWorkoutDialog

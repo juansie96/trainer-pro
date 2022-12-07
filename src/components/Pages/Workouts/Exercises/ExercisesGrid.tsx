@@ -1,6 +1,6 @@
 import { Box, Card, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import { getExerciseImgUrl } from '../../../../utils/utils'
+import { getExerciseImgUrl } from '../../../../utils'
 import EditExerciseDialog from './EditExerciseDialog'
 import { Exercise } from './Exercises'
 import styles from './Exercises.module.css'

@@ -1,8 +1,9 @@
 import { Card, CircularProgress, Divider, Stack, Typography } from '@mui/material'
 import { ReactNode } from 'react'
 import colors from '../../../theme/colors'
-import PersonIcon from '@mui/icons-material/Person'
-import VisibilityIcon from '@mui/icons-material/Visibility'
+import { ClientTask } from './types'
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
+import AccessTimeIcon from '@mui/icons-material/AccessTime'
 
 export const HomeContainer = ({ children }: { children: ReactNode }) => (
   <Stack p={3} flexWrap='wrap' spacing={5}>
@@ -22,13 +23,12 @@ export const HomeCard = ({ children }: { children: ReactNode }) => (
     sx={{
       height: 1,
       width: 700,
-      p: 2,
       boxSizing: 'border-box',
       overflow: 'scroll',
       overflowX: 'hidden',
     }}
   >
-    <Stack spacing={1} divider={<Divider orientation='horizontal' flexItem />} position='relative'>
+    <Stack divider={<Divider orientation='horizontal' flexItem />} position='relative'>
       {children}
     </Stack>
   </Card>
@@ -58,12 +58,62 @@ export const EmptyCardMessage = ({ msg }: { msg: string }) => (
 )
 
 export const ClientRow = ({ fullname, onClick }: { fullname: string; onClick(): void }) => (
-  <Stack direction='row' alignItems='center' spacing={1.5}>
-    <PersonIcon fontSize='large' color='action' />
+  <Stack
+    direction='row'
+    alignItems='center'
+    spacing={1.5}
+    py={1}
+    px={2}
+    sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#ddd' } }}
+    onClick={onClick}
+  >
+    <img src='images/person-icon.png' height={38} width={38} />
     <Typography fontWeight={700} color={colors.textGray} letterSpacing={0.3} variant='button'>
       {fullname}
     </Typography>
-    <VisibilityIcon color='action' onClick={onClick} sx={{ ml: 1, cursor: 'pointer' }} />
+  </Stack>
+)
+
+export const ClientTaskRow = ({ data, onClick }: { data: ClientTask; onClick(): void }) => (
+  <Stack
+    direction='row'
+    alignItems='center'
+    spacing={1.5}
+    sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#ddd' } }}
+    py={1}
+    px={2}
+    onClick={onClick}
+  >
+    <img src='images/person-icon.png' height={38} width={38} />
+
+    <Stack spacing={0.5} flex={1}>
+      <Stack direction='row' alignItems='center' justifyContent='space-between' width={1}>
+        <Typography
+          fontWeight={700}
+          color={colors.textGray}
+          letterSpacing={0.3}
+          variant='button'
+          fontSize={14}
+        >
+          {data.clientName}
+        </Typography>
+        <Stack direction='row' color={colors.textGray} spacing={1} alignItems='center'>
+          <AccessTimeIcon fontSize='small' />
+          <Typography fontStyle='italic' fontWeight={700} fontSize={12}>
+            viernes 11 de ago, 2023 - 18:15
+          </Typography>
+        </Stack>
+      </Stack>
+      <Stack direction='row' alignItems='center' spacing={1} color={colors.textGray}>
+        <Typography fontSize={14}>completó </Typography>{' '}
+        <Stack direction='row' spacing={0.5}>
+          <FitnessCenterIcon color='primary' fontSize='small' />
+          <Typography fontStyle='italic' fontWeight={700} fontSize={14} color='primary'>
+            {data.title}
+          </Typography>
+        </Stack>
+      </Stack>
+    </Stack>
   </Stack>
 )
 

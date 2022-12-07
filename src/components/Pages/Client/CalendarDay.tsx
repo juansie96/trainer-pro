@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import { translateDayToSpanish } from '../../../utils/utils'
+import { translateDayToSpanish } from '../../../utils'
 import dayjs from 'dayjs'
 import CircleIcon from '@mui/icons-material/Circle'
 import { useSelector } from 'react-redux'
@@ -22,7 +22,7 @@ const CalendarDay: React.FC<CalendarDayProps> = ({ day, rowIdx, colIdx, onDayCli
 
   if (!client) return null
 
-  const clientEvents = client.tasks.filter(
+  const clientEvents = client.tasks?.filter(
     (t) => dayjs(t.date).format('DD/MM/YYYY') === dayjs(day).format('DD/MM/YYYY'),
   )
 
@@ -40,9 +40,7 @@ const CalendarDay: React.FC<CalendarDayProps> = ({ day, rowIdx, colIdx, onDayCli
       sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#e7e7e7' } }}
     >
       <CalendarDayHeader day={day} rowIdx={rowIdx} />
-      {clientEvents.map((e, i) => (
-        <DayEvent event={e} key={e.date + i} />
-      ))}
+      {clientEvents && clientEvents.map((e, i) => <DayEvent event={e} key={e.date + i} />)}
     </Box>
   )
 }

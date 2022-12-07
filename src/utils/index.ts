@@ -103,3 +103,10 @@ export const getMonthName = (month: number) => {
 
   return months[month]
 }
+
+// /**
+//  * @param {string} key - The key name of the Date field you want to base the sorting.
+//  */
+// export function sortNewestToOldest<T>(arr: T[], key: keyof T) {
+//   return arr.sort((a, b) => b[key]?.localeCompare(a[key]))
+// }

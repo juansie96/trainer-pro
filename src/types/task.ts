@@ -2,7 +2,10 @@ interface Task {
   id: string
   date: string
   title: string
-  completed: boolean
+  completed: {
+    value: boolean
+    date: Date | null
+  }
   entityId: string
 }
 
@@ -21,5 +24,4 @@ export interface CardioTask extends Task {
 }
 
 export type GeneralTask = WorkoutTask | MealPlanTask | CardioTask
-
 export type CardioTypes = 'correr' | 'caminar' | 'ciclismo' | 'elíptico' | 'nadar' | 'otro' | ''

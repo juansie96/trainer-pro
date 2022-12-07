@@ -45,7 +45,7 @@ const AssignDialog = ({ onClose, data }: IProps) => {
     }
   }, [clients])
 
-  if (loading) return null // loading sometime in the future
+  if (loading) return null // ToDo
 
   let filteredUnassignedClients = unassignedClients?.slice(0)
 
@@ -67,7 +67,7 @@ const AssignDialog = ({ onClose, data }: IProps) => {
       title: data.data.name,
       type: data.type === 'workout' ? 'workout' : 'mealPlan',
       entityId: data.data.id as string,
-      completed: false,
+      completed: { value: false, date: null },
     }
 
     const promises = selectedClients.map((c) =>

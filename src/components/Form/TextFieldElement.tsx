@@ -49,6 +49,7 @@ export default function TextFieldElement({
           type={type}
           error={invalid}
           size={size}
+          variant='outlined'
           helperText={
             error
               ? typeof parseError === 'function'

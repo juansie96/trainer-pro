@@ -24,7 +24,7 @@ import { auth, firestoreDB } from '../../../firebase/firebase'
 import { addDoc, doc, getDoc, WithFieldValue } from 'firebase/firestore'
 import { clientsRef, trainerConverter } from '../../../firebase/fbRefs'
 import type { Client } from '../../../types/client'
-import { mapFirebaseErrorCodeToMsg } from '../../../utils/utils'
+import { mapFirebaseErrorCodeToMsg } from '../../../utils'
 import { CustomSnackbar } from '../../UI/CustomSnackbar'
 import { useParams } from 'react-router-dom'
 

@@ -1,7 +1,7 @@
 import { Card, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useState } from 'react'
-import { getMonth, getMonthName } from '../../../utils/utils'
+import { getMonth, getMonthName } from '../../../utils'
 import AddNewTaskDialog from './AddNewTaskDialog'
 import CalendarDay from './CalendarDay'
 

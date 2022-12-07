@@ -2,7 +2,7 @@ import { Card, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import dayjs from 'dayjs'
 import { useAppSelector } from '../../../state/storeHooks'
-import { CLIENT_OBJECTIVES, TClientObjectives } from '../../../utils/utils'
+import { CLIENT_OBJECTIVES, TClientObjectives } from '../../../utils'
 import { selectClient } from './Client.slice'
 
 const ClientInformation = () => {

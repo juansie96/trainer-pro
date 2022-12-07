@@ -15,7 +15,8 @@ const clientSlice = createSlice({
       return action.payload
     },
     taskAdded(state, action: PayloadAction<GeneralTask>) {
-      return state ? { ...state, tasks: [...state.tasks, action.payload] } : null
+      const newTasks = state.tasks ? [...state.tasks, action.payload] : [action.payload]
+      return state ? { ...state, tasks: newTasks } : null
     },
     cardioTaskModified(state, action: PayloadAction<CardioTask>) {
       return state
