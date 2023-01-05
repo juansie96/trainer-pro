@@ -4,7 +4,7 @@ interface Task {
   title: string
   completed: {
     value: boolean
-    date: Date | null
+    date: string | null
   }
   entityId: string
 }

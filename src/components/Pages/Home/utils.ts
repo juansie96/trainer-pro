@@ -1,4 +1,5 @@
 import { Clients } from '../../../types/client'
+import { getDayName, getFormattedHour, getMonthName } from '../../../utils'
 import { ClientTask } from './types'
 
 export const getClientsWithoutTasks = (clients: Clients) => {
@@ -10,19 +11,21 @@ export const getClientsWithoutTasks = (clients: Clients) => {
 
 export const getRecentlyCompletedTasks = (clients: Clients): ClientTask[] => {
   let tasks: ClientTask[] = []
+
   clients.forEach((c) => {
     if (!c.tasks) return
     tasks = [
       ...tasks,
       ...c.tasks
-        .filter((t) => t.completed)
+        .filter((t) => t.completed.value && daysPassedSince(new Date(t.completed.date)) < 60)
         .map((t) => {
           return { ...t, clientName: c.name + ' ' + c.lastname, clientId: c.id } as ClientTask
         }),
     ]
   })
-  console.log('tasks', tasks)
-  return tasks.sort((a, b) => b.completed.date.getTime() - a.completed.date.getTime())
+  return tasks.sort((a, b) =>
+    a.completed.date < b.completed.date ? -1 : a.completed.date > b.completed.date ? 1 : 0,
+  )
 }
 
 // In the last 7 days
@@ -37,4 +40,17 @@ export const getClientsWithNoCompletedTasks = (clients: Clients) => {
     })
     return hasNonCompletedTasks
   })
+}
+
+export const getFormattedDate = (dateISO: string) => {
+  const date = new Date(dateISO)
+  const dayName = getDayName(date)
+  const monthDay = date.getDate()
+  const monthName = getMonthName(date)
+  const hour = getFormattedHour(date)
+  return `${dayName}, ${monthDay} ${monthName.substring(0, 3)} - ${hour}`
+}
+
+const daysPassedSince = (date: Date) => {
+  return Math.round((new Date().getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
 }

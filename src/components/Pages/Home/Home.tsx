@@ -27,7 +27,7 @@ const Home = () => {
   const [clientsWithNoCompletedTasks, setClientsWithNoCompletedTasks] = useState<Clients>([]) // In the last 7 days
   const [recentlyCompletedTasks, setRecentlyCompletedTasks] = useState<ClientTask[]>()
 
-  console.log('recentlyCompletedTasks', recentlyCompletedTasks)
+  // console.log('recentlyCompletedTasks', recentlyCompletedTasks)
 
   useEffect(() => {
     if (clients) {
@@ -47,38 +47,7 @@ const Home = () => {
           fallbackMsg='No se encontraron clientes sin próximas tareas'
         />
         <HomeSection
-          tasks={[
-            {
-              title: 'Full Body Workout Upper A',
-              clientName: 'Juan Manuel Sierra',
-              clientId: '',
-              type: 'workout',
-              id: '1',
-              date: '',
-              completed: { value: true, date: new Date() },
-              entityId: '',
-            },
-            {
-              title: 'Full Body Workout Upper A',
-              clientName: 'Juan Manuel Sierra',
-              clientId: '',
-              type: 'workout',
-              id: '2',
-              date: '',
-              completed: { value: true, date: new Date() },
-              entityId: '',
-            },
-            {
-              title: 'Full Body Workout Upper A',
-              clientName: 'Juan Manuel Sierra',
-              clientId: '',
-              type: 'workout',
-              id: '3',
-              date: '',
-              completed: { value: true, date: new Date() },
-              entityId: '',
-            },
-          ]}
+          tasks={recentlyCompletedTasks}
           loading={loading}
           title='Tareas completadas recientemente'
           fallbackMsg='No hubo tareas completadas en la última semana'

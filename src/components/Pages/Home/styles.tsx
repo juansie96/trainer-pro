@@ -4,6 +4,7 @@ import colors from '../../../theme/colors'
 import { ClientTask } from './types'
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
+import { getFormattedDate } from './utils'
 
 export const HomeContainer = ({ children }: { children: ReactNode }) => (
   <Stack p={3} flexWrap='wrap' spacing={5}>
@@ -52,7 +53,7 @@ export const HomeCardSection = ({
 )
 
 export const EmptyCardMessage = ({ msg }: { msg: string }) => (
-  <Typography fontStyle='italic' color={colors.textGraySecondary}>
+  <Typography fontStyle='italic' color={colors.textGraySecondary} p={2}>
     {msg}
   </Typography>
 )
@@ -100,7 +101,7 @@ export const ClientTaskRow = ({ data, onClick }: { data: ClientTask; onClick(): 
         <Stack direction='row' color={colors.textGray} spacing={1} alignItems='center'>
           <AccessTimeIcon fontSize='small' />
           <Typography fontStyle='italic' fontWeight={700} fontSize={12}>
-            viernes 11 de ago, 2023 - 18:15
+            {getFormattedDate(data.completed.date)}
           </Typography>
         </Stack>
       </Stack>

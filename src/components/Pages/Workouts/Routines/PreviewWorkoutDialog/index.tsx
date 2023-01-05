@@ -69,7 +69,9 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
   const handleCompleteEvent = async () => {
     const docRef = getDocumentRef('clients', client.id as string)
     const newTasks = client.tasks.map((t) =>
-      t.id === eventData?.id ? { ...t, completed: { value: true, date: new Date() } } : t,
+      t.id === eventData?.id
+        ? { ...t, completed: { value: true, date: new Date().toISOString() } }
+        : t,
     )
     try {
       await updateDoc<Client>(docRef, { tasks: newTasks })

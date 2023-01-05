@@ -1,7 +1,7 @@
 import { Card, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useState } from 'react'
-import { getMonth, getMonthName } from '../../../utils'
+import { capitalize, getMonth, getMonthName } from '../../../utils'
 import AddNewTaskDialog from './AddNewTaskDialog'
 import CalendarDay from './CalendarDay'
 
@@ -23,7 +23,7 @@ const Calendar = () => {
       className='calendar-wrapper'
     >
       <Typography variant='h4' textAlign='center' sx={{ my: 1.5 }}>
-        {getMonthName(new Date().getMonth())} 2022
+        {capitalize(getMonthName(new Date()))} 2022
       </Typography>
       <Box
         className='calendar-grid'

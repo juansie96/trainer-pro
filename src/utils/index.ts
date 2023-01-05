@@ -85,28 +85,21 @@ export const CLIENT_OBJECTIVES = {
   gain: { short: 'Volumen y fuerza', long: 'Ganar músculo, volumen y fuerza' },
 }
 
-export const getMonthName = (month: number) => {
-  const months = [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre',
-  ]
-
-  return months[month]
+export const getDayName = (date: Date) => {
+  return date.toLocaleDateString('default', { weekday: 'long' })
 }
 
-// /**
-//  * @param {string} key - The key name of the Date field you want to base the sorting.
-//  */
-// export function sortNewestToOldest<T>(arr: T[], key: keyof T) {
-//   return arr.sort((a, b) => b[key]?.localeCompare(a[key]))
-// }
+export const getMonthName = (date: Date) => {
+  return date.toLocaleString('default', { month: 'long' })
+}
+
+export const getFormattedHour = (date: Date) => {
+  const hours = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()
+  const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
+  return `${hours}:${minutes}`
+}
+
+export const capitalize = (string: string) => {
+  if (string.length < 1) return string
+  return string[0].toUpperCase() + string.substring(1)
+}
