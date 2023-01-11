@@ -1,20 +1,4 @@
-import dayjs from 'dayjs'
 import { Exercise } from '../components/Pages/Workouts/Exercises/Exercises'
-
-export const getMonth = (month = dayjs().month()) => {
-  const year = dayjs().year()
-  const firstDayOfTheMonth = dayjs(new Date(year, month, 1)).day()
-  let currCalendarDay = 0 - firstDayOfTheMonth
-
-  const daysMatrix = new Array(5).fill(null).map(() =>
-    new Array(7).fill(null).map(() => {
-      currCalendarDay++
-      return dayjs(new Date(year, month, currCalendarDay))
-    }),
-  )
-
-  return daysMatrix
-}
 
 export const translateDayToSpanish = (day: string) => {
   switch (day) {
@@ -83,20 +67,6 @@ export const CLIENT_OBJECTIVES = {
   loss: { short: 'Definición', long: 'Perder peso, quemar grasa y definir músculo' },
   fit: { short: 'Ponerse en forma', long: 'Ponerme en forma de manera balanceada' },
   gain: { short: 'Volumen y fuerza', long: 'Ganar músculo, volumen y fuerza' },
-}
-
-export const getDayName = (date: Date) => {
-  return date.toLocaleDateString('default', { weekday: 'long' })
-}
-
-export const getMonthName = (date: Date) => {
-  return date.toLocaleString('default', { month: 'long' })
-}
-
-export const getFormattedHour = (date: Date) => {
-  const hours = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()
-  const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
-  return `${hours}:${minutes}`
 }
 
 export const capitalize = (string: string) => {

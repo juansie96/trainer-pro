@@ -25,10 +25,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import { selectClient, tasksChanged } from '../../../Client/Client.slice'
 import { useAppDispatch, useAppSelector } from '../../../../../state/storeHooks'
 import Swal from 'sweetalert2'
-import TaskAltIcon from '@mui/icons-material/TaskAlt'
 import CheckIcon from '@mui/icons-material/Check'
 import type { Client } from '../../../../../types/client'
-import { WorkoutTask } from '../../../../../types/task'
 
 const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
   const client = useAppSelector(selectClient) as Client

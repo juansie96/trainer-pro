@@ -1,16 +1,28 @@
-import { Typography } from '@mui/material'
+import { Box, styled, Typography } from '@mui/material'
 import EventNoteIcon from '@mui/icons-material/EventNote'
 import InfoIcon from '@mui/icons-material/Info'
 import RestaurantIcon from '@mui/icons-material/Restaurant'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import Sidebar, { MenuItem } from '../../Sidebar'
+import { useAppSelector } from '../../../state/storeHooks'
+import { selectClient } from './Client.slice'
+import PersonIcon from '@mui/icons-material/Person'
 
 const validSections = ['information', 'nutrition']
+
+const ClientInfo = styled(Box)(() => ({
+  position: 'absolute',
+  bottom: 15,
+  left: 5,
+  width: 90,
+}))
 
 const ClientSidebar = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const { clientId } = useParams()
+  const client = useAppSelector(selectClient)
+  console.log('client', client)
 
   const section = location.pathname.split('/').pop()
 
@@ -37,6 +49,12 @@ const ClientSidebar = () => {
         <RestaurantIcon sx={{ p: 1 }} />
         <Typography>Nutrición</Typography>
       </MenuItem>
+      <ClientInfo>
+        <PersonIcon />
+        <Typography fontStyle='italic' fontSize={12}>
+          {client?.name} {client?.lastname}
+        </Typography>
+      </ClientInfo>
     </Sidebar>
   )
 }

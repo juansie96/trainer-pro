@@ -6,4 +6,5 @@ export interface IProps {
   onSubmit?(mealPlan: MealPlan): void
   mealPlan?: MealPlan
   fromAddTask?: boolean
+  clientId?: string
 }

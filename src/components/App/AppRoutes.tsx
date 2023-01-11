@@ -11,7 +11,6 @@ import Client from '../Pages/Client/Client'
 import ClientPlanification from '../Pages/Client/ClientPlanification'
 import ClientInformation from '../Pages/Client/ClientInformation'
 import { useContext } from 'react'
-import ClientNutrition from '../Pages/Client/ClientNutrition'
 import Routines from '../Pages/Workouts/Routines/Routines'
 import Exercises from '../Pages/Workouts/Exercises/Exercises'
 import ClientActivation from '../Pages/ClientActivation'
@@ -19,6 +18,7 @@ import EmailVerification from '../Pages/EmailVerification'
 import ResetPassword from '../ResetPassword'
 import MealPlans from '../Pages/Nutrition/MealPlans'
 import Meals from '../Pages/Nutrition/Foods'
+import ClientNutrition from '../Pages/Client/ClientNutrition'
 
 const AppRoutes = () => {
   const user = useContext(UserContext)?.user

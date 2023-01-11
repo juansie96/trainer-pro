@@ -10,6 +10,7 @@ export interface MealPlan {
   trainerId: string
   kcal: number
   createdAt?: Timestamp
+  clientId?: string
 }
 
 export type Meals = Array<Meal>

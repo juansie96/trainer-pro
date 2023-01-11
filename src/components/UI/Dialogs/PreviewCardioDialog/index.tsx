@@ -30,6 +30,7 @@ import { firestoreDB } from '../../../../firebase/firebase'
 import type { Client } from '../../../../types/client'
 import type { IProps } from './types'
 import { CardioTask } from '../../../../types/task'
+import CheckIcon from '@mui/icons-material/Check'
 
 const PreviewCardioDialog = ({ onClose, data }: IProps) => {
   const [status, setStatus] = useState<'view' | 'edit'>('view')
@@ -80,6 +81,19 @@ const PreviewCardioDialog = ({ onClose, data }: IProps) => {
     }
   }
 
+  const handleCompleteEvent = async () => {
+    const docRef = getDocumentRef('clients', client.id as string)
+    const newTasks = client.tasks.map((t) =>
+      t.id === data?.id ? { ...t, completed: { value: true, date: new Date().toISOString() } } : t,
+    )
+    try {
+      await updateDoc<Client>(docRef, { tasks: newTasks })
+      dispatch(tasksChanged(newTasks))
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <div>
       <Dialog open onClose={handleClose} maxWidth='sm' fullWidth>
@@ -121,19 +135,30 @@ const PreviewCardioDialog = ({ onClose, data }: IProps) => {
                 <Tooltip title='editar rutina' onClick={() => setStatus('edit')}>
                   <EditIcon color='primary' fontSize='large' sx={{ cursor: 'pointer' }} />
                 </Tooltip>
-                <Button
-                  variant='contained'
-                  color='error'
-                  sx={{ height: 38 }}
-                  onClick={handleDeleteEvent}
-                  disabled={isDeleting}
-                >
-                  <DeleteForeverIcon
-                    fontSize='large'
-                    sx={{ cursor: 'pointer', color: 'white', mr: 1 }}
-                  />
-                  Borrar evento
-                </Button>
+                <Stack direction='row' spacing={2} alignItems='center'>
+                  <Button
+                    variant='contained'
+                    sx={{ height: 38 }}
+                    onClick={() => (data.completed.value ? null : handleCompleteEvent())}
+                    color={data.completed.value ? 'success' : 'primary'}
+                  >
+                    <CheckIcon sx={{ mr: 1 }} />
+                    {data.completed.value ? 'Tarea completada' : 'Completar tarea'}
+                  </Button>
+                  <Button
+                    variant='contained'
+                    color='error'
+                    sx={{ height: 38 }}
+                    onClick={handleDeleteEvent}
+                    disabled={isDeleting}
+                  >
+                    <DeleteForeverIcon
+                      fontSize='large'
+                      sx={{ cursor: 'pointer', color: 'white', mr: 1 }}
+                    />
+                    Borrar tarea
+                  </Button>
+                </Stack>
               </Stack>
             ) : (
               <>
