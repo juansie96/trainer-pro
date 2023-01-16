@@ -15,8 +15,6 @@ const ClientNutrition = () => {
   const client = useAppSelector(selectClient)
   const [mealPlans, loading] = useCollectionData(getMealPlansByClientIdRef(client.id))
 
-  console.log('mealPlans', mealPlans)
-
   const [status, setStatus] = useState<'initial' | 'assigning'>('initial')
 
   const [addNewPlanDialogOpen, setAddNewplanDialogOpen] = useState<boolean>(false)
@@ -66,6 +64,7 @@ const ClientNutrition = () => {
         <AssignMealPlanContent
           onBackClick={() => setStatus('initial')}
           onAddNewPlan={openAddNewPlanDialog}
+          onAssignMealPlan={() => setStatus('initial')}
         />
       )}
       {addNewPlanDialogOpen && (
@@ -82,9 +81,11 @@ const ClientNutrition = () => {
 const AssignMealPlanContent = ({
   onBackClick,
   onAddNewPlan,
+  onAssignMealPlan,
 }: {
   onBackClick(): void
   onAddNewPlan(): void
+  onAssignMealPlan(): void
 }) => (
   <div>
     <Stack direction='row' alignItems={'center'} justifyContent='space-between'>
@@ -96,7 +97,7 @@ const AssignMealPlanContent = ({
         Añadir plan desde cero
       </Button>
     </Stack>
-    <MealPlansLayout isClientAssignation={true} />
+    <MealPlansLayout isClientAssignation={true} onAssignMealPlan={onAssignMealPlan} />
   </div>
 )
 

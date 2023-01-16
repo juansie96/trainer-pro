@@ -6,9 +6,8 @@ import { store } from './state/store'
 import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
 import { BrowserRouter } from 'react-router-dom'
-import { ThemeProvider } from '@mui/material'
 import { theme } from './theme/theme'
-
+import { ThemeProvider } from '@mui/material'
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>

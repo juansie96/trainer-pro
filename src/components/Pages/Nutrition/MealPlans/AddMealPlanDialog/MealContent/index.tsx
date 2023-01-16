@@ -1,7 +1,7 @@
 import { DeleteForever } from '@mui/icons-material'
 import { Button, Typography } from '@mui/material'
 import { useState } from 'react'
-import { useFieldArray, useFormContext } from 'react-hook-form'
+import { FieldValues, useFieldArray, useFormContext, UseFormReturn } from 'react-hook-form'
 import { MdOutlineExpandLess, MdOutlineExpandMore } from 'react-icons/md'
 import { FieldArrayFormProvider } from '../../../../../../contexts/FieldArrayFormProvider'
 import { Food, MealPlan } from '../../../../../../types/meals'
@@ -43,7 +43,7 @@ const MealContent = ({ onDeleteMeal, idx }: IProps) => {
   }
 
   return (
-    <FieldArrayFormProvider {...fc} {...fieldArrayMethods}>
+    <FieldArrayFormProvider {...(fc as any)} {...fieldArrayMethods}>
       <Container>
         <DefaultContent>
           <DeleteForever

@@ -37,18 +37,21 @@ import { Client } from '../../../../../types/client'
 import { firestoreDB } from '../../../../../firebase/firebase'
 import { selectClient, tasksChanged } from '../../../Client/Client.slice'
 import type { IProps, MealPlanDialogState } from './types'
+import { useLocation } from 'react-router-dom'
 
-const MealPlansTable = ({ mealPlans, isClientAssignation }: IProps) => {
+const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
   const client = useAppSelector(selectClient)
   const dispatch = useAppDispatch()
   const [page, setPage] = useState(0)
+  const location = useLocation()
 
-  console.log('isClientAssignation', isClientAssignation)
+  console.log('location', location)
 
   const initialDialogState = {
     open: false,
     mealPlanId: '',
+    clientId: null,
   }
 
   const [previewMealPlanDialog, setPreviewMealPlanDialog] =
@@ -68,6 +71,7 @@ const MealPlansTable = ({ mealPlans, isClientAssignation }: IProps) => {
 
   const closeEditMealPlanDialog = () => {
     setEditMealPlanDialog(initialDialogState)
+    onAssignMealPlan ? onAssignMealPlan() : null
   }
 
   const openAssignDialog = (mealPlanId: string) => {
@@ -125,6 +129,10 @@ const MealPlansTable = ({ mealPlans, isClientAssignation }: IProps) => {
     }
   }
 
+  const handleUseTemplateClick = (mealPlanId: string) => {
+    setEditMealPlanDialog({ open: true, mealPlanId, clientId: client.id })
+  }
+
   return (
     <>
       <TableContainer component={Paper} sx={{ width: 1, mx: 'auto', my: 3 }}>
@@ -156,18 +164,26 @@ const MealPlansTable = ({ mealPlans, isClientAssignation }: IProps) => {
                 </TableCell>
                 <TableCell>
                   {isClientAssignation ? (
-                    <Button size='small' variant='contained'>
+                    <Button
+                      size='small'
+                      variant='contained'
+                      onClick={() => handleUseTemplateClick(mealPlan.id)}
+                    >
                       Usar plantilla
                     </Button>
                   ) : (
                     <Stack direction='row' spacing={1.5}>
-                      <Tooltip title='asignar plan'>
-                        <PersonAddAlt1Icon
-                          onClick={() => openAssignDialog(mealPlan.id as string)}
-                          color='success'
-                          sx={{ cursor: 'pointer' }}
-                        />
-                      </Tooltip>
+                      {!location.pathname.includes('client') ? (
+                        <Tooltip title='asignar plan'>
+                          <PersonAddAlt1Icon
+                            onClick={() => openAssignDialog(mealPlan.id as string)}
+                            color='success'
+                            sx={{ cursor: 'pointer' }}
+                          />
+                        </Tooltip>
+                      ) : (
+                        <>Agendar</>
+                      )}
                       <Tooltip title='visualizar plan'>
                         <VisibilityIcon
                           color='action'
@@ -215,6 +231,7 @@ const MealPlansTable = ({ mealPlans, isClientAssignation }: IProps) => {
           mealPlan={mealPlans.find((w) => w.id === editMealPlanDialog.mealPlanId) as MealPlan}
           onClose={closeEditMealPlanDialog}
           open={editMealPlanDialog.open}
+          clientId={editMealPlanDialog.clientId}
         />
       )}
       {confirmDialog.open && (

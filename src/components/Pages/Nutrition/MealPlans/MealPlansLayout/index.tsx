@@ -8,7 +8,13 @@ import MealPlansTable from '../MealPlansTable'
 import { useAppSelector } from '../../../../../state/storeHooks'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 
-const MealPlansLayout = ({ isClientAssignation }: { isClientAssignation?: boolean }) => {
+const MealPlansLayout = ({
+  isClientAssignation,
+  onAssignMealPlan,
+}: {
+  isClientAssignation?: boolean
+  onAssignMealPlan?(): void
+}) => {
   const trainer = useAppSelector(selectTrainer)
   const [mealPlans] = useCollectionData(getMealPlansByTrainerIdRef(trainer.id as string))
   const [query, setQuery] = useState('')
@@ -30,7 +36,11 @@ const MealPlansLayout = ({ isClientAssignation }: { isClientAssignation?: boolea
       </Stack>
 
       {filteredMealPlans && filteredMealPlans.length > 0 ? (
-        <MealPlansTable mealPlans={filteredMealPlans} isClientAssignation={isClientAssignation} />
+        <MealPlansTable
+          mealPlans={filteredMealPlans}
+          isClientAssignation={isClientAssignation}
+          onAssignMealPlan={onAssignMealPlan}
+        />
       ) : (
         <CenteredLayout>
           <Typography variant='h5' my={3}>

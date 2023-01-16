@@ -96,10 +96,30 @@ const AddMealPlanDialog = ({
 
   const handleMealPlanUpdate = async (data: MealPlan) => {
     const newMealPlan = changeGramsToFloat({ ...data, createdAt: mealPlan.createdAt })
-    await updateDoc(getDocumentRef('mealPlans', newMealPlan.id), {
+    const finalData = {
       ...newMealPlan,
       kcal: parseFloat(getTotalNV('kcal' as NutritionalValueKeys, data.meals).toFixed(2)),
-    })
+      clientId: clientId ? clientId : '',
+    }
+
+    if (clientId) {
+      const promises = []
+      const { id, ...rest } = finalData
+      const realFinalData = {
+        ...rest,
+        createdAt: Timestamp.fromDate(new Date()),
+      }
+
+      promises.push(addDoc(mealPlansRef, realFinalData))
+
+      if (saveOnLibrary) {
+        promises.push(addDoc(mealPlansRef, { ...realFinalData, clientId: '' }))
+      }
+
+      await Promise.all(promises)
+    } else {
+      await updateDoc(getDocumentRef('mealPlans', newMealPlan.id), finalData)
+    }
 
     if (onEditSuccess) {
       onEditSuccess(data as MealPlan)
@@ -109,15 +129,35 @@ const AddMealPlanDialog = ({
   const addMeal = () => {
     const mealNumber = fields.length + 1
     const name = `Comida ${mealNumber}`
-    append({ name })
+    append({ name, foods: [] })
   }
 
   const deleteMeal = (idx: number) => remove(idx)
 
+  const getSubmitButtonName = () => {
+    if (mealPlan) {
+      if (clientId) {
+        return isAdding ? 'Guardando' : 'Guardar'
+      } else {
+        return isAdding ? 'Editando' : 'Editar'
+      }
+    } else {
+      return isAdding ? 'Creando' : 'Crear'
+    }
+  }
+
+  const getDialogTitle = () => {
+    if (mealPlan) {
+      return clientId ? 'Asignar plan nutricional' : 'Editar plan nutricional'
+    } else {
+      return 'Nuevo plan nutricional'
+    }
+  }
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth='lg' fullWidth>
       <FormContainer formContext={formContext} onSuccess={onSubmit}>
-        <StyledDialogHeader title='Nuevo plan nutricional' />
+        <StyledDialogHeader title={getDialogTitle()} />
         <DialogContent sx={{ py: 3 }}>
           <Stack spacing={3}>
             <TextFieldElement name='name' label='Nombre del plan' required />
@@ -166,7 +206,7 @@ const AddMealPlanDialog = ({
           <div>
             <Button onClick={onClose}>Cancelar</Button>
             <Button type='submit' variant='contained' disabled={isAdding}>
-              {mealPlan ? (isAdding ? 'Editando' : 'Editar') : isAdding ? 'Creando' : 'Crear'}
+              {getSubmitButtonName()}
             </Button>
           </div>
         </StyledDialogActions>
