@@ -1,4 +1,4 @@
-import { Button, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material'
+import { IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
@@ -8,9 +8,9 @@ import MealPlansTable from '../MealPlansTable'
 import { useAppSelector } from '../../../../../state/storeHooks'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 
-const MealPlansLayout = ({ openAddMealPlanDialog }: { openAddMealPlanDialog(): void }) => {
+const MealPlansLayout = ({ isClientAssignation }: { isClientAssignation?: boolean }) => {
   const trainer = useAppSelector(selectTrainer)
-  const [mealPlans, loading] = useCollectionData(getMealPlansByTrainerIdRef(trainer.id as string))
+  const [mealPlans] = useCollectionData(getMealPlansByTrainerIdRef(trainer.id as string))
   const [query, setQuery] = useState('')
 
   let filteredMealPlans = mealPlans?.slice(0)
@@ -21,19 +21,16 @@ const MealPlansLayout = ({ openAddMealPlanDialog }: { openAddMealPlanDialog(): v
     )
   }
   return (
-    <Stack mt={5} spacing={1.5}>
+    <Stack mt={2} spacing={1.5}>
       <Stack direction='row' spacing={2}>
-        <SearchClientInput
+        <SearchMealInput
           value={query}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
         />
-        <Button variant='contained' disabled={loading} onClick={openAddMealPlanDialog}>
-          Agregar plan
-        </Button>
       </Stack>
 
       {filteredMealPlans && filteredMealPlans.length > 0 ? (
-        <MealPlansTable mealPlans={filteredMealPlans} />
+        <MealPlansTable mealPlans={filteredMealPlans} isClientAssignation={isClientAssignation} />
       ) : (
         <CenteredLayout>
           <Typography variant='h5' my={3}>
@@ -45,7 +42,7 @@ const MealPlansLayout = ({ openAddMealPlanDialog }: { openAddMealPlanDialog(): v
   )
 }
 
-const SearchClientInput = ({
+const SearchMealInput = ({
   value,
   onChange,
 }: {

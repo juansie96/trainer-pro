@@ -1,4 +1,4 @@
-import { Button, Typography } from '@mui/material'
+import { Button, Stack, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useState } from 'react'
 import { useAppSelector } from '../../../../state/storeHooks'
@@ -6,19 +6,18 @@ import { CenteredLayout } from '../../../UI/CenteredLayout'
 import { selectClient } from '../Client.slice'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import AddMealPlanDialog from '../../Nutrition/MealPlans/AddMealPlanDialog'
+import MealPlansLayout from '../../Nutrition/MealPlans/MealPlansLayout'
 import MealPlansTable from '../../Nutrition/MealPlans/MealPlansTable'
+import { getMealPlansByClientIdRef } from '../../../../firebase/fbRefs'
+import { useCollectionData } from 'react-firebase-hooks/firestore'
 
 const ClientNutrition = () => {
   const client = useAppSelector(selectClient)
-  // const [clients, loading] = useCollectionData(getClientsByTrainerIdRef(trainer.id as string))
+  const [mealPlans, loading] = useCollectionData(getMealPlansByClientIdRef(client.id))
+
+  console.log('mealPlans', mealPlans)
 
   const [status, setStatus] = useState<'initial' | 'assigning'>('initial')
-
-  // const clientNutritionalPlans = [1, 2]
-  const clientNutritionalPlans = null
-
-  let content
-  const loading = false
 
   const [addNewPlanDialogOpen, setAddNewplanDialogOpen] = useState<boolean>(false)
 
@@ -28,12 +27,21 @@ const ClientNutrition = () => {
 
   const closeAddNewPlanDialog = () => {
     setAddNewplanDialogOpen(false)
+    setStatus('initial')
   }
 
   const initialContent = loading ? (
     <p>Cargando..</p>
-  ) : clientNutritionalPlans && clientNutritionalPlans.length > 0 ? (
-    <MealPlansTable mealPlans={[]} />
+  ) : mealPlans && mealPlans.length > 0 ? (
+    <>
+      <Stack direction='row' justifyContent={'space-between'} alignItems={'center'}>
+        <Typography variant='h1'>Planes asignados</Typography>
+        <Button onClick={() => setStatus('assigning')} variant='contained' sx={{ mt: 2 }}>
+          Asignar nuevo plan
+        </Button>
+      </Stack>
+      <MealPlansTable mealPlans={mealPlans} />
+    </>
   ) : (
     <CenteredLayout>
       <Typography variant='h5'>
@@ -79,13 +87,16 @@ const AssignMealPlanContent = ({
   onAddNewPlan(): void
 }) => (
   <div>
-    <Button onClick={onBackClick}>
-      <ChevronLeftIcon />
-      Back
-    </Button>
-    <Button variant='contained' color='primary' sx={{ ml: 2 }} onClick={onAddNewPlan}>
-      Añadir plan desde cero
-    </Button>
+    <Stack direction='row' alignItems={'center'} justifyContent='space-between'>
+      <Button onClick={onBackClick}>
+        <ChevronLeftIcon />
+        Atrás
+      </Button>
+      <Button variant='contained' color='primary' sx={{ ml: 2 }} onClick={onAddNewPlan}>
+        Añadir plan desde cero
+      </Button>
+    </Stack>
+    <MealPlansLayout isClientAssignation={true} />
   </div>
 )
 

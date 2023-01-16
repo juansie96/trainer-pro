@@ -11,9 +11,11 @@ function App() {
   // const [user] = useAuthState(auth)
   // const trainer = useAppSelector(selectTrainer)
 
+  const location = useLocation()
+
   return (
     <UserProvider>
-      {!useLocation().pathname.includes('/client-activation') && <Header />}
+      {!location.pathname.includes('/client-activation') && <Header />}
       <AppRoutes />
     </UserProvider>
   )

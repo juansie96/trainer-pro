@@ -4,15 +4,13 @@ import { useDocumentData } from 'react-firebase-hooks/firestore'
 import { useDispatch } from 'react-redux'
 import { Outlet, useParams } from 'react-router-dom'
 import { getClientDataDocById } from '../../../firebase/fbRefs'
-import { useAppSelector } from '../../../state/storeHooks'
-import { clientDataRetrieved, selectClient } from './Client.slice'
+import { clientDataRetrieved } from './Client.slice'
 import ClientSidebar from './ClientSidebar'
 
 const Client = () => {
   const { clientId } = useParams()
   const dispatch = useDispatch()
   useDocumentData()
-  const client = useAppSelector(selectClient)
 
   useEffect(() => {
     getClientDataDocById(clientId as string).then((docSnap) => {
@@ -27,7 +25,7 @@ const Client = () => {
   return (
     <Box flex={1} className='client-layout' display='grid' gridTemplateColumns={'110px 1fr'}>
       <ClientSidebar />
-      <Box p={4} flex={1}>
+      <Box p={4} flex={1} maxWidth='85em'>
         <Outlet />
       </Box>
     </Box>

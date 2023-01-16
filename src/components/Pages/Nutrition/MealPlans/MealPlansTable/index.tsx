@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import {
+  Button,
   Paper,
   Table,
   TableBody,
@@ -28,7 +29,6 @@ import { clientsRef, getDocumentRef } from '../../../../../firebase/fbRefs'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import type { IProps, MealPlanDialogState } from './types'
 import PreviewMealPlanDialog from '../PreviewMealPlanDialog'
 import { Stack } from '@mui/system'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
@@ -36,37 +36,30 @@ import AssignDialog from '../../../../UI/Dialogs/AssignDialog'
 import { Client } from '../../../../../types/client'
 import { firestoreDB } from '../../../../../firebase/firebase'
 import { selectClient, tasksChanged } from '../../../Client/Client.slice'
+import type { IProps, MealPlanDialogState } from './types'
 
-const MealPlansTable = ({ mealPlans }: IProps) => {
+const MealPlansTable = ({ mealPlans, isClientAssignation }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
   const client = useAppSelector(selectClient)
   const dispatch = useAppDispatch()
   const [page, setPage] = useState(0)
 
-  const [previewMealPlanDialog, setPreviewMealPlanDialog] = useState<MealPlanDialogState>({
-    open: false,
-    mealPlanId: '',
-  })
-  const [editMealPlanDialog, setEditMealPlanDialog] = useState<MealPlanDialogState>({
-    open: false,
-    mealPlanId: '',
-  })
-  const [confirmDialog, setConfirmDialog] = useState<MealPlanDialogState>({
-    open: false,
-    mealPlanId: '',
-  })
+  console.log('isClientAssignation', isClientAssignation)
 
-  const [assignDialog, setAssignDialog] = useState<MealPlanDialogState>({
+  const initialDialogState = {
     open: false,
     mealPlanId: '',
-  })
+  }
+
+  const [previewMealPlanDialog, setPreviewMealPlanDialog] =
+    useState<MealPlanDialogState>(initialDialogState)
+  const [editMealPlanDialog, setEditMealPlanDialog] =
+    useState<MealPlanDialogState>(initialDialogState)
+  const [confirmDialog, setConfirmDialog] = useState<MealPlanDialogState>(initialDialogState)
+  const [assignDialog, setAssignDialog] = useState<MealPlanDialogState>(initialDialogState)
 
   const openPreviewMealPlanDialog = (mealPlanId: string) => {
     setPreviewMealPlanDialog({ open: true, mealPlanId })
-  }
-
-  const closePreviewMealPlanDialog = () => {
-    setPreviewMealPlanDialog({ open: false, mealPlanId: '' })
   }
 
   const openEditMealPlanDialog = (mealPlanId: string) => {
@@ -74,15 +67,11 @@ const MealPlansTable = ({ mealPlans }: IProps) => {
   }
 
   const closeEditMealPlanDialog = () => {
-    setEditMealPlanDialog({ open: false, mealPlanId: '' })
+    setEditMealPlanDialog(initialDialogState)
   }
 
   const openAssignDialog = (mealPlanId: string) => {
     setAssignDialog({ open: true, mealPlanId: mealPlanId })
-  }
-
-  const closeAssignDialog = () => {
-    setAssignDialog({ open: false, mealPlanId: '' })
   }
 
   const handleDeleteMealPlan = async () => {
@@ -143,12 +132,12 @@ const MealPlansTable = ({ mealPlans }: IProps) => {
           <TableHead sx={{ bgcolor: '#1677d2' }}>
             <TableRow>
               <TableCell sx={{ width: 0.2, fontWeight: 700, color: 'white' }}>Nombre</TableCell>
-              <TableCell sx={{ width: 0.45, fontWeight: 700, color: 'white' }}>
+              <TableCell sx={{ width: 0.4, fontWeight: 700, color: 'white' }}>
                 Descripción
               </TableCell>
               <TableCell sx={{ width: 0.15, fontWeight: 700, color: 'white' }}>Energía</TableCell>
               <TableCell sx={{ width: 0.1, fontWeight: 700, color: 'white' }}>Creación</TableCell>
-              <TableCell sx={{ width: 0.1, fontWeight: 700, color: 'white' }}></TableCell>
+              <TableCell sx={{ width: 0.15, fontWeight: 700, color: 'white' }}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -166,40 +155,46 @@ const MealPlansTable = ({ mealPlans }: IProps) => {
                   {mealPlan.createdAt?.toDate().toLocaleDateString().split(' ')[0]}
                 </TableCell>
                 <TableCell>
-                  <Stack direction='row' spacing={1.5}>
-                    <Tooltip title='asignar plan'>
-                      <PersonAddAlt1Icon
-                        onClick={() => openAssignDialog(mealPlan.id as string)}
-                        color='success'
-                        sx={{ cursor: 'pointer' }}
-                      />
-                    </Tooltip>
-                    <Tooltip title='visualizar plan'>
-                      <VisibilityIcon
-                        color='action'
-                        onClick={() => openPreviewMealPlanDialog(mealPlan.id as string)}
-                        sx={{ cursor: 'pointer' }}
-                      />
-                    </Tooltip>
-                    <Tooltip title='editar plan'>
-                      <EditIcon
-                        fontSize='small'
-                        color='primary'
-                        sx={{ cursor: 'pointer' }}
-                        onClick={() => handleIconClick('edit', mealPlan)}
-                      />
-                    </Tooltip>
-                    <Tooltip title='eliminar plan'>
-                      <DeleteIcon
-                        color='error'
-                        fontSize='small'
-                        sx={{
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => handleIconClick('delete', mealPlan)}
-                      />
-                    </Tooltip>
-                  </Stack>
+                  {isClientAssignation ? (
+                    <Button size='small' variant='contained'>
+                      Usar plantilla
+                    </Button>
+                  ) : (
+                    <Stack direction='row' spacing={1.5}>
+                      <Tooltip title='asignar plan'>
+                        <PersonAddAlt1Icon
+                          onClick={() => openAssignDialog(mealPlan.id as string)}
+                          color='success'
+                          sx={{ cursor: 'pointer' }}
+                        />
+                      </Tooltip>
+                      <Tooltip title='visualizar plan'>
+                        <VisibilityIcon
+                          color='action'
+                          onClick={() => openPreviewMealPlanDialog(mealPlan.id as string)}
+                          sx={{ cursor: 'pointer' }}
+                        />
+                      </Tooltip>
+                      <Tooltip title='editar plan'>
+                        <EditIcon
+                          fontSize='small'
+                          color='primary'
+                          sx={{ cursor: 'pointer' }}
+                          onClick={() => handleIconClick('edit', mealPlan)}
+                        />
+                      </Tooltip>
+                      <Tooltip title='eliminar plan'>
+                        <DeleteIcon
+                          color='error'
+                          fontSize='small'
+                          sx={{
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => handleIconClick('delete', mealPlan)}
+                        />
+                      </Tooltip>
+                    </Stack>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

@@ -22,7 +22,6 @@ const ClientSidebar = () => {
   const navigate = useNavigate()
   const { clientId } = useParams()
   const client = useAppSelector(selectClient)
-  console.log('client', client)
 
   const section = location.pathname.split('/').pop()
 

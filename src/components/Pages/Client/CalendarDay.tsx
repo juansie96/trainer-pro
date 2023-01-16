@@ -104,7 +104,7 @@ const DayEvent = ({ event }: { event: GeneralTask }) => {
       onClick={handleEventClick}
     >
       <CircleIcon sx={{ fontSize: 12, pl: 0.5 }} />
-      <Typography variant='caption' fontSize={10} ml={0.5}>
+      <Typography variant='caption' fontSize={10} ml={0.5} color={'white'}>
         {event.title}
       </Typography>
       {detailsDialog.open && dialogContainer}

@@ -22,7 +22,7 @@ const MealPlans = () => {
   if (loading) {
     content = <p>Cargando..</p>
   } else if (mealPlans && mealPlans.length > 0) {
-    content = <MealPlansLayout openAddMealPlanDialog={openAddMealPlanDialog} />
+    content = <MealPlansLayout />
   } else {
     content = (
       <CenteredLayout>

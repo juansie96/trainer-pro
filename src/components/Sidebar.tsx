@@ -34,6 +34,7 @@ const sidebarStyles = {
   boxShadow: '0px 3px 6px 4px rgb(0 0 0 / 20%)',
   color: 'white',
   textAlign: 'center',
+  '& .MuiTypography-root': { color: 'white' },
 }
 
 export default Sidebar

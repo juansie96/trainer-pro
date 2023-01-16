@@ -46,7 +46,7 @@ export function Header() {
 
   return (
     <Box className='header'>
-      <AppBar position='static'>
+      <AppBar position='static' sx={{ '& .MuiTypography-root': { color: 'white' } }}>
         <Toolbar sx={{ boxShadow: '0px 3px 3px 0px rgb(0 0 0 / 10%)' }}>
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             Trainer Pro
@@ -60,7 +60,7 @@ export function Header() {
 
 const CustomLink = (link: Link) => (
   <Button>
-    <Link to={link.to} style={{ textDecoration: 'none', color: '#fff' }} onClick={link.onClick}>
+    <Link to={link.to} style={{ textDecoration: 'none', color: 'white' }} onClick={link.onClick}>
       {link.label}
     </Link>
   </Button>

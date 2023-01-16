@@ -11,9 +11,7 @@ import { getClientsByTrainerIdRef } from '../../../firebase/fbRefs'
 
 export const ClientsLayout = ({ openAddClientDialog }: { openAddClientDialog(): void }) => {
   const trainer = useSelector(selectTrainer)
-  const [clients, loading, error] = useCollectionData(
-    getClientsByTrainerIdRef(trainer.id as string),
-  )
+  const [clients, loading] = useCollectionData(getClientsByTrainerIdRef(trainer.id as string))
 
   const [query, setQuery] = useState('')
 

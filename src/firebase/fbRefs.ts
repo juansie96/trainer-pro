@@ -127,6 +127,9 @@ export const getFoodsByTrainerIdRef = (trainerId: string) =>
 export const getMealPlansByTrainerIdRef = (trainerId: string) =>
   query(mealPlansRef, where('trainerId', '==', trainerId), where('clientId', '==', ''))
 
+export const getMealPlansByClientIdRef = (clientId: string) =>
+  query(mealPlansRef, where('clientId', '==', clientId))
+
 export const getTrainerDataQueryRef = (email: string) =>
   query(trainersRef, where('email', '==', email))
 

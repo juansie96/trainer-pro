@@ -7,4 +7,5 @@ export interface MealPlanDialogState {
 
 export interface IProps {
   mealPlans: MealPlans
+  isClientAssignation?: boolean
 }
