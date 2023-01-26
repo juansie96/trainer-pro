@@ -2,7 +2,7 @@ interface Task {
   id: string
   date: string
   title: string
-  completed: {
+  completed?: {
     value: boolean
     date: string | null
   }

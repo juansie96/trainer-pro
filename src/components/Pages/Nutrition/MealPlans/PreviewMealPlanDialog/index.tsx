@@ -60,9 +60,9 @@ const PreviewMealPlanDialog = ({ onClose, data, eventData }: IProps) => {
 
   const handleDeleteEvent = async () => {
     const docRef = getDocumentRef('clients', client.id as string)
-    const newTasks = (client as Client).tasks.filter(
-      (t) => !(t.type === 'mealPlan' && t.entityId === (mealPlan as MealPlan).id),
-    )
+    // const newTasks = (client as Client).tasks.filter(
+    //   (t) => !(t.type === 'mealPlan' && t.entityId === (mealPlan as MealPlan).id),
+    const newTasks = client.tasks.filter((t) => !(t.id === eventData.id))
     try {
       await updateDoc<Client>(docRef, { tasks: newTasks })
       dispatch(tasksChanged(newTasks))

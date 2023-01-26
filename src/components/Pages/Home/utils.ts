@@ -4,7 +4,7 @@ import { ClientTask } from './types'
 
 export const getClientsWithoutTasks = (clients: Clients) => {
   return clients.filter((c) => {
-    const hasFutureTask = !c.tasks?.some((t) => new Date(t.date) > new Date())
+    const hasFutureTask = !c.tasks?.some((t) => new Date(t.date) > new Date() && t.completed)
     return hasFutureTask
   })
 }
@@ -17,7 +17,10 @@ export const getRecentlyCompletedTasks = (clients: Clients): ClientTask[] => {
     tasks = [
       ...tasks,
       ...c.tasks
-        .filter((t) => t.completed.value && daysPassedSince(new Date(t.completed.date)) < 60)
+        .filter(
+          (t) =>
+            t.completed && t.completed.value && daysPassedSince(new Date(t.completed.date)) < 60,
+        )
         .map((t) => {
           return { ...t, clientName: c.name + ' ' + c.lastname, clientId: c.id } as ClientTask
         }),
@@ -36,7 +39,7 @@ export const getClientsWithNoCompletedTasks = (clients: Clients) => {
   return clients.filter((c) => {
     const hasNonCompletedTasks = c.tasks?.some((t) => {
       const taskDate = new Date(t.date)
-      return taskDate > sevenDaysAgo && taskDate < today && !t.completed.value
+      return taskDate > sevenDaysAgo && taskDate < today && t.completed && !t.completed.value
     })
     return hasNonCompletedTasks
   })

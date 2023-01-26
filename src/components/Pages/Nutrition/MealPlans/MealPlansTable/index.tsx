@@ -11,21 +11,13 @@ import {
   TableRow,
   Tooltip,
 } from '@mui/material'
-import {
-  deleteDoc,
-  doc,
-  DocumentReference,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from 'firebase/firestore'
+import { deleteDoc, DocumentReference, updateDoc } from 'firebase/firestore'
 import { MealPlan } from '../../../../../types/meals'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 import { useAppDispatch, useAppSelector } from '../../../../../state/storeHooks'
 import AddMealPlanDialog from '../AddMealPlanDialog'
 import ConfirmDialog from '../../../../ConfirmDialog'
-import { clientsRef, getDocumentRef } from '../../../../../firebase/fbRefs'
+import { getDocumentRef } from '../../../../../firebase/fbRefs'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -33,20 +25,17 @@ import PreviewMealPlanDialog from '../PreviewMealPlanDialog'
 import { Stack } from '@mui/system'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
 import AssignDialog from '../../../../UI/Dialogs/AssignDialog'
-import { Client } from '../../../../../types/client'
-import { firestoreDB } from '../../../../../firebase/firebase'
-import { selectClient, tasksChanged } from '../../../Client/Client.slice'
+import { selectClient, taskDeleted } from '../../../Client/Client.slice'
 import type { IProps, MealPlanDialogState } from './types'
 import { useLocation } from 'react-router-dom'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
+import SchedulePlanDialog from '../../../Client/ClientNutrition/SchedulePlanDialog'
 
 const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IProps) => {
-  const trainer = useAppSelector(selectTrainer)
   const client = useAppSelector(selectClient)
   const dispatch = useAppDispatch()
   const [page, setPage] = useState(0)
   const location = useLocation()
-
-  console.log('location', location)
 
   const initialDialogState = {
     open: false,
@@ -60,6 +49,8 @@ const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IP
     useState<MealPlanDialogState>(initialDialogState)
   const [confirmDialog, setConfirmDialog] = useState<MealPlanDialogState>(initialDialogState)
   const [assignDialog, setAssignDialog] = useState<MealPlanDialogState>(initialDialogState)
+  const [scheduleMealPlanDialog, setScheduleMealPlanDialog] =
+    useState<MealPlanDialogState>(initialDialogState)
 
   const openPreviewMealPlanDialog = (mealPlanId: string) => {
     setPreviewMealPlanDialog({ open: true, mealPlanId })
@@ -69,51 +60,35 @@ const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IP
     setEditMealPlanDialog({ open: true, mealPlanId: mealPlanId })
   }
 
+  const openScheduleMealPlanDialog = (mealPlanId: string) => {
+    setScheduleMealPlanDialog({ open: true, mealPlanId, clientId: client.id })
+  }
+
+  const closeScheduleMealPlanDialog = () => {
+    setScheduleMealPlanDialog(initialDialogState)
+  }
+
   const closeEditMealPlanDialog = () => {
     setEditMealPlanDialog(initialDialogState)
     onAssignMealPlan ? onAssignMealPlan() : null
-  }
-
-  const openAssignDialog = (mealPlanId: string) => {
-    setAssignDialog({ open: true, mealPlanId: mealPlanId })
   }
 
   const handleDeleteMealPlan = async () => {
     const mealPlan = mealPlans.find((mp) => mp.id === confirmDialog.mealPlanId) as MealPlan
     const mealPlanRef = getDocumentRef('mealPlans', mealPlan.id as string)
     deleteDoc(mealPlanRef as DocumentReference<MealPlan>)
-    const q = query<Client>(clientsRef, where('trainerId', '==', trainer.id as string))
-    const querySnapshot = await getDocs<Client>(q)
-    const clientsQuery: Client[] = []
-    querySnapshot.forEach((doc) => clientsQuery.push(doc.data()))
 
-    const promises: Promise<void>[] = []
-
-    clientsQuery.forEach((c) => {
-      const clientDoc = c as Client
-      const containsMealPlanTask = c.tasks.some(
-        (t) => t.type === 'mealPlan' && t.entityId == confirmDialog.mealPlanId,
-      )
-      if (containsMealPlanTask) {
-        const newTasks = c.tasks.filter(
-          (t) => t.type === 'mealPlan' && t.entityId !== confirmDialog.mealPlanId,
-        )
-        const docRef = doc(firestoreDB, 'clients', clientDoc.id as string)
-        promises.push(updateDoc<Client>(docRef as DocumentReference<Client>, { tasks: newTasks }))
+    if (mealPlan.clientId) {
+      try {
+        updateDoc(getDocumentRef('clients', mealPlan.clientId), {
+          tasks: client.tasks.filter((t) => t.entityId !== mealPlan.id),
+        })
+        dispatch(taskDeleted({ taskEntityId: mealPlan.id }))
+      } catch (error) {
+        console.log(error)
       }
-    })
-
-    await Promise.all(promises)
-
-    if (client) {
-      dispatch(
-        tasksChanged(
-          client.tasks.filter(
-            (t) => t.type === 'mealPlan' && t.entityId !== confirmDialog.mealPlanId,
-          ),
-        ),
-      )
     }
+
     setConfirmDialog({ open: false, mealPlanId: '' })
   }
 
@@ -176,13 +151,19 @@ const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IP
                       {!location.pathname.includes('client') ? (
                         <Tooltip title='asignar plan'>
                           <PersonAddAlt1Icon
-                            onClick={() => openAssignDialog(mealPlan.id as string)}
+                            onClick={() => null}
                             color='success'
                             sx={{ cursor: 'pointer' }}
                           />
                         </Tooltip>
                       ) : (
-                        <>Agendar</>
+                        <Tooltip title='agendar plan'>
+                          <CalendarMonthIcon
+                            onClick={() => openScheduleMealPlanDialog(mealPlan.id as string)}
+                            color='success'
+                            sx={{ cursor: 'pointer' }}
+                          />
+                        </Tooltip>
                       )}
                       <Tooltip title='visualizar plan'>
                         <VisibilityIcon
@@ -224,7 +205,6 @@ const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IP
         rowsPerPage={10}
         page={page}
         onPageChange={(_, n) => setPage(n)}
-        // onRowsPerPageChange={handleChangeRowsPerPage}
       />
       {editMealPlanDialog.open && (
         <AddMealPlanDialog
@@ -244,6 +224,12 @@ const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IP
         <PreviewMealPlanDialog
           onClose={() => setPreviewMealPlanDialog({ open: false, mealPlanId: '' })}
           data={mealPlans.find((mp) => mp.id === previewMealPlanDialog.mealPlanId) as MealPlan}
+        />
+      )}
+      {scheduleMealPlanDialog.open && (
+        <SchedulePlanDialog
+          onClose={closeScheduleMealPlanDialog}
+          mealPlanId={scheduleMealPlanDialog.mealPlanId}
         />
       )}
       {assignDialog.open && (

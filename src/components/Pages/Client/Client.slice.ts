@@ -18,6 +18,10 @@ const clientSlice = createSlice({
       const newTasks = state.tasks ? [...state.tasks, action.payload] : [action.payload]
       return state ? { ...state, tasks: newTasks } : null
     },
+    tasksAdded(state, action: PayloadAction<GeneralTask[]>) {
+      const newTasks = state.tasks ? [...state.tasks, ...action.payload] : [...action.payload]
+      return state ? { ...state, tasks: newTasks } : null
+    },
     cardioTaskModified(state, action: PayloadAction<CardioTask>) {
       return state
         ? {
@@ -31,12 +35,26 @@ const clientSlice = createSlice({
     tasksChanged(state, action: PayloadAction<GeneralTask[]>) {
       return state ? { ...state, tasks: action.payload } : null
     },
+    mealPlanAssigned(state, action: PayloadAction<{ date: string; mealPlanId: string }[]>) {
+      return state ? { ...state, assignedMealPlans: action.payload } : null
+    },
+    taskDeleted(state, action: PayloadAction<{ taskEntityId: string }>) {
+      return state
+        ? { ...state, tasks: state.tasks.filter((t) => t.entityId !== action.payload.taskEntityId) }
+        : null
+    },
   },
 })
 
 export const selectClient = (state: RootState) => state.client
 
-export const { clientDataRetrieved, taskAdded, tasksChanged, cardioTaskModified } =
-  clientSlice.actions
+export const {
+  clientDataRetrieved,
+  taskAdded,
+  tasksAdded,
+  tasksChanged,
+  cardioTaskModified,
+  taskDeleted,
+} = clientSlice.actions
 
 export default clientSlice.reducer
