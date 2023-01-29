@@ -1,4 +1,12 @@
-import { Box, Button, Card, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
 import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
@@ -11,7 +19,7 @@ export const ExercisesLayout = ({ openAddExerciseDialog }: { openAddExerciseDial
 
   const [query, setQuery] = useState('')
 
-  let filteredExercises = exercises?.slice(0)
+  let filteredExercises = exercises?.slice(0).sort((a, b) => a.name.localeCompare(b.name))
 
   if (query && exercises) {
     filteredExercises = exercises.filter((workout) =>
@@ -20,13 +28,10 @@ export const ExercisesLayout = ({ openAddExerciseDialog }: { openAddExerciseDial
   }
 
   return (
-    <Box>
-      <Box
-        sx={{ height: 1, display: 'flex', flexDirection: 'column' }}
-        // elevation={10}
-        className='exercises-layout'
-      >
-        <Box display='flex' justifyContent='center' mt={3}>
+    <Box className='exercises-layout'>
+      <Stack spacing={3}>
+        <Typography variant='h1'>Ejercicios</Typography>
+        <Box>
           <SearchClientInput
             value={query}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
@@ -45,7 +50,7 @@ export const ExercisesLayout = ({ openAddExerciseDialog }: { openAddExerciseDial
             </Typography>
           </CenteredLayout>
         )}
-      </Box>
+      </Stack>
     </Box>
   )
 }

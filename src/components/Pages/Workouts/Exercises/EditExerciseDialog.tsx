@@ -16,7 +16,6 @@ import {
 import FormContainer from '../../../Form/FormContainer'
 import { useForm } from 'react-hook-form'
 import { deleteDoc, updateDoc } from 'firebase/firestore'
-import { Exercise } from './Exercises'
 import { Box } from '@mui/system'
 import TextFieldElement from '../../../Form/TextFieldElement'
 import { extractVideoID, videoUrlIsValid } from '../../../../utils'
@@ -26,6 +25,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import Swal from 'sweetalert2'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ConfirmDialog from '../../../ConfirmDialog'
+import { Exercise } from '../../../../types/workout'
 
 interface EditExerciseDialogProps {
   open: boolean
@@ -323,10 +323,6 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
             <DialogTitle>Editar Ejercicio</DialogTitle>
           </Box>
           <DialogContent sx={{ pt: 3, pb: 4 }}>
-            {/* <DialogContentText>
-              Completa los datos de tu nuevo ejercicio
-            </DialogContentText> */}
-
             <Stack
               width={1}
               direction='row'

@@ -19,11 +19,10 @@ import Swal from 'sweetalert2'
 import { exercisesRef, workoutsRef } from '../../../../../firebase/fbRefs'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 import { useAppSelector } from '../../../../../state/storeHooks'
-import { SingleExercise, Workout } from '../../../../../types/workout'
+import { Exercise, SingleExercise, Workout } from '../../../../../types/workout'
 import { getExerciseImgUrl } from '../../../../../utils'
 import FormContainer from '../../../../Form/FormContainer'
 import TextFieldElement from '../../../../Form/TextFieldElement'
-import { Exercise } from '../../Exercises/Exercises'
 import WorkoutExercisesTable from '../WorkoutExercisesTable'
 
 interface AddWorkoutDialogProps {

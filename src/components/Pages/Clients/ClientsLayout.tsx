@@ -1,45 +1,78 @@
-import { Box, Button, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  Skeleton,
+  TextField,
+  Typography,
+} from '@mui/material'
 import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
-import type { Client } from '../../../types/client'
-import { CenteredLayout } from '../../UI/CenteredLayout'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { ClientsTable } from './ClientsTable'
 import { useSelector } from 'react-redux'
 import { selectTrainer } from '../../../redux/slices/trainerSlice'
 import { getClientsByTrainerIdRef } from '../../../firebase/fbRefs'
+import { Stack } from '@mui/system'
+import { AddClientDialog } from './AddClientDialog'
 
-export const ClientsLayout = ({ openAddClientDialog }: { openAddClientDialog(): void }) => {
+export const ClientsLayout = () => {
   const trainer = useSelector(selectTrainer)
-  const [clients, loading] = useCollectionData(getClientsByTrainerIdRef(trainer.id as string))
-
+  const [clients, isLoading] = useCollectionData(getClientsByTrainerIdRef(trainer.id as string))
+  const [addClientDialogOpen, setAddClientDialogOpen] = useState<boolean>(false)
   const [query, setQuery] = useState('')
 
   let filteredClients = clients?.slice(0)
 
+  console.log('filteredClients', filteredClients)
+
   if (query && clients) {
-    filteredClients = clients.filter((c) => c.name.toUpperCase().includes(query.toUpperCase()))
+    filteredClients = clients.filter(
+      (c) =>
+        c.name.toUpperCase().includes(query.toUpperCase()) ||
+        c.lastname.toUpperCase().includes(query.toUpperCase()) ||
+        c.email.toUpperCase().includes(query.toUpperCase()),
+    )
   }
 
   return (
-    <Box mt={5}>
-      <Box display='flex' justifyContent='center' mb={5}>
+    <Stack mt={5} className='clients-layout' maxWidth='95em' pl={4} spacing={4}>
+      <Typography variant='h1'>Clientes</Typography>
+      <Box display='flex'>
         <SearchClientInput
           value={query}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
         />
-        <Button variant='contained' disabled={loading} onClick={openAddClientDialog}>
+        <Button
+          variant='contained'
+          disabled={isLoading}
+          onClick={() => setAddClientDialogOpen(true)}
+        >
           Agregar cliente
         </Button>
       </Box>
-      {filteredClients && filteredClients.length > 0 ? (
-        <ClientsTable clients={filteredClients as Client[]} />
+
+      {isLoading ? (
+        <Box>
+          <Skeleton
+            variant='rounded'
+            sx={{ width: '100%', maxWidth: 'calc(100vw - 4em)' }}
+            height={60}
+          />
+          <Skeleton
+            variant='rectangular'
+            sx={{ width: '100%', maxWidth: 'calc(100vw - 4em)', mt: 0.5 }}
+            height={200}
+          />
+        </Box>
       ) : (
-        <CenteredLayout>
-          <Typography variant='h5'>No se encontró ningun cliente</Typography>
-        </CenteredLayout>
+        <ClientsTable clients={filteredClients} />
       )}
-    </Box>
+      {addClientDialogOpen && (
+        <AddClientDialog open={addClientDialogOpen} onClose={() => setAddClientDialogOpen(false)} />
+      )}
+    </Stack>
   )
 }
 

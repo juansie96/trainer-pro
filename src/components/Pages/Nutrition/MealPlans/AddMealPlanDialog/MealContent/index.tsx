@@ -74,7 +74,9 @@ const MealContent = ({ onDeleteMeal, idx }: IProps) => {
               ))}
             </JMTableRow>
             {fields.length === 0 ? (
-              <NoContentTableMessage msg='Todavía no agregaste ninguna comida' />
+              <JMTableRow>
+                <NoContentTableMessage msg='Todavía no agregaste ninguna comida!' />
+              </JMTableRow>
             ) : (
               <>
                 {fields.map((f, foodIdx) => {

@@ -63,18 +63,18 @@ const FoodsTable = ({ foods }: IProps) => {
 
   return (
     <>
-      <TableContainer component={Paper} sx={{ width: 1, mx: 'auto', my: 3 }}>
+      <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label='foods table'>
           <TableHead sx={{ bgcolor: '#1677d2' }}>
             <TableRow>
-              <TableCell sx={{ width: 0.3, color: 'white', fontWeight: 700 }}>Nombre</TableCell>
-              <TableCell sx={{ width: 0.1, color: 'white', fontWeight: 700 }}>Calorías</TableCell>
-              <TableCell sx={{ width: 0.1, color: 'white', fontWeight: 700 }}>Proteínas</TableCell>
-              <TableCell sx={{ width: 0.09, color: 'white', fontWeight: 700 }}>Carbs</TableCell>
-              <TableCell sx={{ width: 0.09, color: 'white', fontWeight: 700 }}>Grasas</TableCell>
-              <TableCell sx={{ width: 0.09, color: 'white', fontWeight: 700 }}>Fibra</TableCell>
-              <TableCell sx={{ width: 0.1, color: 'white', fontWeight: 700 }}>Creado por</TableCell>
-              <TableCell sx={{ width: 0.13, color: 'white', fontWeight: 700 }}></TableCell>
+              <TableCell sx={{ width: '25em', color: 'white', fontWeight: 700 }}>Nombre</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700 }}>Calorías</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700 }}>Proteínas</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700 }}>Carbs</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700 }}>Grasas</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700 }}>Fibra</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700 }}>Creado por</TableCell>
+              <TableCell sx={{ width: '4em', color: 'white', fontWeight: 700 }}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

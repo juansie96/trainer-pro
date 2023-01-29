@@ -1,12 +1,22 @@
-import { IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  Skeleton,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
 import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getMealPlansByTrainerIdRef } from '../../../../../firebase/fbRefs'
-import { CenteredLayout } from '../../../../UI/CenteredLayout'
 import MealPlansTable from '../MealPlansTable'
 import { useAppSelector } from '../../../../../state/storeHooks'
 import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
+import AddMealPlanDialog from '../AddMealPlanDialog'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 
 const MealPlansLayout = ({
   isClientAssignation,
@@ -16,10 +26,13 @@ const MealPlansLayout = ({
   onAssignMealPlan?(): void
 }) => {
   const trainer = useAppSelector(selectTrainer)
-  const [mealPlans] = useCollectionData(getMealPlansByTrainerIdRef(trainer.id as string))
+  const [mealPlans, isLoading] = useCollectionData(getMealPlansByTrainerIdRef(trainer.id as string))
   const [query, setQuery] = useState('')
+  const [addMealPlanDialogOpen, setAddMealPlanDialogOpen] = useState<boolean>(false)
 
-  let filteredMealPlans = mealPlans?.slice(0)
+  let filteredMealPlans = mealPlans
+    ?.slice(0)
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0))
 
   if (query && mealPlans) {
     filteredMealPlans = mealPlans.filter((meal) =>
@@ -27,26 +40,54 @@ const MealPlansLayout = ({
     )
   }
   return (
-    <Stack mt={2} spacing={1.5}>
+    <Stack className='workouts-layout' maxWidth='95em' spacing={4}>
+      <Typography variant='h1'>Planes nutricionales</Typography>
       <Stack direction='row' spacing={2}>
-        <SearchMealInput
-          value={query}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
-        />
+        <div>
+          {isClientAssignation && (
+            <Button onClick={onAssignMealPlan} sx={{ mr: 2 }}>
+              <ChevronLeftIcon />
+              Atrás
+            </Button>
+          )}
+          <SearchMealInput
+            value={query}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+          />
+        </div>
+        <Button
+          variant='contained'
+          disabled={isLoading}
+          onClick={() => setAddMealPlanDialogOpen(true)}
+        >
+          Agregar plan
+        </Button>
       </Stack>
-
-      {filteredMealPlans && filteredMealPlans.length > 0 ? (
+      {isLoading ? (
+        <Box>
+          <Skeleton
+            variant='rounded'
+            sx={{ width: '100%', maxWidth: 'calc(100vw - 6.875em - 4em)' }}
+            height={60}
+          />
+          <Skeleton
+            variant='rectangular'
+            sx={{ width: '100%', maxWidth: 'calc(100vw - 6.875em - 4em)', mt: 0.5 }}
+            height={200}
+          />
+        </Box>
+      ) : (
         <MealPlansTable
           mealPlans={filteredMealPlans}
           isClientAssignation={isClientAssignation}
           onAssignMealPlan={onAssignMealPlan}
         />
-      ) : (
-        <CenteredLayout>
-          <Typography variant='h5' my={3}>
-            No se encontró ningun plan nutricional
-          </Typography>
-        </CenteredLayout>
+      )}
+      {addMealPlanDialogOpen && (
+        <AddMealPlanDialog
+          open={addMealPlanDialogOpen}
+          onClose={() => setAddMealPlanDialogOpen(false)}
+        />
       )}
     </Stack>
   )

@@ -25,7 +25,7 @@ const Client = () => {
   return (
     <Box flex={1} className='client-layout' display='grid' gridTemplateColumns={'110px 1fr'}>
       <ClientSidebar />
-      <Box p={4} flex={1} maxWidth='85em' position='relative'>
+      <Box p={4} flex={1} maxWidth='95em' position='relative'>
         <Outlet />
       </Box>
     </Box>

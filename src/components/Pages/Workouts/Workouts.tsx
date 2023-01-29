@@ -6,7 +6,7 @@ const Workouts = () => {
   return (
     <Box flex={1} className='client-layout' display='grid' gridTemplateColumns={'110px 1fr'}>
       <WorkoutSidebar />
-      <Box ml='110px' p={2} flex={1}>
+      <Box p={4} flex={1}>
         <Outlet />
       </Box>
     </Box>

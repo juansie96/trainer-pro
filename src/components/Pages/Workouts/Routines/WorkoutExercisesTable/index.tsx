@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Controller, FieldArrayWithId, useFieldArray, useFormContext } from 'react-hook-form'
+import { Controller, FieldArrayWithId, useFormContext } from 'react-hook-form'
 import { AddWorkoutFormData } from '../AddWorkoutDialog'
 import { IProps } from './types'
 import {
@@ -20,16 +20,9 @@ import { getExerciseImgUrl } from '../../../../../utils'
 import WorkoutExercisesTableToolbar from './WorkoutExercisesTableToolbar'
 import WorkoutExercisesTableHead from '../WorkoutExercisesTableHead'
 import { restDropdownItems } from './data'
-import { Exercise } from '../../Exercises/Exercises'
-import { SingleExercise } from '../../../../../types/workout'
+import { Exercise } from '../../../../../types/workout'
 
-const WorkoutExercisesTable = ({
-  fields,
-  exercises,
-  onRemoveExercises,
-}: // onSupersetClick,
-IProps) => {
-  const { register, control } = useFormContext<AddWorkoutFormData>()
+const WorkoutExercisesTable = ({ fields, exercises, onRemoveExercises }: IProps) => {
   const [selected, setSelected] = useState<readonly string[]>([])
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {

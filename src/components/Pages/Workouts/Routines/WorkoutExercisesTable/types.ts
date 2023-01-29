@@ -1,5 +1,5 @@
 import { FieldArrayWithId } from 'react-hook-form'
-import { Exercise } from '../../Exercises/Exercises'
+import { Exercise } from '../../../../../types/workout'
 import { AddWorkoutFormData } from '../AddWorkoutDialog'
 
 export interface IProps {

@@ -13,9 +13,8 @@ import {
 import { firestoreDB } from './firebase'
 
 import type { Client } from '../types/client'
-import type { Exercise } from '../components/Pages/Workouts/Exercises/Exercises'
 import type { TrainerState } from '../redux/slices/trainerSlice'
-import type { Workout } from '../types/workout'
+import type { Exercise, Workout } from '../types/workout'
 import type { Food, MealPlan } from '../types/meals'
 
 export const trainerConverter: FirestoreDataConverter<Omit<TrainerState, 'id'>> = {

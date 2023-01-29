@@ -13,7 +13,6 @@ import {
 } from '@mui/material'
 import { deleteDoc, DocumentReference, updateDoc } from 'firebase/firestore'
 import { MealPlan } from '../../../../../types/meals'
-import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
 import { useAppDispatch, useAppSelector } from '../../../../../state/storeHooks'
 import AddMealPlanDialog from '../AddMealPlanDialog'
 import ConfirmDialog from '../../../../ConfirmDialog'
@@ -30,6 +29,7 @@ import type { IProps, MealPlanDialogState } from './types'
 import { useLocation } from 'react-router-dom'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import SchedulePlanDialog from '../../../Client/ClientNutrition/SchedulePlanDialog'
+import { NoContentTableMessage } from '../AddMealPlanDialog/MealContent/styles'
 
 const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IProps) => {
   const client = useAppSelector(selectClient)
@@ -110,7 +110,7 @@ const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IP
 
   return (
     <>
-      <TableContainer component={Paper} sx={{ width: 1, mx: 'auto', my: 3 }}>
+      <TableContainer component={Paper} sx={{ maxWidth: 'calc(100vw - 6.875em - 4em)' }}>
         <Table sx={{ minWidth: 650 }} aria-label='mealPlans table'>
           <TableHead sx={{ bgcolor: '#1677d2' }}>
             <TableRow>
@@ -119,83 +119,93 @@ const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IP
                 Descripción
               </TableCell>
               <TableCell sx={{ width: 0.15, fontWeight: 700, color: 'white' }}>Energía</TableCell>
-              <TableCell sx={{ width: 0.1, fontWeight: 700, color: 'white' }}>Creación</TableCell>
-              <TableCell sx={{ width: 0.15, fontWeight: 700, color: 'white' }}></TableCell>
+              <TableCell sx={{ width: '10em', fontWeight: 700, color: 'white' }}>
+                Creación
+              </TableCell>
+              <TableCell sx={{ width: '10em', fontWeight: 700, color: 'white' }}></TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {mealPlans.map((mealPlan) => (
-              <TableRow
-                key={mealPlan.id}
-                sx={{
-                  '&:last-child td, &:last-child th': { border: 0 },
-                }}
-              >
-                <TableCell scope='row'>{mealPlan.name}</TableCell>
-                <TableCell scope='row'>{mealPlan.description}</TableCell>
-                <TableCell scope='row'>{mealPlan.kcal} kcal</TableCell>
-                <TableCell scope='row'>
-                  {mealPlan.createdAt?.toDate().toLocaleDateString().split(' ')[0]}
-                </TableCell>
-                <TableCell>
-                  {isClientAssignation ? (
-                    <Button
-                      size='small'
-                      variant='contained'
-                      onClick={() => handleUseTemplateClick(mealPlan.id)}
-                    >
-                      Usar plantilla
-                    </Button>
-                  ) : (
-                    <Stack direction='row' spacing={1.5}>
-                      {!location.pathname.includes('client') ? (
-                        <Tooltip title='asignar plan'>
-                          <PersonAddAlt1Icon
-                            onClick={() => null}
-                            color='success'
+          {mealPlans.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5}>
+                <NoContentTableMessage msg='No se encontró ningun plan nutricional' />
+              </TableCell>
+            </TableRow>
+          ) : (
+            <TableBody>
+              {mealPlans.map((mealPlan) => (
+                <TableRow
+                  key={mealPlan.id}
+                  sx={{
+                    '&:last-child td, &:last-child th': { border: 0 },
+                  }}
+                >
+                  <TableCell scope='row'>{mealPlan.name}</TableCell>
+                  <TableCell scope='row'>{mealPlan.description}</TableCell>
+                  <TableCell scope='row'>{mealPlan.kcal} kcal</TableCell>
+                  <TableCell scope='row'>
+                    {mealPlan.createdAt?.toDate().toLocaleDateString().split(' ')[0]}
+                  </TableCell>
+                  <TableCell>
+                    {isClientAssignation ? (
+                      <Button
+                        size='small'
+                        variant='contained'
+                        onClick={() => handleUseTemplateClick(mealPlan.id)}
+                      >
+                        Usar plantilla
+                      </Button>
+                    ) : (
+                      <Stack direction='row' spacing={1.5}>
+                        {!location.pathname.includes('client') ? (
+                          <Tooltip title='asignar plan'>
+                            <PersonAddAlt1Icon
+                              onClick={() => null}
+                              color='success'
+                              sx={{ cursor: 'pointer' }}
+                            />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title='agendar plan'>
+                            <CalendarMonthIcon
+                              onClick={() => openScheduleMealPlanDialog(mealPlan.id as string)}
+                              color='success'
+                              sx={{ cursor: 'pointer' }}
+                            />
+                          </Tooltip>
+                        )}
+                        <Tooltip title='visualizar plan'>
+                          <VisibilityIcon
+                            color='action'
+                            onClick={() => openPreviewMealPlanDialog(mealPlan.id as string)}
                             sx={{ cursor: 'pointer' }}
                           />
                         </Tooltip>
-                      ) : (
-                        <Tooltip title='agendar plan'>
-                          <CalendarMonthIcon
-                            onClick={() => openScheduleMealPlanDialog(mealPlan.id as string)}
-                            color='success'
+                        <Tooltip title='editar plan'>
+                          <EditIcon
+                            fontSize='small'
+                            color='primary'
                             sx={{ cursor: 'pointer' }}
+                            onClick={() => handleIconClick('edit', mealPlan)}
                           />
                         </Tooltip>
-                      )}
-                      <Tooltip title='visualizar plan'>
-                        <VisibilityIcon
-                          color='action'
-                          onClick={() => openPreviewMealPlanDialog(mealPlan.id as string)}
-                          sx={{ cursor: 'pointer' }}
-                        />
-                      </Tooltip>
-                      <Tooltip title='editar plan'>
-                        <EditIcon
-                          fontSize='small'
-                          color='primary'
-                          sx={{ cursor: 'pointer' }}
-                          onClick={() => handleIconClick('edit', mealPlan)}
-                        />
-                      </Tooltip>
-                      <Tooltip title='eliminar plan'>
-                        <DeleteIcon
-                          color='error'
-                          fontSize='small'
-                          sx={{
-                            cursor: 'pointer',
-                          }}
-                          onClick={() => handleIconClick('delete', mealPlan)}
-                        />
-                      </Tooltip>
-                    </Stack>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+                        <Tooltip title='eliminar plan'>
+                          <DeleteIcon
+                            color='error'
+                            fontSize='small'
+                            sx={{
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => handleIconClick('delete', mealPlan)}
+                          />
+                        </Tooltip>
+                      </Stack>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
       <TablePagination

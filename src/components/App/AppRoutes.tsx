@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { Login } from '../Pages/Login/Login'
 import { Register } from '../Pages/Register/Register'
 import { Dashboard } from '../Pages/Dashboard/Dashboard'
-import Clients from '../Pages/Clients/Clients'
 import HomeScreen from '../Pages/Home/Home'
 import Nutrition from '../Pages/Nutrition/Nutrition'
 import Workouts from '../Pages/Workouts/Workouts'
@@ -11,14 +10,15 @@ import Client from '../Pages/Client/Client'
 import ClientPlanification from '../Pages/Client/ClientPlanification'
 import ClientInformation from '../Pages/Client/ClientInformation'
 import { useContext } from 'react'
-import Routines from '../Pages/Workouts/Routines/Routines'
 import Exercises from '../Pages/Workouts/Exercises/Exercises'
 import ClientActivation from '../Pages/ClientActivation'
 import EmailVerification from '../Pages/EmailVerification'
 import ResetPassword from '../ResetPassword'
-import MealPlans from '../Pages/Nutrition/MealPlans'
 import Meals from '../Pages/Nutrition/Foods'
 import ClientNutrition from '../Pages/Client/ClientNutrition'
+import { ClientsLayout } from '../Pages/Clients/ClientsLayout'
+import { RoutinesLayout } from '../Pages/Workouts/Routines/RoutinesLayout'
+import MealPlansLayout from '../Pages/Nutrition/MealPlans/MealPlansLayout'
 
 const AppRoutes = () => {
   const user = useContext(UserContext)?.user
@@ -33,13 +33,13 @@ const AppRoutes = () => {
       <Route path='/verification' element={<EmailVerification />} />
       <Route path='/dashboard' element={<Dashboard />}>
         <Route path='' element={<HomeScreen />} />
-        <Route path='clients' element={<Clients />} />
+        <Route path='clients' element={<ClientsLayout />} />
         <Route path='workouts' element={<Workouts />}>
-          <Route path='' element={<Routines />} />
+          <Route path='' element={<RoutinesLayout />} />
           <Route path='exercises' element={<Exercises />} />
         </Route>
         <Route path='nutrition' element={<Nutrition />}>
-          <Route path='' element={<MealPlans />} />
+          <Route path='' element={<MealPlansLayout />} />
           <Route path='meals' element={<Meals />} />
         </Route>
         <Route path='client/:clientId' element={<Client />}>

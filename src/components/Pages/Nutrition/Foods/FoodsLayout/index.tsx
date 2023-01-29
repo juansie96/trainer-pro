@@ -27,7 +27,7 @@ const MealsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
   const [query, setQuery] = useState('')
   const [createdBy, setCreatedBy] = useState<CreatedByTypes>('all')
 
-  let filteredFoods = foods?.slice(0)
+  let filteredFoods = foods?.slice(0).sort((a, b) => a.name.localeCompare(b.name))
 
   if (query && foods) {
     filteredFoods = foods.filter((meal) => meal.name.toUpperCase().includes(query.toUpperCase()))
@@ -40,9 +40,9 @@ const MealsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
   }
 
   return (
-    <Stack mt={5} spacing={1.5}>
+    <Stack maxWidth='95em' spacing={2.5}>
       <Stack direction='row' spacing={2}>
-        <SearchClientInput
+        <SearchFoodInput
           value={query}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
         />
@@ -79,7 +79,7 @@ const MealsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
   )
 }
 
-const SearchClientInput = ({
+const SearchFoodInput = ({
   value,
   onChange,
 }: {

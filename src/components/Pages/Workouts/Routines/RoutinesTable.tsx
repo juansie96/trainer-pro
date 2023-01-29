@@ -34,6 +34,7 @@ import { firestoreDB } from '../../../../firebase/firebase'
 import { selectClient, tasksChanged } from '../../Client/Client.slice'
 import { selectTrainer } from '../../../../redux/slices/trainerSlice'
 import { useAppDispatch, useAppSelector } from '../../../../state/storeHooks'
+import { NoContentTableMessage } from '../../Nutrition/MealPlans/AddMealPlanDialog/MealContent/styles'
 
 export interface WorkoutsTableProps {
   workouts: Workout[]
@@ -133,68 +134,78 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
 
   return (
     <>
-      <TableContainer component={Paper} sx={{ width: 0.9, mx: 'auto' }}>
+      <TableContainer component={Paper} sx={{ maxWidth: 'calc(100vw - 6.875em - 4em)' }}>
         <Table sx={{ minWidth: 650 }} aria-label='workouts table'>
           <TableHead sx={{ bgcolor: '#1677d2' }}>
             <TableRow>
-              <TableCell sx={{ color: 'white', fontWeight: 700, width: 0.28 }}>Nombre</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 700, width: 0.48 }}>
+              <TableCell sx={{ color: 'white', fontWeight: 700, width: 0.25, maxWidth: '20em' }}>
+                Nombre
+              </TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700, minWidth: '20em' }}>
                 Descripción
               </TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 700, width: 0.13 }}>
+              <TableCell sx={{ color: 'white', fontWeight: 700, width: '10em' }}>
                 Fecha de creación
               </TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 700, width: 0.13 }}></TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 700, width: '10em' }}></TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {workouts.slice(page * 10, page * 10 + 10).map((workout) => (
-              <TableRow
-                key={workout.id}
-                sx={{
-                  '&:last-child td, &:last-child th': { border: 0 },
-                }}
-              >
-                <TableCell component='th' scope='row'>
-                  {workout.name}
-                </TableCell>
-                <TableCell>{workout.description}</TableCell>
-                <TableCell>
-                  {workout.createdAt.toDate().toLocaleDateString().split(' ')[0]}
-                </TableCell>
-                <TableCell>
-                  <Tooltip title='asignar rutina'>
-                    <PersonAddAlt1Icon
-                      color='success'
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => openAssignDialog(workout.id)}
-                    />
-                  </Tooltip>
-                  <Tooltip title='visualizar rutina'>
-                    <VisibilityIcon
-                      color='action'
-                      onClick={() => openPreviewWorkoutDialog(workout.id)}
-                      sx={{ ml: 1, cursor: 'pointer' }}
-                    />
-                  </Tooltip>
-                  <Tooltip title='editar rutina'>
-                    <EditIcon
-                      color='primary'
-                      sx={{ ml: 1, cursor: 'pointer' }}
-                      onClick={() => openEditWorkoutDialog(workout.id)}
-                    />
-                  </Tooltip>
-                  <Tooltip title='eliminar rutina'>
-                    <DeleteIcon
-                      color='error'
-                      sx={{ ml: 1, cursor: 'pointer' }}
-                      onClick={() => setConfirmDialog({ open: true, workoutId: workout.id })}
-                    />
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          {workouts.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={4}>
+                <NoContentTableMessage msg='No se encontró ninguna rutina' />
+              </TableCell>
+            </TableRow>
+          ) : (
+            <TableBody>
+              {workouts.slice(page * 10, page * 10 + 10).map((workout) => (
+                <TableRow
+                  key={workout.id}
+                  sx={{
+                    '&:last-child td, &:last-child th': { border: 0 },
+                  }}
+                >
+                  <TableCell component='th' scope='row'>
+                    {workout.name}
+                  </TableCell>
+                  <TableCell>{workout.description}</TableCell>
+                  <TableCell>
+                    {workout.createdAt.toDate().toLocaleDateString().split(' ')[0]}
+                  </TableCell>
+                  <TableCell sx={{ width: '5em' }}>
+                    <Tooltip title='asignar rutina'>
+                      <PersonAddAlt1Icon
+                        color='success'
+                        sx={{ cursor: 'pointer' }}
+                        onClick={() => openAssignDialog(workout.id)}
+                      />
+                    </Tooltip>
+                    <Tooltip title='visualizar rutina'>
+                      <VisibilityIcon
+                        color='action'
+                        onClick={() => openPreviewWorkoutDialog(workout.id)}
+                        sx={{ ml: 1, cursor: 'pointer' }}
+                      />
+                    </Tooltip>
+                    <Tooltip title='editar rutina'>
+                      <EditIcon
+                        color='primary'
+                        sx={{ ml: 1, cursor: 'pointer' }}
+                        onClick={() => openEditWorkoutDialog(workout.id)}
+                      />
+                    </Tooltip>
+                    <Tooltip title='eliminar rutina'>
+                      <DeleteIcon
+                        color='error'
+                        sx={{ ml: 1, cursor: 'pointer' }}
+                        onClick={() => setConfirmDialog({ open: true, workoutId: workout.id })}
+                      />
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
       <TablePagination

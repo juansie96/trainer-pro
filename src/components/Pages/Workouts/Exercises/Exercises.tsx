@@ -2,20 +2,9 @@ import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { CenteredLayout } from '../../../UI/CenteredLayout'
-import { DocumentData, DocumentReference } from 'firebase/firestore'
 import { ExercisesLayout } from './ExercisesLayout'
 import AddExerciseDialog from './AddExerciseDialog'
 import { exercisesRef } from '../../../../firebase/fbRefs'
-
-export interface Exercise {
-  name: string
-  description?: string
-  id: string
-  videoUrl: string
-  imgUrls: string[] | null
-  tags: string[] | null
-  ref: DocumentReference<DocumentData>
-}
 
 const Exercises = () => {
   let content
@@ -53,7 +42,7 @@ const Exercises = () => {
   }
 
   return (
-    <Box height={1}>
+    <Box height={1} className='exercises'>
       {content}
       {addExerciseDialogOpen && (
         <AddExerciseDialog open={addExerciseDialogOpen} onClose={closeAddExerciseDialog} />

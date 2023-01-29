@@ -18,7 +18,6 @@ import FormContainer from '../../../Form/FormContainer'
 import { useForm } from 'react-hook-form'
 import { addDoc, WithFieldValue } from 'firebase/firestore'
 import { exercisesRef } from '../../../../firebase/fbRefs'
-import { Exercise } from './Exercises'
 import { Box } from '@mui/system'
 import TextFieldElement from '../../../Form/TextFieldElement'
 import { extractVideoID, videoUrlIsValid } from '../../../../utils'
@@ -26,6 +25,7 @@ import { TagsInput } from '../../../Form/TagsInput'
 import { storage } from '../../../../firebase/firebase'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import Swal from 'sweetalert2'
+import { Exercise } from '../../../../types/workout'
 
 interface AddExerciseDialogProps {
   open: boolean

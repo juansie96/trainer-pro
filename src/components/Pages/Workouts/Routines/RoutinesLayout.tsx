@@ -1,20 +1,32 @@
-import { Box, Button, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  Skeleton,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
 import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
-import { getWorkoutsByTrainerIdRef, workoutsRef } from '../../../../firebase/fbRefs'
+import { getWorkoutsByTrainerIdRef } from '../../../../firebase/fbRefs'
 import RoutinesTable from './RoutinesTable'
-import { CenteredLayout } from '../../../UI/CenteredLayout'
 import { Workout } from '../../../../types/workout'
 import { selectTrainer } from '../../../../redux/slices/trainerSlice'
 import { useAppSelector } from '../../../../state/storeHooks'
+import AddWorkoutDialog from './AddWorkoutDialog'
 
-export const RoutinesLayout = ({ openAddWorkoutDialog }: { openAddWorkoutDialog(): void }) => {
+export const RoutinesLayout = () => {
   const trainer = useAppSelector(selectTrainer)
-  const [workouts, loading] = useCollectionData(getWorkoutsByTrainerIdRef(trainer.id as string))
+  const [workouts, isLoading] = useCollectionData(getWorkoutsByTrainerIdRef(trainer.id as string))
   const [query, setQuery] = useState('')
+  const [addWorkoutDialogOpen, setAddWorkoutDialogOpen] = useState<boolean>(false)
 
-  let filteredWorkouts = workouts?.slice(0)
+  let filteredWorkouts = workouts
+    ?.slice(0)
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0))
 
   if (query && workouts) {
     filteredWorkouts = workouts.filter((workout) =>
@@ -23,24 +35,46 @@ export const RoutinesLayout = ({ openAddWorkoutDialog }: { openAddWorkoutDialog(
   }
 
   return (
-    <Box mt={5}>
-      <Box display='flex' justifyContent='center' mb={5}>
+    <Stack className='workouts-layout' maxWidth='95em' spacing={2.5}>
+      <Typography variant='h1'>Rutinas</Typography>
+      <Box display='flex'>
         <SearchClientInput
           value={query}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
         />
-        <Button variant='contained' disabled={loading} onClick={openAddWorkoutDialog}>
+        <Button
+          variant='contained'
+          disabled={isLoading}
+          onClick={() => setAddWorkoutDialogOpen(true)}
+        >
           Agregar rutina
         </Button>
       </Box>
-      {filteredWorkouts && filteredWorkouts.length > 0 ? (
-        <RoutinesTable workouts={filteredWorkouts as Workout[]} />
+
+      {isLoading ? (
+        <Box>
+          <Skeleton
+            variant='rounded'
+            sx={{ width: '100%', maxWidth: 'calc(100vw - 6.875em - 4em)' }}
+            height={60}
+          />
+          <Skeleton
+            variant='rectangular'
+            sx={{ width: '100%', maxWidth: 'calc(100vw - 6.875em - 4em)', mt: 0.5 }}
+            height={200}
+          />
+        </Box>
       ) : (
-        <CenteredLayout>
-          <Typography variant='h5'>No se encontró ninguna rutina</Typography>
-        </CenteredLayout>
+        <RoutinesTable workouts={filteredWorkouts as Workout[]} />
       )}
-    </Box>
+
+      {addWorkoutDialogOpen && (
+        <AddWorkoutDialog
+          open={addWorkoutDialogOpen}
+          onClose={() => setAddWorkoutDialogOpen(false)}
+        />
+      )}
+    </Stack>
   )
 }
 

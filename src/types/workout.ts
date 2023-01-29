@@ -20,6 +20,16 @@ export interface Workout {
   ref: DocumentReference<DocumentData>
 }
 
+export interface Exercise {
+  name: string
+  description?: string
+  id: string
+  videoUrl: string
+  imgUrls: string[] | null
+  tags: string[] | null
+  ref: DocumentReference<DocumentData>
+}
+
 // export interface Superset {
 //   id: string
 //   sets: number
