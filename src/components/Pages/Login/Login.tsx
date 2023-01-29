@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, Navigate } from 'react-router-dom'
-import { Box, Button, LinearProgress, Typography } from '@mui/material'
-import { MainContainer } from '../../MainContainer/MainContainer'
+import { Box, Button, Container, LinearProgress, Typography } from '@mui/material'
 import { CustomSnackbar } from '../../UI/CustomSnackbar'
 import FormContainer from '../../Form/FormContainer'
 import TextFieldElement from '../../Form/TextFieldElement'
 import { mapFirebaseErrorCodeToMsg } from '../../../utils'
 import { useAppDispatch } from '../../../state/storeHooks'
-import { TrainerState, userLoggedIn } from '../../../redux/slices/trainerSlice'
+import { TrainerState, userLoggedIn } from '../../../redux/slices/Trainer.slice'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { getTrainerDataQueryRef, trainersRef } from '../../../firebase/fbRefs'
 import { addDoc, getDocs, WithFieldValue } from 'firebase/firestore'
@@ -21,7 +20,7 @@ type RegisterFormValues = {
   password: string
 }
 
-export const Login: React.FC = () => {
+export const Login = () => {
   const dispatch = useAppDispatch()
   const [user] = useAuthState(auth)
 
@@ -64,7 +63,7 @@ export const Login: React.FC = () => {
   }
 
   return (
-    <MainContainer sx={{ mt: 4 }} maxWidth='xs'>
+    <Container sx={{ mt: 4 }} maxWidth='xs'>
       <FormContainer formContext={formContext} handleSubmit={formContext.handleSubmit(loginUser)}>
         <TextFieldElement
           sx={{ mb: 2 }}
@@ -118,7 +117,7 @@ export const Login: React.FC = () => {
         severity='error'
         onClose={onSnackbarClose}
       />
-    </MainContainer>
+    </Container>
   )
 
   function onSnackbarClose() {

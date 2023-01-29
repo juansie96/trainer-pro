@@ -4,7 +4,7 @@ import { useDocumentData } from 'react-firebase-hooks/firestore'
 import { useDispatch } from 'react-redux'
 import { Outlet, useParams } from 'react-router-dom'
 import { getClientDataDocById } from '../../../firebase/fbRefs'
-import { clientDataRetrieved } from './Client.slice'
+import { clientDataRetrieved } from '../../../redux/slices/Client.slice'
 import ClientSidebar from './ClientSidebar'
 
 const Client = () => {

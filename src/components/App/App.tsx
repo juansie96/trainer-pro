@@ -1,5 +1,4 @@
 import { Header } from '../Header/Header'
-import { UserProvider } from '../../contexts/UserContext'
 import AppRoutes from './AppRoutes'
 import { useLocation } from 'react-router-dom'
 // import { useAuthState } from 'react-firebase-hooks/auth'
@@ -14,10 +13,10 @@ function App() {
   const location = useLocation()
 
   return (
-    <UserProvider>
+    <>
       {!location.pathname.includes('/client-activation') && <Header />}
       <AppRoutes />
-    </UserProvider>
+    </>
   )
 }
 

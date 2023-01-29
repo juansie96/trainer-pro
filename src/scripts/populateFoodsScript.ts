@@ -1,5 +1,5 @@
 import { addDoc } from 'firebase/firestore'
-import { foodsRef } from '../../../../firebase/fbRefs'
+import { foodsRef } from '../firebase/fbRefs'
 
 const foods = [
   {

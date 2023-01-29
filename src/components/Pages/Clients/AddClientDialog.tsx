@@ -16,7 +16,7 @@ import { Box } from '@mui/system'
 import LinkIcon from '@mui/icons-material/Link'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { getAuth } from 'firebase/auth'
-import { selectTrainer } from '../../../redux/slices/trainerSlice'
+import { selectTrainer } from '../../../redux/slices/Trainer.slice'
 import { useAppSelector } from '../../../state/storeHooks'
 
 interface AddClientDialogProps {

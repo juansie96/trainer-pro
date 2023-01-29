@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { HiOutlineMail } from 'react-icons/hi'
 import { useNavigate } from 'react-router-dom'
-import { auth } from '../../firebase/firebase'
+import { auth } from '../../../firebase/firebase'
 
 const EmailVerification = () => {
   const [user] = useAuthState(auth)

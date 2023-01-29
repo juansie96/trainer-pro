@@ -12,7 +12,7 @@ import {
 import { Box } from '@mui/system'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm, Controller, useFormContext, useFieldArray } from 'react-hook-form'
-import { TrainerState } from '../../../redux/slices/trainerSlice'
+import { TrainerState } from '../../../redux/slices/Trainer.slice'
 import FormContainer from '../../Form/FormContainer'
 import TextFieldElement from '../../Form/TextFieldElement'
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker'

@@ -25,14 +25,14 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore'
-import ConfirmDialog from '../../../ConfirmDialog'
+import ConfirmDialog from '../../../UI/Dialogs/ConfirmDialog'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
 import AssignDialog from '../../../UI/Dialogs/AssignDialog'
 import { Client } from '../../../../types/client'
 import { clientsRef } from '../../../../firebase/fbRefs'
 import { firestoreDB } from '../../../../firebase/firebase'
-import { selectClient, tasksChanged } from '../../Client/Client.slice'
-import { selectTrainer } from '../../../../redux/slices/trainerSlice'
+import { selectClient, tasksChanged } from '../../../../redux/slices/Client.slice'
+import { selectTrainer } from '../../../../redux/slices/Trainer.slice'
 import { useAppDispatch, useAppSelector } from '../../../../state/storeHooks'
 import { NoContentTableMessage } from '../../Nutrition/MealPlans/AddMealPlanDialog/MealContent/styles'
 

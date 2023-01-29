@@ -18,7 +18,7 @@ import { getFoodsByTrainerIdRef } from '../../../../../firebase/fbRefs'
 import { CenteredLayout } from '../../../../UI/CenteredLayout'
 import FoodsTable from '../FoodsTable'
 import { useAppSelector } from '../../../../../state/storeHooks'
-import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
+import { selectTrainer } from '../../../../../redux/slices/Trainer.slice'
 import { CreatedByTypes } from './types'
 
 const MealsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {

@@ -26,7 +26,7 @@ import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form'
 import { exercisesRef, getClientDataDocById, clientsRef } from '../../../../../firebase/fbRefs'
 import { firestoreDB } from '../../../../../firebase/firebase'
-import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
+import { selectTrainer } from '../../../../../redux/slices/Trainer.slice'
 import { useAppDispatch, useAppSelector } from '../../../../../state/storeHooks'
 import { Client } from '../../../../../types/client'
 import { GeneralTask } from '../../../../../types/task'
@@ -34,7 +34,11 @@ import { Exercise, Workout } from '../../../../../types/workout'
 import { getExerciseImgUrl } from '../../../../../utils'
 import FormContainer from '../../../../Form/FormContainer'
 import TextFieldElement from '../../../../Form/TextFieldElement'
-import { clientDataRetrieved, selectClient, tasksChanged } from '../../../Client/Client.slice'
+import {
+  clientDataRetrieved,
+  selectClient,
+  tasksChanged,
+} from '../../../../../redux/slices/Client.slice'
 import WorkoutExercisesTable from '../WorkoutExercisesTable'
 import { EditWorkoutDialogProps, EditWorkoutFormData } from './types'
 

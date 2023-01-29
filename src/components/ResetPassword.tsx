@@ -1,9 +1,7 @@
-import { Button, Typography } from '@mui/material'
+import { Button, Container, Typography } from '@mui/material'
 import FormContainer from './Form/FormContainer'
 import TextFieldElement from './Form/TextFieldElement'
-import { MainContainer } from './MainContainer/MainContainer'
 import { HiOutlineKey } from 'react-icons/hi'
-import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { BsCheckCircle } from 'react-icons/bs'
 import { AuthError, sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '../firebase/firebase'
@@ -37,7 +35,7 @@ const ResetPassword = () => {
       })
   }
   return (
-    <MainContainer sx={{ mt: 4, textAlign: 'center', color: '#333' }} maxWidth='xs'>
+    <Container sx={{ mt: 4, textAlign: 'center', color: '#333' }} maxWidth='xs'>
       {!emailSent ? (
         <>
           <HiOutlineKey size={100} />
@@ -73,7 +71,7 @@ const ResetPassword = () => {
         severity='error'
         onClose={() => setLoginError('')}
       />
-    </MainContainer>
+    </Container>
   )
 }
 

@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { getTrainerDataQueryRef } from '../../../firebase/fbRefs'
 import { auth } from '../../../firebase/firebase'
-import { selectTrainer, userLoggedIn } from '../../../redux/slices/trainerSlice'
+import { selectTrainer, userLoggedIn } from '../../../redux/slices/Trainer.slice'
 import { useAppSelector } from '../../../state/storeHooks'
 import { DashboardTabs } from './DashboardTabs'
 

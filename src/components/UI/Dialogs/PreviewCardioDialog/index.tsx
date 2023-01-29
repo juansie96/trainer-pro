@@ -18,7 +18,11 @@ import CloseIcon from '@mui/icons-material/Close'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { useAppDispatch, useAppSelector } from '../../../../state/storeHooks'
-import { cardioTaskModified, selectClient, tasksChanged } from '../../../Pages/Client/Client.slice'
+import {
+  cardioTaskModified,
+  selectClient,
+  tasksChanged,
+} from '../../../../redux/slices/Client.slice'
 import { StyledDialogActions } from '../styles'
 import { getDocumentRef } from '../../../../firebase/fbRefs'
 import { Section } from '../../../Pages/Nutrition/MealPlans/PreviewMealPlanDialog'

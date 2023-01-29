@@ -5,7 +5,7 @@ import RestaurantIcon from '@mui/icons-material/Restaurant'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import Sidebar, { MenuItem } from '../../Sidebar'
 import { useAppSelector } from '../../../state/storeHooks'
-import { selectClient } from './Client.slice'
+import { selectClient } from '../../../redux/slices/Client.slice'
 import PersonIcon from '@mui/icons-material/Person'
 
 const validSections = ['information', 'nutrition']

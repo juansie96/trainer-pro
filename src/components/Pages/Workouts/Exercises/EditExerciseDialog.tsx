@@ -24,7 +24,7 @@ import { storage } from '../../../../firebase/firebase'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import Swal from 'sweetalert2'
 import DeleteIcon from '@mui/icons-material/Delete'
-import ConfirmDialog from '../../../ConfirmDialog'
+import ConfirmDialog from '../../../UI/Dialogs/ConfirmDialog'
 import { Exercise } from '../../../../types/workout'
 
 interface EditExerciseDialogProps {

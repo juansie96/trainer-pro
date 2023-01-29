@@ -5,11 +5,10 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../state/storeHooks'
-import { useContext } from 'react'
-import { UserContext } from '../../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebase/firebase'
-import { userLoggedOut } from '../../redux/slices/trainerSlice'
+import { userLoggedOut } from '../../redux/slices/Trainer.slice'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 type Link = {
   label: string
@@ -18,7 +17,7 @@ type Link = {
 }
 
 export function Header() {
-  const user = useContext(UserContext)
+  const [user, loading, error] = useAuthState(auth)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   let links
@@ -29,7 +28,7 @@ export function Header() {
     navigate('/login')
   }
 
-  if (user?.user) {
+  if (user) {
     links = (
       <Button sx={{ color: 'white' }} onClick={onLogout}>
         Cerrar sesión

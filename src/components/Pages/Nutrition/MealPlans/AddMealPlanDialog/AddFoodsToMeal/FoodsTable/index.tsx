@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@mui/material'
 import { useAppSelector } from '../../../../../../../state/storeHooks'
-import { selectTrainer } from '../../../../../../../redux/slices/trainerSlice'
+import { selectTrainer } from '../../../../../../../redux/slices/Trainer.slice'
 import { Food, MealPlan } from '../../../../../../../types/meals'
 import { CgAddR, CgCheckO } from 'react-icons/cg'
 import { useFieldArrayFormContext } from '../../../../../../../contexts/FieldArrayFormProvider'

@@ -18,7 +18,7 @@ import { IProps } from './types'
 import TextFieldElement from '../../../../Form/TextFieldElement'
 import { foodsRef } from '../../../../../firebase/fbRefs'
 import { useAppSelector } from '../../../../../state/storeHooks'
-import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
+import { selectTrainer } from '../../../../../redux/slices/Trainer.slice'
 
 const AddFoodDialog = ({ open, onClose }: IProps) => {
   const trainer = useAppSelector(selectTrainer)

@@ -27,14 +27,6 @@ export interface Exercise {
   videoUrl: string
   imgUrls: string[] | null
   tags: string[] | null
+  creatorId?: string
   ref: DocumentReference<DocumentData>
 }
-
-// export interface Superset {
-//   id: string
-//   sets: number
-//   exercises: SingleExercise[]
-//   type: 'superset'
-// }
-
-// export type WorkoutExercise = SingleExercise | Superset

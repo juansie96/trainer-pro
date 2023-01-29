@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { RootState } from '../../../state/store'
-import { Client } from '../../../types/client'
-import { CardioTask, GeneralTask } from '../../../types/task'
+import { RootState } from '../../state/store'
+import { Client } from '../../types/client'
+import { CardioTask, GeneralTask } from '../../types/task'
 
 type SliceState = Client | null
 

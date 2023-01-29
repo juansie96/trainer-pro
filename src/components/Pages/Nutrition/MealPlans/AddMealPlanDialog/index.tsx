@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import { useAppSelector } from '../../../../../state/storeHooks'
-import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
+import { selectTrainer } from '../../../../../redux/slices/Trainer.slice'
 import { Button, Dialog, DialogContent, Typography, Stack, Box, Checkbox } from '@mui/material'
 import FormContainer from '../../../../Form/FormContainer'
 import TextFieldElement from '../../../../Form/TextFieldElement'

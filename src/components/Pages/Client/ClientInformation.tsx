@@ -3,7 +3,7 @@ import { Box } from '@mui/system'
 import dayjs from 'dayjs'
 import { useAppSelector } from '../../../state/storeHooks'
 import { CLIENT_OBJECTIVES, TClientObjectives } from '../../../utils'
-import { selectClient } from './Client.slice'
+import { selectClient } from '../../../redux/slices/Client.slice'
 
 const ClientInformation = () => {
   const client = useAppSelector(selectClient)

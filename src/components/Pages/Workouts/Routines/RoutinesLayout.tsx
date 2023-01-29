@@ -14,7 +14,7 @@ import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getWorkoutsByTrainerIdRef } from '../../../../firebase/fbRefs'
 import RoutinesTable from './RoutinesTable'
 import { Workout } from '../../../../types/workout'
-import { selectTrainer } from '../../../../redux/slices/trainerSlice'
+import { selectTrainer } from '../../../../redux/slices/Trainer.slice'
 import { useAppSelector } from '../../../../state/storeHooks'
 import AddWorkoutDialog from './AddWorkoutDialog'
 

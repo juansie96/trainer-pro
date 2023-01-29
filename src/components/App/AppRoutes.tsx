@@ -5,23 +5,23 @@ import { Dashboard } from '../Pages/Dashboard/Dashboard'
 import HomeScreen from '../Pages/Home/Home'
 import Nutrition from '../Pages/Nutrition/Nutrition'
 import Workouts from '../Pages/Workouts/Workouts'
-import { UserContext } from '../../contexts/UserContext'
 import Client from '../Pages/Client/Client'
 import ClientPlanification from '../Pages/Client/ClientPlanification'
 import ClientInformation from '../Pages/Client/ClientInformation'
-import { useContext } from 'react'
 import Exercises from '../Pages/Workouts/Exercises/Exercises'
 import ClientActivation from '../Pages/ClientActivation'
-import EmailVerification from '../Pages/EmailVerification'
 import ResetPassword from '../ResetPassword'
 import Meals from '../Pages/Nutrition/Foods'
 import ClientNutrition from '../Pages/Client/ClientNutrition'
 import { ClientsLayout } from '../Pages/Clients/ClientsLayout'
 import { RoutinesLayout } from '../Pages/Workouts/Routines/RoutinesLayout'
 import MealPlansLayout from '../Pages/Nutrition/MealPlans/MealPlansLayout'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth } from '../../firebase/firebase'
+import EmailVerification from '../Pages/EmailVerification'
 
 const AppRoutes = () => {
-  const user = useContext(UserContext)?.user
+  const [user] = useAuthState(auth)
 
   return (
     <Routes>

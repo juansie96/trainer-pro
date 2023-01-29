@@ -13,7 +13,7 @@ import {
 import { firestoreDB } from './firebase'
 
 import type { Client } from '../types/client'
-import type { TrainerState } from '../redux/slices/trainerSlice'
+import type { TrainerState } from '../redux/slices/Trainer.slice'
 import type { Exercise, Workout } from '../types/workout'
 import type { Food, MealPlan } from '../types/meals'
 

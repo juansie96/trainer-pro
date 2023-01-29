@@ -1,19 +1,17 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, LinearProgress } from '@mui/material'
+import { Button, Container, LinearProgress } from '@mui/material'
 import { useForm } from 'react-hook-form'
-import { MainContainer } from '../../MainContainer/MainContainer'
 import { CustomSnackbar } from '../../UI/CustomSnackbar'
 import FormContainer from '../../Form/FormContainer'
-import { UserContext } from '../../../contexts/UserContext'
 import TextFieldElement from '../../Form/TextFieldElement'
 import { AuthError, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'
 import { auth } from '../../../firebase/firebase'
 import { mapFirebaseErrorCodeToMsg } from '../../../utils'
 import { addDoc, WithFieldValue } from 'firebase/firestore'
 import { trainersRef } from '../../../firebase/fbRefs'
-import { TrainerState } from '../../../redux/slices/trainerSlice'
-import { useDispatch } from 'react-redux'
+import { TrainerState } from '../../../redux/slices/Trainer.slice'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 type RegisterFormValues = {
   email: string
@@ -23,8 +21,7 @@ type RegisterFormValues = {
 }
 
 export const Register = () => {
-  const userContext = useContext(UserContext)
-  const dispatch = useDispatch()
+  const [user] = useAuthState(auth)
 
   const formContext = useForm<RegisterFormValues>({
     mode: 'onBlur',
@@ -39,13 +36,12 @@ export const Register = () => {
   const [signingUp, setSigningUp] = useState(false)
   const [registerError, setRegisterError] = useState('')
 
-  if (userContext?.user) {
+  if (user) {
     return <Navigate to='/dashboard' />
   }
 
   return (
-    <MainContainer maxWidth='xs' sx={{ mt: 4 }}>
-      {/* <FormErrors errors={formErrors} /> */}
+    <Container maxWidth='xs' sx={{ mt: 4 }}>
       <>{signingUp && <LinearProgress sx={{ my: 3 }} />}</>
       <FormContainer formContext={formContext} handleSubmit={formContext.handleSubmit(onSignUp)}>
         <TextFieldElement
@@ -91,7 +87,7 @@ export const Register = () => {
         severity='error'
         onClose={onSnackbarClose}
       />
-    </MainContainer>
+    </Container>
   )
 
   function onSnackbarClose() {

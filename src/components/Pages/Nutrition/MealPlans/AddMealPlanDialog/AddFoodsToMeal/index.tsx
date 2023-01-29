@@ -23,7 +23,7 @@ import { StyledDialogActions, StyledDialogHeader } from '../../../../../UI/Dialo
 import { useAppSelector } from '../../../../../../state/storeHooks'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getFoodsByTrainerIdRef } from '../../../../../../firebase/fbRefs'
-import { selectTrainer } from '../../../../../../redux/slices/trainerSlice'
+import { selectTrainer } from '../../../../../../redux/slices/Trainer.slice'
 import SearchIcon from '@mui/icons-material/Search'
 
 import type { IProps } from './types'

@@ -12,7 +12,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { ClientsTable } from './ClientsTable'
 import { useSelector } from 'react-redux'
-import { selectTrainer } from '../../../redux/slices/trainerSlice'
+import { selectTrainer } from '../../../redux/slices/Trainer.slice'
 import { getClientsByTrainerIdRef } from '../../../firebase/fbRefs'
 import { Stack } from '@mui/system'
 import { AddClientDialog } from './AddClientDialog'
@@ -24,8 +24,6 @@ export const ClientsLayout = () => {
   const [query, setQuery] = useState('')
 
   let filteredClients = clients?.slice(0)
-
-  console.log('filteredClients', filteredClients)
 
   if (query && clients) {
     filteredClients = clients.filter(

@@ -14,7 +14,7 @@ import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getMealPlansByTrainerIdRef } from '../../../../../firebase/fbRefs'
 import MealPlansTable from '../MealPlansTable'
 import { useAppSelector } from '../../../../../state/storeHooks'
-import { selectTrainer } from '../../../../../redux/slices/trainerSlice'
+import { selectTrainer } from '../../../../../redux/slices/Trainer.slice'
 import AddMealPlanDialog from '../AddMealPlanDialog'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 
