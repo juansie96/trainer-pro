@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   FormControlLabel,
   FormLabel,
@@ -15,13 +14,12 @@ import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getFoodsByTrainerIdRef } from '../../../../../firebase/fbRefs'
-import { CenteredLayout } from '../../../../UI/CenteredLayout'
 import FoodsTable from '../FoodsTable'
 import { useAppSelector } from '../../../../../state/storeHooks'
 import { selectTrainer } from '../../../../../redux/slices/Trainer.slice'
 import { CreatedByTypes } from './types'
 
-const MealsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
+const FoodsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
   const trainer = useAppSelector(selectTrainer)
   const [foods, loading] = useCollectionData(getFoodsByTrainerIdRef(trainer.id as string))
   const [query, setQuery] = useState('')
@@ -33,6 +31,7 @@ const MealsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
     filteredFoods = foods.filter((meal) => meal.name.toUpperCase().includes(query.toUpperCase()))
   }
 
+  console.log('outs')
   if (createdBy === 'custom') {
     filteredFoods = filteredFoods?.filter((m) => m.creatorId === trainer.id)
   } else if (createdBy === 'default') {
@@ -69,11 +68,9 @@ const MealsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
       {filteredFoods && filteredFoods.length > 0 ? (
         <FoodsTable foods={filteredFoods} />
       ) : (
-        <CenteredLayout>
-          <Typography variant='h5' my={3}>
-            No se encontró ningun alimento
-          </Typography>
-        </CenteredLayout>
+        <Typography variant='h5' my={3}>
+          No se encontró ningun alimento
+        </Typography>
       )}
     </Stack>
   )
@@ -105,4 +102,4 @@ const SearchFoodInput = ({
   />
 )
 
-export default MealsLayout
+export default FoodsLayout

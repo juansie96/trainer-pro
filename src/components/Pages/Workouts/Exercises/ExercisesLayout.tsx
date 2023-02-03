@@ -1,8 +1,12 @@
 import {
   Box,
   Button,
+  FormControlLabel,
+  FormLabel,
   IconButton,
   InputAdornment,
+  Radio,
+  RadioGroup,
   Stack,
   TextField,
   Typography,
@@ -10,12 +14,18 @@ import {
 import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
-import { exercisesRef } from '../../../../firebase/fbRefs'
+import { getExercisesByTrainerIdRef } from '../../../../firebase/fbRefs'
 import { CenteredLayout } from '../../../UI/CenteredLayout'
 import ExercisesGrid from './ExercisesGrid'
+import { useAppSelector } from '../../../../state/storeHooks'
+import { selectTrainer } from '../../../../redux/slices/Trainer.slice'
+import { CreatedByTypes } from '../../Nutrition/Foods/FoodsLayout/types'
 
 export const ExercisesLayout = ({ openAddExerciseDialog }: { openAddExerciseDialog(): void }) => {
-  const [exercises, loading] = useCollectionData(exercisesRef)
+  const trainer = useAppSelector(selectTrainer)
+  const [exercises, loading] = useCollectionData(getExercisesByTrainerIdRef(trainer.id))
+  const [createdBy, setCreatedBy] = useState<CreatedByTypes>('all')
+  console.log('createdBy', createdBy)
 
   const [query, setQuery] = useState('')
 
@@ -25,6 +35,14 @@ export const ExercisesLayout = ({ openAddExerciseDialog }: { openAddExerciseDial
     filteredExercises = exercises.filter((workout) =>
       workout.name.toUpperCase().includes(query.toUpperCase()),
     )
+  }
+
+  if (createdBy === 'custom') {
+    console.log(filteredExercises)
+    filteredExercises = filteredExercises?.filter((e) => e.creatorId === trainer.id)
+    console.log(filteredExercises)
+  } else if (createdBy === 'default') {
+    filteredExercises = filteredExercises?.filter((e) => e.creatorId === '')
   }
 
   return (
@@ -40,15 +58,27 @@ export const ExercisesLayout = ({ openAddExerciseDialog }: { openAddExerciseDial
             Agregar ejercicio
           </Button>
         </Box>
+        <Stack direction='row' alignItems='center' mt={3} spacing={3}>
+          <FormLabel>Alimentos creados por:</FormLabel>
+          <RadioGroup
+            value={createdBy}
+            onChange={(e) => setCreatedBy(e.target.value as CreatedByTypes)}
+            name='radio-buttons-group'
+          >
+            <Stack direction='row'>
+              <FormControlLabel value='all' control={<Radio />} label='Todos' />
+              <FormControlLabel value='default' control={<Radio />} label='Trainer Pro' />
+              <FormControlLabel value='custom' control={<Radio />} label='Propios' />
+            </Stack>
+          </RadioGroup>
+        </Stack>
 
         {filteredExercises && filteredExercises.length > 0 ? (
           <ExercisesGrid exercises={filteredExercises} />
         ) : (
-          <CenteredLayout>
-            <Typography variant='h5' my={3}>
-              No se encontró ningun ejercicio
-            </Typography>
-          </CenteredLayout>
+          <Typography variant='h5' my={3}>
+            No se encontró ningun ejercicio
+          </Typography>
         )}
       </Stack>
     </Box>

@@ -23,10 +23,10 @@ export interface Workout {
 export interface Exercise {
   name: string
   description?: string
-  id: string
+  id?: string
   videoUrl: string
   imgUrls: string[] | null
   tags: string[] | null
   creatorId?: string
-  ref: DocumentReference<DocumentData>
+  ref?: DocumentReference<DocumentData>
 }

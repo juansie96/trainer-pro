@@ -26,6 +26,8 @@ import { storage } from '../../../../firebase/firebase'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import Swal from 'sweetalert2'
 import { Exercise } from '../../../../types/workout'
+import { useAppSelector } from '../../../../state/storeHooks'
+import { selectTrainer } from '../../../../redux/slices/Trainer.slice'
 
 interface AddExerciseDialogProps {
   open: boolean
@@ -48,6 +50,8 @@ interface Image {
 
 const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
   const formContext = useForm<AddExerciseFormData>()
+  const trainer = useAppSelector(selectTrainer)
+  console.log('trainer', trainer)
 
   const [isAdding, setIsAdding] = useState<boolean>(false)
   const [mediaType, setMediaType] = useState<MediaType>('video')
@@ -90,8 +94,9 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
   }
 
   const onSubmit = async (exercise: AddExerciseFormData) => {
-    const newExercise: AddExerciseFormData & { imgUrls?: string[] | null } = {
-      ...exercise,
+    const newExercise: Exercise = {
+      ...(exercise as Exercise),
+      creatorId: trainer.id,
     }
 
     setIsAdding(true)
@@ -108,7 +113,7 @@ const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
     }
 
     try {
-      const res = await addDoc(exercisesRef, newExercise as WithFieldValue<Exercise>)
+      await addDoc(exercisesRef, newExercise as WithFieldValue<Exercise>)
       setIsAdding(false)
       onClose()
       Swal.fire('¡Éxito!', 'El ejercicio se creo correctamente!', 'success')

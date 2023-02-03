@@ -73,6 +73,8 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
     },
   })
 
+  const isDefault = exercise.creatorId === ''
+
   const [isAdding, setIsAdding] = useState<boolean>(false)
 
   const [mediaType, setMediaType] = useState<MediaType>(
@@ -223,6 +225,7 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
     selectMediaTypeContent = (
       <Box mt={2} display='flex' flexDirection='column' alignItems='center' width={1}>
         <TextFieldElement
+          disabled={isDefault}
           name='videoUrl'
           label='URL del video'
           validation={{
@@ -266,6 +269,7 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
               hidden
               accept='image/*'
               onChange={(e) => onImageChange(e, 'first')}
+              disabled={isDefault}
             />
           </Button>
         </Box>
@@ -337,8 +341,9 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
                 validation={{ required: 'El nombre es requerido' }}
                 size='small'
                 fullWidth={true}
+                disabled={isDefault}
               />
-              <FormControl sx={{ mt: 2 }}>
+              <FormControl sx={{ mt: 2 }} disabled={isDefault}>
                 <FormLabel id='demo-controlled-radio-buttons-group'>
                   ¿Quieres añadir contenido gráfico?
                 </FormLabel>
@@ -356,30 +361,34 @@ const EditExerciseDialog = ({ open, onClose, exercise }: EditExerciseDialogProps
                 label='Instrucciones (opcional)'
                 sx={{ mt: 2 }}
                 fullWidth
+                disabled={isDefault}
               />
               <TagsInput
                 name='tags'
                 label='Categorías'
                 placeholder='Agrega una categoría presionando enter'
+                disabled={isDefault}
               />
             </Stack>
           </DialogContent>
-          <DialogActions
-            sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3', justifyContent: 'space-between' }}
-          >
-            <DeleteIcon
-              fontSize='large'
-              color='error'
-              sx={{ cursor: 'pointer' }}
-              onClick={() => setConfirmDialogOpen(true)}
-            />
-            <Box>
-              <Button onClick={onClose}>Cancelar</Button>
-              <Button type='submit' variant='contained' disabled={isAdding}>
-                {isAdding ? 'Guardando Ejercicio' : 'Guardar Ejercicio'}
-              </Button>
-            </Box>
-          </DialogActions>
+          {!isDefault && (
+            <DialogActions
+              sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3', justifyContent: 'space-between' }}
+            >
+              <DeleteIcon
+                fontSize='large'
+                color='error'
+                sx={{ cursor: 'pointer' }}
+                onClick={() => setConfirmDialogOpen(true)}
+              />
+              <Box>
+                <Button onClick={onClose}>Cancelar</Button>
+                <Button type='submit' variant='contained' disabled={isAdding}>
+                  {isAdding ? 'Guardando Ejercicio' : 'Guardar Ejercicio'}
+                </Button>
+              </Box>
+            </DialogActions>
+          )}
         </FormContainer>
       </Dialog>
       {confirmDialogOpen && (

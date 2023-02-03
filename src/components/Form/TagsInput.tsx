@@ -1,15 +1,22 @@
-import { Autocomplete, Chip, TextField } from '@mui/material';
-import React from 'react';
-import { Control, Controller } from 'react-hook-form';
+import { Autocomplete, Chip, TextField } from '@mui/material'
+import React from 'react'
+import { Control, Controller } from 'react-hook-form'
 
 interface TagsInputProps {
-  control?: Control<any>;
-  label: string;
-  placeholder: string;
-  name: string;
+  control?: Control<any>
+  label: string
+  placeholder: string
+  name: string
+  disabled?: boolean
 }
 
-export const TagsInput: React.FC<TagsInputProps> = ({name, control, label, placeholder}) => {
+export const TagsInput: React.FC<TagsInputProps> = ({
+  name,
+  control,
+  label,
+  placeholder,
+  disabled,
+}) => {
   return (
     <Controller
       name={name}
@@ -17,38 +24,30 @@ export const TagsInput: React.FC<TagsInputProps> = ({name, control, label, place
       render={({ field }) => (
         <Autocomplete
           {...field}
+          disabled={disabled}
           sx={{ mt: 2 }}
           fullWidth
           multiple
-          id="tags-filled"
+          id='tags-filled'
           options={[]}
           // defaultValue={field.value}
           freeSolo
           onChange={(e, value) => field.onChange(value)}
           renderTags={(
             value: any[],
-            getTagProps: (arg0: { index: any }) => JSX.IntrinsicAttributes
+            getTagProps: (arg0: { index: any }) => JSX.IntrinsicAttributes,
           ) =>
             value.map((option: any, index: any) => {
               return (
-                <Chip
-                  key={index}
-                  variant="outlined"
-                  label={option}
-                  {...getTagProps({ index })}
-                />
-              );
+                <Chip key={index} variant='outlined' label={option} {...getTagProps({ index })} />
+              )
             })
           }
           renderInput={(params: any) => (
-            <TextField
-              {...params}
-              label={label}
-              placeholder={placeholder}
-            />
+            <TextField {...params} label={label} placeholder={placeholder} />
           )}
         />
       )}
     />
-  );
-};
+  )
+}
