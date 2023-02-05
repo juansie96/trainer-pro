@@ -1,11 +1,11 @@
 import { Box } from '@mui/material'
 import { signOut } from 'firebase/auth'
-import { getDocs } from 'firebase/firestore'
+import { addDoc, getDocs } from 'firebase/firestore'
 import { useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useDispatch } from 'react-redux'
 import { Outlet, useNavigate } from 'react-router-dom'
-import { getTrainerDataQueryRef } from '../../../firebase/fbRefs'
+import { getTrainerDataQueryRef, trainersRef } from '../../../firebase/fbRefs'
 import { auth } from '../../../firebase/firebase'
 import { selectTrainer, userLoggedIn } from '../../../redux/slices/Trainer.slice'
 import { useAppSelector } from '../../../state/storeHooks'
@@ -32,7 +32,7 @@ export const Dashboard = () => {
     const querySnapshot = await getDocs(getTrainerDataQueryRef(user?.email as string))
     const userExists = querySnapshot.size > 0
     if (userExists) {
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach(async (doc) => {
         const trainerdb = doc.data()
         if (trainerdb) {
           dispatch(userLoggedIn({ ...trainerdb, id: doc.id }))
@@ -41,7 +41,19 @@ export const Dashboard = () => {
         }
       })
     } else {
-      signOut(auth)
+      const { id } = await addDoc(trainersRef, {
+        email: user.email,
+        name: user.displayName,
+        lastname: '',
+      })
+      dispatch(
+        userLoggedIn({
+          id,
+          email: user.email,
+          name: user.displayName,
+          lastname: '',
+        }),
+      )
     }
   }
 

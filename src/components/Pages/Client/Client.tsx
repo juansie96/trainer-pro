@@ -15,7 +15,8 @@ const Client = () => {
   useEffect(() => {
     getClientDataDocById(clientId as string).then((docSnap) => {
       if (docSnap.exists()) {
-        dispatch(clientDataRetrieved(docSnap.data()))
+        const clientData = (({ ref: _, ...objWithoutRef }) => objWithoutRef)(docSnap.data())
+        dispatch(clientDataRetrieved(clientData))
       } else {
         throw new Error()
       }

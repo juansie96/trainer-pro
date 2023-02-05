@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { getDoc, updateDoc } from 'firebase/firestore'
+import { deleteDoc, getDoc, updateDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { exercisesRef, getDocumentRef } from '../../../../../firebase/fbRefs'
@@ -55,6 +55,7 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
     const docRef = getDocumentRef('clients', client.id as string)
     const newTasks = client.tasks.filter((t) => !(t.id === eventData?.id))
     try {
+      await deleteDoc(workout.ref)
       await updateDoc<Client>(docRef, { tasks: newTasks })
       dispatch(tasksChanged(newTasks))
       Swal.fire('¡Éxito!', 'El evento se eliminó correctamente', 'success')

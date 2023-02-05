@@ -31,7 +31,6 @@ const FoodsLayout = ({ openAddMealDialog }: { openAddMealDialog(): void }) => {
     filteredFoods = foods.filter((meal) => meal.name.toUpperCase().includes(query.toUpperCase()))
   }
 
-  console.log('outs')
   if (createdBy === 'custom') {
     filteredFoods = filteredFoods?.filter((m) => m.creatorId === trainer.id)
   } else if (createdBy === 'default') {

@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -11,7 +12,7 @@ import {
   Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import { addDoc, Timestamp, WithFieldValue } from 'firebase/firestore'
+import { addDoc, DocumentReference, Timestamp } from 'firebase/firestore'
 import React, { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form'
@@ -28,7 +29,8 @@ import WorkoutExercisesTable from '../WorkoutExercisesTable'
 interface AddWorkoutDialogProps {
   open: boolean
   onClose(): void
-  fromAddTask?: boolean
+  clientId?: string
+  onAssign?(workout: Workout): void
 }
 
 export interface AddWorkoutFormData {
@@ -37,7 +39,7 @@ export interface AddWorkoutFormData {
   workoutExercises: Array<SingleExercise>
 }
 
-const AddWorkoutDialog = ({ open, onClose, fromAddTask }: AddWorkoutDialogProps) => {
+const AddWorkoutDialog = ({ open, onClose, clientId, onAssign }: AddWorkoutDialogProps) => {
   const [exercises] = useCollectionData(exercisesRef)
   const formContext = useForm<AddWorkoutFormData>()
   const { fields, append, remove } = useFieldArray({
@@ -49,6 +51,7 @@ const AddWorkoutDialog = ({ open, onClose, fromAddTask }: AddWorkoutDialogProps)
 
   const [isAdding, setIsAdding] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
+  const [saveOnLibrary, setSaveOnLibrary] = useState(false)
 
   const filteredExercises =
     exercises && searchTerm.length
@@ -62,17 +65,34 @@ const AddWorkoutDialog = ({ open, onClose, fromAddTask }: AddWorkoutDialogProps)
 
   const onSubmit = async (newWorkout: AddWorkoutFormData) => {
     setIsAdding(true)
+
+    const finalData: Workout = {
+      ...newWorkout,
+      trainerId: trainer.id,
+      createdAt: Timestamp.fromDate(new Date()),
+      clientId: clientId ? clientId : '',
+    }
+
+    const promises: Promise<DocumentReference<Workout>>[] = []
+
     try {
-      await addDoc(workoutsRef, {
-        ...newWorkout,
-        trainerId: trainer.id,
-        createdAt: Timestamp.fromDate(new Date()),
-      } as WithFieldValue<Workout>)
-      setIsAdding(false)
-      if (!fromAddTask) {
-        Swal.fire('¡Éxito!', 'El plan alimenticio se creó correctamente!', 'success')
+      promises.push(addDoc(workoutsRef, finalData))
+
+      if (saveOnLibrary) {
+        promises.push(addDoc(workoutsRef, { ...finalData, clientId: '' }))
       }
+
+      const [{ id }] = await Promise.all(promises)
+
+      setIsAdding(false)
+
+      if (clientId) {
+        onAssign({ ...newWorkout, id } as Workout)
+        return
+      }
+
       onClose()
+      Swal.fire('¡Éxito!', 'El plan alimenticio se creó correctamente!', 'success')
     } catch (err: unknown) {
       setIsAdding(false)
     }
@@ -85,45 +105,6 @@ const AddWorkoutDialog = ({ open, onClose, fromAddTask }: AddWorkoutDialogProps)
   const handleSearchExerciseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value.toLowerCase())
   }
-
-  // const handleSupersetBuild = (selected: readonly string[]) => {
-  //   const workoutExercisesClone = formContext
-  //     .watch('workoutExercises')
-  //     .map((e, idx) => ({ ...e, id: fields[idx].id }))
-
-  //   const selectedIndexesAsc = selected
-  //     .map((id) =>
-  //       fields.findIndex((f) => {
-  //         if (f.type === 'single') {
-  //           return f.id === id
-  //         } else {
-  //           return false
-  //         }
-  //       }),
-  //     )
-  //     .sort((a, b) => a - b)
-
-  //   const supersetIdx = selectedIndexesAsc[0]
-
-  //   const supersetExercises = selectedIndexesAsc.map((idx) => ({
-  //     ...(workoutExercisesClone[idx] as SingleExercise),
-  //   }))
-
-  //   const supersetObj: Superset = {
-  //     id: Math.random().toString(),
-  //     type: 'superset',
-  //     exercises: supersetExercises,
-  //     sets: 3,
-  //   }
-
-  //   workoutExercisesClone[supersetIdx] = supersetObj
-
-  //   const newWorkoutExercises = workoutExercisesClone.filter((_, idx) => {
-  //     return idx === supersetIdx || !selectedIndexesAsc.includes(idx)
-  //   })
-
-  //   formContext.reset({ ...formContext.watch(), workoutExercises: newWorkoutExercises })
-  // }
 
   return (
     <Dialog
@@ -156,7 +137,6 @@ const AddWorkoutDialog = ({ open, onClose, fromAddTask }: AddWorkoutDialogProps)
               exercises={exercises}
               fields={fields}
               deleteSelectedExercises={deleteSelectedExercises}
-              // onSupersetClick={handleSupersetBuild}
             />
             <UIVerticalSeparator />
             <RightSideContent
@@ -166,11 +146,33 @@ const AddWorkoutDialog = ({ open, onClose, fromAddTask }: AddWorkoutDialogProps)
             />
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #e3e3e3' }}>
-          <Button onClick={onClose}>Cancelar</Button>
-          <Button type='submit' variant='contained' disabled={isAdding}>
-            {isAdding ? 'Agregando Rutina' : 'Agregar Rutina'}
-          </Button>
+        <DialogActions
+          sx={{
+            px: 3,
+            py: 2,
+            borderTop: '1px solid #e3e3e3',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div>
+            {clientId && (
+              <Stack direction='row' alignItems='center'>
+                <Checkbox
+                  value={saveOnLibrary}
+                  onChange={(e) => setSaveOnLibrary(e.target.checked)}
+                />
+                <Typography>Guardar plan en mi biblioteca</Typography>
+              </Stack>
+            )}
+          </div>
+          <div>
+            <Button onClick={onClose}>Cancelar</Button>
+            <Button type='submit' variant='contained' disabled={isAdding}>
+              {isAdding ? 'Agregando Rutina' : 'Agregar Rutina'}
+            </Button>
+          </div>
         </DialogActions>
       </FormContainer>
     </Dialog>
@@ -181,12 +183,10 @@ const LeftSideContent = ({
   exercises,
   fields,
   deleteSelectedExercises,
-}: // onSupersetClick,
-{
+}: {
   exercises: Exercise[] | undefined
   fields: FieldArrayWithId<AddWorkoutFormData, 'workoutExercises', 'id'>[]
   deleteSelectedExercises: (selected: readonly string[]) => void
-  // onSupersetClick: (selected: readonly string[]) => void
 }) => {
   return (
     <Box width={0.55}>
@@ -212,7 +212,6 @@ const LeftSideContent = ({
           fields={fields}
           exercises={exercises}
           onRemoveExercises={deleteSelectedExercises}
-          // onSupersetClick={onSupersetClick}
         />
       ) : (
         <p>Cargando tabla</p>
@@ -268,9 +267,9 @@ const ExerciseCard = ({
 }) => {
   const Tags = () => (
     <Box pl={1}>
-      {exercise.tags && exercise.tags.length > 0 ? (
-        exercise.tags?.map((tag, idx) => {
-          const isLastItem = idx === exercise.tags!.length - 1
+      {exercise.tags?.length > 0 ? (
+        exercise.tags.map((tag, idx) => {
+          const isLastItem = idx === exercise.tags.length - 1
 
           return (
             <Typography variant='caption' component='span' key={idx}>

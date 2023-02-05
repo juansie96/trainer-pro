@@ -51,7 +51,6 @@ interface Image {
 const AddExerciseDialog = ({ open, onClose }: AddExerciseDialogProps) => {
   const formContext = useForm<AddExerciseFormData>()
   const trainer = useAppSelector(selectTrainer)
-  console.log('trainer', trainer)
 
   const [isAdding, setIsAdding] = useState<boolean>(false)
   const [mediaType, setMediaType] = useState<MediaType>('video')

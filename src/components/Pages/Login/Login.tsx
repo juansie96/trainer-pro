@@ -7,10 +7,10 @@ import FormContainer from '../../Form/FormContainer'
 import TextFieldElement from '../../Form/TextFieldElement'
 import { mapFirebaseErrorCodeToMsg } from '../../../utils'
 import { useAppDispatch } from '../../../state/storeHooks'
-import { TrainerState, userLoggedIn } from '../../../redux/slices/Trainer.slice'
+import { userLoggedIn } from '../../../redux/slices/Trainer.slice'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { getTrainerDataQueryRef, trainersRef } from '../../../firebase/fbRefs'
-import { addDoc, getDocs, WithFieldValue } from 'firebase/firestore'
+import { getTrainerDataQueryRef } from '../../../firebase/fbRefs'
+import { getDocs } from 'firebase/firestore'
 import { FcGoogle } from 'react-icons/fc'
 import { AuthError, signInWithPopup, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { auth, googleProvider } from '../../../firebase/firebase'
@@ -40,23 +40,8 @@ export const Login = () => {
   }
 
   const handleGoogleLogin = async () => {
-    setLoading(true)
-
     try {
-      const { user } = await signInWithPopup(auth, googleProvider)
-      const querySnapshot = await getDocs(getTrainerDataQueryRef(user?.email as string))
-      const userExists = querySnapshot.size > 0
-      if (userExists) {
-        setLoading(false)
-      } else {
-        const name = user.displayName as string
-        await addDoc(trainersRef, {
-          email: user.email,
-          name,
-          lastname: '',
-        } as WithFieldValue<TrainerState>)
-        setLoading(false)
-      }
+      await signInWithPopup(auth, googleProvider)
     } catch (error) {
       console.error(error)
     }

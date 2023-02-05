@@ -136,7 +136,7 @@ const ClientActivation = () => {
     <Box
       bgcolor='#1976d2'
       width={1}
-      height={1}
+      height={'100vh'}
       display='flex'
       justifyContent='center'
       alignItems='center'
@@ -354,7 +354,7 @@ const StepSevenContent = () => {
     formState: { errors },
   } = useFormContext<ClientActivationForm>()
 
-  const { fields, update } = useFieldArray({
+  const { fields, update } = useFieldArray<ClientActivationForm>({
     control,
     name: 'healthFormQuestions',
   })
@@ -365,7 +365,6 @@ const StepSevenContent = () => {
         const hasError =
           Boolean(errors.healthFormQuestions) &&
           Boolean((errors.healthFormQuestions as Array<unknown>)[idx])
-
         return (
           <Box my={2} key={item.question}>
             {hasError && (
@@ -385,6 +384,7 @@ const StepSevenContent = () => {
                   <RadioGroup
                     sx={{ my: 0 }}
                     {...field}
+                    value={item.answer}
                     onChange={(e) =>
                       update(idx, { ...item, answer: e.target.value === 'true' ? true : false })
                     }
@@ -437,6 +437,7 @@ const StepEightContent = () => {
                   <RadioGroup
                     sx={{ my: 0 }}
                     {...field}
+                    value={item.answer}
                     onChange={(e) =>
                       update(idx + 2, { ...item, answer: e.target.value === 'true' ? true : false })
                     }
@@ -489,6 +490,7 @@ const StepNineContent = () => {
                   <RadioGroup
                     sx={{ my: 0 }}
                     {...field}
+                    value={item.answer}
                     onChange={(e) =>
                       update(idx + 5, { ...item, answer: e.target.value === 'true' ? true : false })
                     }

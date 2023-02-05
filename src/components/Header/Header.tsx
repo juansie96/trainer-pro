@@ -17,7 +17,7 @@ type Link = {
 }
 
 export function Header() {
-  const [user, loading, error] = useAuthState(auth)
+  const [user] = useAuthState(auth)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   let links

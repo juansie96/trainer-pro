@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   Paper,
   Table,
@@ -24,7 +24,6 @@ const FoodsTable = ({ foods }: IProps) => {
   const trainer = useAppSelector(selectTrainer)
   const trainerName = trainer.name?.split(' ')[0]
   const [page, setPage] = useState(0)
-  console.log('page', page)
 
   if (page > 0 && foods.length < 10) setPage(0)
 
@@ -63,7 +62,6 @@ const FoodsTable = ({ foods }: IProps) => {
       setConfirmDialog({ open: true, foodId: food.id as string })
     }
   }
-  console.log(foods.length)
 
   return (
     <>

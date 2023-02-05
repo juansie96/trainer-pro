@@ -11,30 +11,17 @@ import {
 } from '@mui/material'
 import { Workout } from '../../../../types/workout'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import { useState } from 'react'
 import PreviewWorkoutDialog from './PreviewWorkoutDialog'
 import EditWorkoutDialog from './EditWorkoutDialog'
-import {
-  deleteDoc,
-  doc,
-  DocumentReference,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from 'firebase/firestore'
+import { deleteDoc } from 'firebase/firestore'
 import ConfirmDialog from '../../../UI/Dialogs/ConfirmDialog'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
 import AssignDialog from '../../../UI/Dialogs/AssignDialog'
-import { Client } from '../../../../types/client'
-import { clientsRef } from '../../../../firebase/fbRefs'
-import { firestoreDB } from '../../../../firebase/firebase'
-import { selectClient, tasksChanged } from '../../../../redux/slices/Client.slice'
-import { selectTrainer } from '../../../../redux/slices/Trainer.slice'
-import { useAppDispatch, useAppSelector } from '../../../../state/storeHooks'
 import { NoContentTableMessage } from '../../Nutrition/MealPlans/AddMealPlanDialog/MealContent/styles'
+import Swal from 'sweetalert2'
 
 export interface WorkoutsTableProps {
   workouts: Workout[]
@@ -46,9 +33,6 @@ export interface WorkoutDialogState {
 }
 
 const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
-  const dispatch = useAppDispatch()
-  const trainer = useAppSelector(selectTrainer)
-  const client = useAppSelector(selectClient)
   const [page, setPage] = useState(0)
 
   const [previewWorkoutDialog, setPreviewWorkoutDialog] = useState<WorkoutDialogState>({
@@ -90,44 +74,18 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
     setAssignDialog({ open: true, workoutId: workoutId })
   }
 
-  const closeAssignDialog = () => {
-    setAssignDialog({ open: false, workoutId: '' })
-  }
-
   const handleDeleteWorkout = async () => {
     const workout = workouts.find((w) => w.id === confirmDialog.workoutId) as Workout
-    deleteDoc(workout.ref)
-    const q = query<Client>(clientsRef, where('trainerId', '==', trainer.id as string))
-    const querySnapshot = await getDocs<Client>(q)
-    const clientsQuery: Client[] = []
-    querySnapshot.forEach((doc) => clientsQuery.push(doc.data()))
-
-    const promises: Promise<void>[] = []
-
-    clientsQuery.forEach((c) => {
-      const clientDoc = c as Client
-      const containsWorkoutTask = c.tasks.some(
-        (t) => t.type === 'workout' && t.entityId == confirmDialog.workoutId,
-      )
-      if (containsWorkoutTask) {
-        const newTasks = c.tasks.filter(
-          (t) => t.type === 'workout' && t.entityId !== confirmDialog.workoutId,
-        )
-        const docRef = doc(firestoreDB, 'clients', clientDoc.id as string)
-        promises.push(updateDoc<Client>(docRef as DocumentReference<Client>, { tasks: newTasks }))
-      }
-    })
-
-    await Promise.all(promises)
-
-    if (client) {
-      dispatch(
-        tasksChanged(
-          client.tasks.filter(
-            (t) => t.type === 'workout' && t.entityId !== confirmDialog.workoutId,
-          ),
-        ),
-      )
+    try {
+      await deleteDoc(workout.ref)
+      Swal.fire('¡Éxito!', 'La rutina se eliminó correctamente!', 'success')
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al eliminar',
+        text: 'Hubo un error al eliminar la rutina, por favor intente nuevamente o comuniquese con un administrador.',
+      })
+      console.error(error)
     }
     setConfirmDialog({ open: false, workoutId: '' })
   }
@@ -215,7 +173,6 @@ const RoutinesTable = ({ workouts }: WorkoutsTableProps) => {
         rowsPerPage={10}
         page={page}
         onPageChange={(_, n) => setPage(n)}
-        // onRowsPerPageChange={handleChangeRowsPerPage}
       />
       {previewWorkoutDialog.open && (
         <PreviewWorkoutDialog

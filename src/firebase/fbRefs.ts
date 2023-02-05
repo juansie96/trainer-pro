@@ -24,7 +24,7 @@ export const trainerConverter: FirestoreDataConverter<Omit<TrainerState, 'id'>> 
     return {
       email: trainer.email,
       name: trainer.name,
-      lastname: trainer.lastname,
+      lastname: trainer.lastname ?? undefined,
     }
   },
   fromFirestore(
@@ -50,6 +50,7 @@ const clientConverter: FirestoreDataConverter<Client> = {
     return {
       ...data,
       id: snapshot.id,
+      ref: snapshot.ref,
     }
   },
 }
@@ -132,7 +133,7 @@ export const getExercisesByTrainerIdRef = (trainerId: string) => {
 }
 
 export const getWorkoutsByTrainerIdRef = (trainerId: string) =>
-  query(workoutsRef, where('trainerId', '==', trainerId))
+  query(workoutsRef, where('trainerId', '==', trainerId), where('clientId', '==', ''))
 
 export const getFoodsByTrainerIdRef = (trainerId: string) =>
   query(foodsRef, where('creatorId', 'in', [trainerId, '']))

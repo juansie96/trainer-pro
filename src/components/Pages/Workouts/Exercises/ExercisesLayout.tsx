@@ -15,7 +15,6 @@ import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getExercisesByTrainerIdRef } from '../../../../firebase/fbRefs'
-import { CenteredLayout } from '../../../UI/CenteredLayout'
 import ExercisesGrid from './ExercisesGrid'
 import { useAppSelector } from '../../../../state/storeHooks'
 import { selectTrainer } from '../../../../redux/slices/Trainer.slice'
@@ -25,7 +24,6 @@ export const ExercisesLayout = ({ openAddExerciseDialog }: { openAddExerciseDial
   const trainer = useAppSelector(selectTrainer)
   const [exercises, loading] = useCollectionData(getExercisesByTrainerIdRef(trainer.id))
   const [createdBy, setCreatedBy] = useState<CreatedByTypes>('all')
-  console.log('createdBy', createdBy)
 
   const [query, setQuery] = useState('')
 
@@ -38,9 +36,7 @@ export const ExercisesLayout = ({ openAddExerciseDialog }: { openAddExerciseDial
   }
 
   if (createdBy === 'custom') {
-    console.log(filteredExercises)
     filteredExercises = filteredExercises?.filter((e) => e.creatorId === trainer.id)
-    console.log(filteredExercises)
   } else if (createdBy === 'default') {
     filteredExercises = filteredExercises?.filter((e) => e.creatorId === '')
   }

@@ -10,14 +10,15 @@ export interface SingleExercise {
 }
 
 export interface Workout {
-  id: string
+  id?: string
   name: string
   description: string
   trainerId: string
+  clientId?: string
   createdAt: Timestamp
-  updatedAt: Timestamp
+  updatedAt?: Timestamp
   workoutExercises: Array<SingleExercise>
-  ref: DocumentReference<DocumentData>
+  ref?: DocumentReference<DocumentData>
 }
 
 export interface Exercise {

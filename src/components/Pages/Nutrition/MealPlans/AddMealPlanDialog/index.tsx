@@ -104,7 +104,7 @@ const AddMealPlanDialog = ({
 
     if (clientId) {
       const promises = []
-      const { id, ...rest } = finalData
+      const { id: _, ...rest } = finalData
       const realFinalData = {
         ...rest,
         createdAt: Timestamp.fromDate(new Date()),

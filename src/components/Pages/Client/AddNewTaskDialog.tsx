@@ -17,7 +17,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import { Dispatch, useState } from 'react'
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getWorkoutsByTrainerIdRef } from '../../../firebase/fbRefs'
@@ -36,6 +36,7 @@ import AddWorkoutDialog from '../Workouts/Routines/AddWorkoutDialog'
 import { v4 as uuidv4 } from 'uuid'
 import { Client } from '../../../types/client'
 import type { CardioTask, CardioTypes, WorkoutTask } from '../../../types/task'
+import EditWorkoutDialog from '../Workouts/Routines/EditWorkoutDialog'
 
 interface AddNewTaskDialogProps {
   onClose(): void
@@ -63,11 +64,7 @@ const AddNewTaskDialog = ({ onClose, day }: AddNewTaskDialogProps) => {
   )
 }
 
-const InitialContent = ({
-  setStatus,
-}: {
-  setStatus: React.Dispatch<React.SetStateAction<Status>>
-}) => (
+const InitialContent = ({ setStatus }: { setStatus: Dispatch<Status> }) => (
   <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2em', p: 2 }}>
     <WorkoutCard onClick={() => setStatus('workout')} />
     <CardioCard onClick={() => setStatus('cardio')} />
@@ -108,11 +105,26 @@ const CardioCard = ({ onClick }: { onClick(): void }) => {
   )
 }
 
+const createWorkoutTask = (workout: Workout, day: Date): WorkoutTask => ({
+  id: uuidv4(),
+  type: 'workout',
+  entityId: workout.id,
+  date: day.toISOString(),
+  title: workout.name,
+  completed: { value: false, date: null },
+})
+
+export interface WorkoutDialogState {
+  open: boolean
+  workoutId: string
+}
+
 const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) => {
   const trainer = useAppSelector(selectTrainer)
-  const client = useAppSelector(selectClient) as Client
+  const client = useAppSelector(selectClient)
   const dispatch = useAppDispatch()
   const [addWorkoutDialogOpen, setAddWorkoutDialogOpen] = useState<boolean>(false)
+  const [editWorkoutDialogOpen, setEditWorkoutDialogOpen] = useState<boolean>(false)
 
   const openAddWorkoutDialog = () => {
     setAddWorkoutDialogOpen(true)
@@ -132,25 +144,21 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
     )
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async (workout: Workout) => {
     const docRef = doc(firestoreDB, 'clients', client.id as string)
-
-    const task: WorkoutTask = {
-      id: uuidv4(),
-      type: 'workout',
-      entityId: selectedWorkoutId,
-      date: day.toISOString(),
-      title: (workouts as Workout[]).find((w) => w.id === selectedWorkoutId)?.name as string,
-      completed: { value: false, date: null },
+    const workoutTask = createWorkoutTask(workout, day)
+    const newTasks = client.tasks ? [...client.tasks, workoutTask] : [workoutTask]
+    try {
+      closeAddWorkoutDialog()
+      await updateDoc(docRef, {
+        tasks: newTasks,
+      })
+      dispatch(taskAdded(workoutTask))
+      Swal.fire('¡Éxito!', 'La rutina se asignó correctamente!', 'success')
+      onClose()
+    } catch (error) {
+      console.error(error)
     }
-
-    const newTasks = client.tasks ? [...client.tasks, task] : [task]
-    updateDoc(docRef, {
-      tasks: newTasks,
-    })
-    dispatch(taskAdded(task))
-    Swal.fire('¡Éxito!', 'La rutina se asignó correctamente!', 'success')
-    onClose()
   }
 
   return (
@@ -188,12 +196,29 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
         <Button onClick={onClose} sx={{ mr: 1 }}>
           Cancelar
         </Button>
-        <Button variant='contained' onClick={handleSubmit}>
-          Agregar
+        <Button
+          variant='contained'
+          onClick={() => setEditWorkoutDialogOpen(true)}
+          disabled={!selectedWorkoutId}
+        >
+          Usar plantilla
         </Button>
       </Box>
       {addWorkoutDialogOpen && (
-        <AddWorkoutDialog open={addWorkoutDialogOpen} onClose={closeAddWorkoutDialog} />
+        <AddWorkoutDialog
+          open={addWorkoutDialogOpen}
+          onClose={closeAddWorkoutDialog}
+          clientId={client.id}
+          onAssign={handleSubmit}
+        />
+      )}
+      {editWorkoutDialogOpen && (
+        <EditWorkoutDialog
+          workout={workouts.find((w) => w.id === selectedWorkoutId)}
+          onClose={() => setEditWorkoutDialogOpen(false)}
+          clientId={client.id}
+          onSubmit={handleSubmit}
+        />
       )}
     </Box>
   )
