@@ -73,7 +73,6 @@ const SchedulePlanDialog = ({ onClose, mealPlanId }: { onClose(): void; mealPlan
   })
 
   const { control, watch } = fc
-
   const isTaskRepeated = 'true' === watch('isTaskRepeated')
 
   useEffect(() => {

@@ -17,17 +17,17 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { Dispatch, useState } from 'react'
+import { Dispatch, useEffect, useState } from 'react'
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { getWorkoutsByTrainerIdRef } from '../../../firebase/fbRefs'
 import { Workout } from '../../../types/workout'
 import Swal from 'sweetalert2'
 import { doc, updateDoc } from 'firebase/firestore'
-import { selectClient, taskAdded } from '../../../redux/slices/Client.slice'
+import { selectClient, taskAdded, tasksAdded } from '../../../redux/slices/Client.slice'
 import { useAppDispatch, useAppSelector } from '../../../state/storeHooks'
 import { firestoreDB } from '../../../firebase/firebase'
-import { Controller, SubmitHandler } from 'react-hook-form'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import TextFieldElement from '../../Form/TextFieldElement'
 import FormContainer from '../../Form/FormContainer'
 import { useDispatch } from 'react-redux'
@@ -37,16 +37,86 @@ import { v4 as uuidv4 } from 'uuid'
 import { Client } from '../../../types/client'
 import type { CardioTask, CardioTypes, WorkoutTask } from '../../../types/task'
 import EditWorkoutDialog from '../Workouts/Routines/EditWorkoutDialog'
+import { DayCircle } from './ClientNutrition/SchedulePlanDialog/styles'
+import { getDateIncreasedByNDays, getDateIncreasedByNWeeks } from '../../../utils/dates'
 
 interface AddNewTaskDialogProps {
   onClose(): void
   day: Date
 }
 
-type Status = 'initial' | 'workout' | 'cardio' | 'mealPlan'
+type Status = 'initial' | 'repeatForm' | 'workout' | 'cardio'
+
+interface RepeatTaskFormData {
+  isTaskRepeated: boolean
+  numberOfWeeks: number
+  repeatDays: IRepeatDay[]
+}
+
+interface IRepeatDay {
+  label: string
+  isActive: boolean
+  dayNumber: number
+}
 
 const AddNewTaskDialog = ({ onClose, day }: AddNewTaskDialogProps) => {
+  const dispatch = useAppDispatch()
+  const client = useAppSelector(selectClient)
   const [status, setStatus] = useState<Status>('initial')
+  const [repeatTaskData, setRepeatTaskData] = useState<RepeatTaskFormData>({
+    isTaskRepeated: undefined,
+    numberOfWeeks: undefined,
+    repeatDays: [],
+  })
+  const [isRepeatFormActive, setIsRepeatFormActive] = useState(false)
+
+  const getNumberOfDaysToAdd = (daysDifference: number) => {
+    if (daysDifference >= 0) return daysDifference
+    return daysDifference === -2 ? 5 : 6
+  }
+
+  const handleWorkoutAssignation = async (workout: Workout) => {
+    const { isTaskRepeated, repeatDays, numberOfWeeks } = repeatTaskData
+    const tasks: WorkoutTask[] = []
+    const todayTask = createWorkoutTask(workout, day)
+
+    if (isTaskRepeated) {
+      for (let i = 1; i <= +numberOfWeeks; i++) {
+        const minDate = i === 1 ? day : getDateIncreasedByNWeeks(day, i - 1)
+        if (i === 1) tasks.push(todayTask)
+        repeatDays
+          .filter((d) => d.isActive)
+          .forEach((day) => {
+            const dayDifference = day.dayNumber - minDate.getDay()
+            if (dayDifference === 0 && i === 1) return
+            const taskDate = getDateIncreasedByNDays(minDate, getNumberOfDaysToAdd(dayDifference))
+            tasks.push(createWorkoutTask(workout, taskDate))
+          })
+      }
+    } else {
+      tasks.push(todayTask)
+    }
+    const docRef = doc(firestoreDB, 'clients', client.id as string)
+    try {
+      dispatch(tasksAdded(tasks))
+      await updateDoc(docRef, {
+        tasks: [...(client.tasks ? client.tasks : []), ...tasks],
+      })
+      Swal.fire('¡Éxito!', '¡El plan se asignó correctamente!', 'success')
+      onClose()
+    } catch (err: unknown) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al asignar',
+        text: 'Hubo un error al asignar el plan alimenticio, por favor intente nuevamente o comuniquese con un administrador.',
+      })
+    }
+  }
+
+  const handleRepeatTaskFormSubmit = (data: RepeatTaskFormData) => {
+    setIsRepeatFormActive(false)
+    setRepeatTaskData(data)
+  }
 
   return (
     <div>
@@ -55,19 +125,48 @@ const AddNewTaskDialog = ({ onClose, day }: AddNewTaskDialogProps) => {
           <DialogTitle>Agregar nueva tarea</DialogTitle>
         </Box>
         <DialogContent sx={{ p: 0 }}>
-          {status === 'initial' && <InitialContent setStatus={setStatus} />}
-          {status === 'workout' && <SelectWorkoutContent onClose={onClose} day={day} />}
-          {status === 'cardio' && <AddCardioForm onClose={onClose} day={day} />}
+          {status === 'initial' && (
+            <InitialContent setStatus={setStatus} setIsRepeatFormActive={setIsRepeatFormActive} />
+          )}
+          {isRepeatFormActive && (
+            <RepeatTaskForm onSubmit={handleRepeatTaskFormSubmit} onClose={onClose} />
+          )}
+          {status === 'workout' && !isRepeatFormActive && (
+            <SelectWorkoutContent
+              onClose={onClose}
+              day={day}
+              onWorkoutAssignation={handleWorkoutAssignation}
+            />
+          )}
+          {status === 'cardio' && !isRepeatFormActive && (
+            <AddCardioForm onClose={onClose} day={day} />
+          )}
         </DialogContent>
       </Dialog>
     </div>
   )
 }
 
-const InitialContent = ({ setStatus }: { setStatus: Dispatch<Status> }) => (
+const InitialContent = ({
+  setStatus,
+  setIsRepeatFormActive,
+}: {
+  setStatus: Dispatch<Status>
+  setIsRepeatFormActive: Dispatch<boolean>
+}) => (
   <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2em', p: 2 }}>
-    <WorkoutCard onClick={() => setStatus('workout')} />
-    <CardioCard onClick={() => setStatus('cardio')} />
+    <WorkoutCard
+      onClick={() => {
+        setStatus('workout')
+        setIsRepeatFormActive(true)
+      }}
+    />
+    <CardioCard
+      onClick={() => {
+        setStatus('cardio')
+        setIsRepeatFormActive(true)
+      }}
+    />
   </Box>
 )
 
@@ -119,12 +218,27 @@ export interface WorkoutDialogState {
   workoutId: string
 }
 
-const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) => {
+interface FormValues {
+  isTaskRepeated: string
+  assignationDate: Date
+  numberOfWeeks: string
+}
+
+const SelectWorkoutContent = ({
+  onClose,
+  onWorkoutAssignation,
+}: {
+  onClose(): void
+  day: Date
+  onWorkoutAssignation: (workout: Workout) => void
+}) => {
   const trainer = useAppSelector(selectTrainer)
   const client = useAppSelector(selectClient)
-  const dispatch = useAppDispatch()
+
   const [addWorkoutDialogOpen, setAddWorkoutDialogOpen] = useState<boolean>(false)
   const [editWorkoutDialogOpen, setEditWorkoutDialogOpen] = useState<boolean>(false)
+  const [workouts, loading] = useCollectionData(getWorkoutsByTrainerIdRef(trainer.id as string))
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState('')
 
   const openAddWorkoutDialog = () => {
     setAddWorkoutDialogOpen(true)
@@ -133,8 +247,7 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
   const closeAddWorkoutDialog = () => {
     setAddWorkoutDialogOpen(false)
   }
-  const [workouts, loading] = useCollectionData(getWorkoutsByTrainerIdRef(trainer.id as string))
-  const [selectedWorkoutId, setSelectedWorkoutId] = useState('')
+
   const hasError = false
   if (loading) {
     return (
@@ -142,23 +255,6 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
         <CircularProgress />
       </Box>
     )
-  }
-
-  const handleSubmit = async (workout: Workout) => {
-    const docRef = doc(firestoreDB, 'clients', client.id as string)
-    const workoutTask = createWorkoutTask(workout, day)
-    const newTasks = client.tasks ? [...client.tasks, workoutTask] : [workoutTask]
-    try {
-      closeAddWorkoutDialog()
-      await updateDoc(docRef, {
-        tasks: newTasks,
-      })
-      dispatch(taskAdded(workoutTask))
-      Swal.fire('¡Éxito!', 'La rutina se asignó correctamente!', 'success')
-      onClose()
-    } catch (error) {
-      console.error(error)
-    }
   }
 
   return (
@@ -192,6 +288,7 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
       ) : (
         <Typography sx={{ px: 3, py: 2 }}>Todavía no se creó ninguna rutina</Typography>
       )}
+
       <Box sx={{ borderTop: '1px solid #e3e3e3', p: 2 }} display='flex' justifyContent={'end'}>
         <Button onClick={onClose} sx={{ mr: 1 }}>
           Cancelar
@@ -209,7 +306,7 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
           open={addWorkoutDialogOpen}
           onClose={closeAddWorkoutDialog}
           clientId={client.id}
-          onAssign={handleSubmit}
+          onAssign={onWorkoutAssignation}
         />
       )}
       {editWorkoutDialogOpen && (
@@ -217,10 +314,123 @@ const SelectWorkoutContent = ({ onClose, day }: { onClose(): void; day: Date }) 
           workout={workouts.find((w) => w.id === selectedWorkoutId)}
           onClose={() => setEditWorkoutDialogOpen(false)}
           clientId={client.id}
-          onSubmit={handleSubmit}
+          onSubmit={onWorkoutAssignation}
         />
       )}
     </Box>
+  )
+}
+
+const RepeatTaskForm = ({
+  onSubmit,
+  onClose,
+}: {
+  onSubmit(data: RepeatTaskFormData): void
+  onClose(): void
+}) => {
+  const fc = useForm<FormValues>({
+    defaultValues: {
+      isTaskRepeated: 'false',
+      numberOfWeeks: undefined,
+    },
+  })
+
+  const { control, watch } = fc
+  const isTaskRepeated = 'true' === watch('isTaskRepeated')
+
+  const [noDaysSelected, setNoDaysSelected] = useState(false)
+  const [repeatDays, setRepeatDays] = useState([
+    { label: 'L', isActive: false, dayNumber: 1 },
+    { label: 'M', isActive: false, dayNumber: 2 },
+    { label: 'X', isActive: false, dayNumber: 3 },
+    { label: 'J', isActive: false, dayNumber: 4 },
+    { label: 'V', isActive: false, dayNumber: 5 },
+    { label: 'S', isActive: false, dayNumber: 6 },
+    { label: 'D', isActive: false, dayNumber: 7 },
+  ])
+
+  useEffect(() => {
+    if (noDaysSelected) {
+      setNoDaysSelected(repeatDays.every((d) => !d.isActive))
+    }
+  }, [repeatDays])
+
+  const handleDayClick = (dayLabel: string) => {
+    setRepeatDays(
+      repeatDays.map((d) => (d.label === dayLabel ? { ...d, isActive: !d.isActive } : d)),
+    )
+  }
+
+  const handleSubmit: SubmitHandler<RepeatTaskFormData> = ({ numberOfWeeks }) => {
+    if (isTaskRepeated && repeatDays.every((d) => !d.isActive)) {
+      setNoDaysSelected(repeatDays.every((d) => !d.isActive))
+      return
+    }
+    onSubmit({
+      isTaskRepeated,
+      numberOfWeeks,
+      repeatDays,
+    })
+  }
+  return (
+    <FormContainer formContext={fc} onSuccess={handleSubmit}>
+      <Box py={2} px={3}>
+        <Typography>¿Quieres repetir esta tarea?</Typography>
+        <Controller
+          control={control}
+          name='isTaskRepeated'
+          render={({ field }) => (
+            <RadioGroup row {...field}>
+              <FormControlLabel value={'true'} control={<Radio />} label='Si' />
+              <FormControlLabel value={'false'} control={<Radio />} label='No' />
+            </RadioGroup>
+          )}
+        />
+        {!!isTaskRepeated && (
+          <>
+            <Box mt={2}>
+              <Typography>
+                Repetir los días{' '}
+                {noDaysSelected && (
+                  <span style={{ fontSize: 11, color: 'red' }}>DEBES SELECCIONAR ALGÚN DÍA</span>
+                )}
+              </Typography>
+              <Stack direction={'row'} spacing={1.5} mt={1}>
+                {repeatDays.map(({ label, isActive }) => (
+                  <DayCircle key={label} isActive={isActive} onClick={() => handleDayClick(label)}>
+                    {label}
+                  </DayCircle>
+                ))}
+              </Stack>
+            </Box>
+            <Box display='flex' alignItems={'center'} mt={2}>
+              <Typography>Durante</Typography>
+              <TextFieldElement
+                fullWidth
+                name='numberOfWeeks'
+                type='number'
+                variant='outlined'
+                sx={{ mx: 1, width: 75 }}
+                size='small'
+                validation={{
+                  required: true,
+                  min: 1,
+                }}
+              />
+              <Typography>semanas</Typography>
+            </Box>
+          </>
+        )}
+      </Box>
+      <Box sx={{ borderTop: '1px solid #e3e3e3', p: 2 }} display='flex' justifyContent={'end'}>
+        <Button onClick={onClose} sx={{ mr: 1 }}>
+          Cancelar
+        </Button>
+        <Button variant='contained' type='submit'>
+          Siguiente
+        </Button>
+      </Box>
+    </FormContainer>
   )
 }
 

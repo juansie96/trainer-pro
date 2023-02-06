@@ -55,7 +55,6 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
     const docRef = getDocumentRef('clients', client.id as string)
     const newTasks = client.tasks.filter((t) => !(t.id === eventData?.id))
     try {
-      await deleteDoc(workout.ref)
       await updateDoc<Client>(docRef, { tasks: newTasks })
       dispatch(tasksChanged(newTasks))
       Swal.fire('¡Éxito!', 'El evento se eliminó correctamente', 'success')
