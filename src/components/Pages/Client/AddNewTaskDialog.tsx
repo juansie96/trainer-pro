@@ -59,6 +59,11 @@ interface IRepeatDay {
   dayNumber: number
 }
 
+const getNumberOfDaysToAdd = (daysDifference: number) => {
+  if (daysDifference >= 0) return daysDifference
+  return daysDifference === -2 ? 5 : 6
+}
+
 const AddNewTaskDialog = ({ onClose, day }: AddNewTaskDialogProps) => {
   const dispatch = useAppDispatch()
   const client = useAppSelector(selectClient)
@@ -69,11 +74,6 @@ const AddNewTaskDialog = ({ onClose, day }: AddNewTaskDialogProps) => {
     repeatDays: [],
   })
   const [isRepeatFormActive, setIsRepeatFormActive] = useState(false)
-
-  const getNumberOfDaysToAdd = (daysDifference: number) => {
-    if (daysDifference >= 0) return daysDifference
-    return daysDifference === -2 ? 5 : 6
-  }
 
   const handleWorkoutAssignation = async (workout: Workout) => {
     const { isTaskRepeated, repeatDays, numberOfWeeks } = repeatTaskData
@@ -139,7 +139,7 @@ const AddNewTaskDialog = ({ onClose, day }: AddNewTaskDialogProps) => {
             />
           )}
           {status === 'cardio' && !isRepeatFormActive && (
-            <AddCardioForm onClose={onClose} day={day} />
+            <AddCardioForm onClose={onClose} day={day} repeatTaskFormData={repeatTaskData} />
           )}
         </DialogContent>
       </Dialog>
@@ -434,7 +434,29 @@ const RepeatTaskForm = ({
   )
 }
 
-const AddCardioForm = ({ onClose, day }: { onClose(): void; day: Date }) => {
+const createCardioTask = (
+  data: CardioTask & { cardioType: CardioTypes },
+  day: Date,
+): CardioTask => ({
+  id: uuidv4(),
+  type: 'cardio',
+  entityId: '',
+  date: day.toISOString(),
+  title: data.cardioType[0].toUpperCase() + data.cardioType.substring(1),
+  cardioType: data.cardioType,
+  distance: data.distance,
+  completed: { value: false, date: null },
+})
+
+const AddCardioForm = ({
+  onClose,
+  day,
+  repeatTaskFormData,
+}: {
+  onClose(): void
+  day: Date
+  repeatTaskFormData: RepeatTaskFormData
+}) => {
   const client = useAppSelector(selectClient) as Client
   const dispatch = useDispatch()
 
@@ -452,27 +474,45 @@ const AddCardioForm = ({ onClose, day }: { onClose(): void; day: Date }) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit: SubmitHandler<typeof defaultValues> = async (data) => {
-    const docRef = doc(firestoreDB, 'clients', client.id as string)
-    const finalTask = {
-      ...data,
-      title: data.cardioType[0].toUpperCase() + data.cardioType.substring(1),
-    }
-    setIsLoading(true)
+    const { isTaskRepeated, repeatDays, numberOfWeeks } = repeatTaskFormData
+    const tasks: CardioTask[] = []
+    const todayTask = createCardioTask(data, day)
 
+    if (isTaskRepeated) {
+      for (let i = 1; i <= +numberOfWeeks; i++) {
+        const minDate = i === 1 ? day : getDateIncreasedByNWeeks(day, i - 1)
+        if (i === 1) tasks.push(todayTask)
+        repeatDays
+          .filter((d) => d.isActive)
+          .forEach((day) => {
+            const dayDifference = day.dayNumber - minDate.getDay()
+            if (dayDifference === 0 && i === 1) return
+            const taskDate = getDateIncreasedByNDays(minDate, getNumberOfDaysToAdd(dayDifference))
+            tasks.push(createCardioTask(data, taskDate))
+          })
+      }
+    } else {
+      tasks.push(todayTask)
+    }
+
+    console.log('tasks', tasks)
+    const docRef = doc(firestoreDB, 'clients', client.id as string)
     try {
+      setIsLoading(true)
+      dispatch(tasksAdded(tasks))
       await updateDoc(docRef, {
-        tasks: [...client.tasks, finalTask],
+        tasks: [...(client.tasks ? client.tasks : []), ...tasks],
       })
-      Swal.fire('¡Éxito!', 'El cardio se asignó correctamente!', 'success')
-      dispatch(taskAdded(finalTask))
+      Swal.fire('¡Éxito!', '¡El plan se asignó correctamente!', 'success')
       onClose()
-    } catch (error) {
-      onClose()
+    } catch (err: unknown) {
       Swal.fire({
         icon: 'error',
-        title: 'Oops...',
-        text: 'No se pudo agregar la rutina, intente nuevamente.',
+        title: 'Error al asignar',
+        text: 'Hubo un error al asignar el plan alimenticio, por favor intente nuevamente o comuniquese con un administrador.',
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
