@@ -1,11 +1,9 @@
 import { DocumentData, DocumentReference, Timestamp } from 'firebase/firestore'
 
-export interface SingleExercise {
-  id?: string
+export interface SingleExercise extends Exercise {
   sets?: number
   objective?: string
   rest: number
-  type: 'single'
   exerciseId: string
 }
 

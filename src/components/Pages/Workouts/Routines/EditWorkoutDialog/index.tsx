@@ -94,8 +94,12 @@ const EditWorkoutDialog = ({
     }
   }
 
-  const handleAddExercise = (id: string) => {
-    append({ rest: 0, type: 'single', exerciseId: id })
+  const handleAddExercise = (exercise: Exercise) => {
+    append({
+      rest: 0,
+      exerciseId: exercise.id,
+      ...(({ ref, id, creatorId, ...data }) => data)(exercise),
+    })
   }
 
   const handleSearchExerciseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -232,7 +236,7 @@ const RightSideContent = ({
   onSearchExerciseChange,
 }: {
   exercises: Exercise[] | undefined
-  onExerciseClick: (id: string) => void
+  onExerciseClick: (exercise: Exercise) => void
   onSearchExerciseChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }) => (
   <Box width={0.4}>
@@ -267,7 +271,7 @@ const ExerciseCard = ({
   onClick,
 }: {
   exercise: Exercise
-  onClick: (exerciseId: string) => void
+  onClick: (exercise: Exercise) => void
 }) => {
   const Tags = () => (
     <Box pl={1}>
@@ -292,7 +296,7 @@ const ExerciseCard = ({
   return (
     <Paper
       elevation={3}
-      onClick={() => onClick(exercise.id)}
+      onClick={() => onClick(exercise)}
       sx={{ cursor: 'pointer', borderRadius: '10px' }}
     >
       <Box position='relative' width={1} height='150px' sx={{ borderRadius: '10px' }}>

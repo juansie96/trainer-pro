@@ -495,7 +495,6 @@ const AddCardioForm = ({
       tasks.push(todayTask)
     }
 
-    console.log('tasks', tasks)
     const docRef = doc(firestoreDB, 'clients', client.id as string)
     try {
       setIsLoading(true)
