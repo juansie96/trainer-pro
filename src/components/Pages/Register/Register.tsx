@@ -12,6 +12,7 @@ import { addDoc, WithFieldValue } from 'firebase/firestore'
 import { trainersRef } from '../../../firebase/fbRefs'
 import { TrainerState } from '../../../redux/slices/Trainer.slice'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import { populateTestClients, testClients } from '../../../scripts/populateTestClientsScript'
 
 type RegisterFormValues = {
   email: string
@@ -98,11 +99,13 @@ export const Register = () => {
     setSigningUp(true)
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      await addDoc(trainersRef, {
+      const { id: trainerId } = await addDoc(trainersRef, {
         email,
         name,
         lastname,
       } as WithFieldValue<TrainerState>)
+      const testTrainerClients = testClients.map((c) => ({ ...c, trainerId }))
+      await populateTestClients(testTrainerClients)
       await sendEmailVerification(userCredential.user)
       setSigningUp(false)
       setRegisterError('')

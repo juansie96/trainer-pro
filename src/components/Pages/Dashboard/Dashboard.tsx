@@ -8,6 +8,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { getTrainerDataQueryRef, trainersRef } from '../../../firebase/fbRefs'
 import { auth } from '../../../firebase/firebase'
 import { selectTrainer, userLoggedIn } from '../../../redux/slices/Trainer.slice'
+import { populateTestClients, testClients } from '../../../scripts/populateTestClientsScript'
 import { useAppSelector } from '../../../state/storeHooks'
 import { DashboardTabs } from './DashboardTabs'
 
@@ -46,6 +47,8 @@ export const Dashboard = () => {
         name: user.displayName,
         lastname: '',
       })
+      const testTrainerClients = testClients.map((c) => ({ ...c, trainerId: id }))
+      await populateTestClients(testTrainerClients)
       dispatch(
         userLoggedIn({
           id,
