@@ -13,6 +13,9 @@ import { trainersRef } from '../../../firebase/fbRefs'
 import { TrainerState } from '../../../redux/slices/Trainer.slice'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { populateTestClients, testClients } from '../../../scripts/populateTestClientsScript'
+import { defaultWorkouts, populateWorkouts } from '../../../scripts/populateWorkoutsScript'
+import { Workout } from '../../../types/workout'
+import { populateMealPlan } from '../../../scripts/populateMealPlan'
 
 type RegisterFormValues = {
   email: string
@@ -105,8 +108,11 @@ export const Register = () => {
         lastname,
       } as WithFieldValue<TrainerState>)
       const testTrainerClients = testClients.map((c) => ({ ...c, trainerId }))
-      await populateTestClients(testTrainerClients)
+      const testWorkouts = defaultWorkouts.map((w) => ({ ...w, trainerId }))
       await sendEmailVerification(userCredential.user)
+      await populateTestClients(testTrainerClients)
+      await populateWorkouts(testWorkouts as any as Workout[])
+      await populateMealPlan(trainerId)
       setSigningUp(false)
       setRegisterError('')
     } catch (err) {

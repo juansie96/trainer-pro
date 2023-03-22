@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { deleteDoc, getDoc, updateDoc } from 'firebase/firestore'
+import { getDoc, updateDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { exercisesRef, getDocumentRef } from '../../../../../firebase/fbRefs'
@@ -122,7 +122,7 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
                 />
                 <Box ml={3}>
                   <Typography variant='h5' fontSize='1.2em'>
-                    Deadlift
+                    {exercise.name}
                   </Typography>
                   {exercise.sets && (
                     <Typography variant='body1' fontSize='0.9rem' color='#5a5a5a'>
@@ -187,24 +187,6 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
                 />
                 Borrar tarea
               </Button>
-              {/* {showDateInput ? (
-                <Button variant='contained' color='primary' sx={{ height: 38, ml: 2 }}>
-                  <EventIcon fontSize='large' sx={{ cursor: 'pointer', color: 'white', mr: 1 }} />
-                  Cambiar fecha
-                </Button>
-              ) : (
-                <Box ml={2}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DesktopDatePicker
-                      label='Fecha de nacimiento'
-                      inputFormat='DD/MM/YYYY'
-                      renderInput={(params) => <TextField {...params} sx={{ width: 250 }} />}
-                      value={selectedDate}
-                      onChange={setSelectedDate}
-                    />
-                  </LocalizationProvider>
-                </Box>
-              )} */}
             </>
           )}
         </Stack>

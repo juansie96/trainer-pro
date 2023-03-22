@@ -8,8 +8,11 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { getTrainerDataQueryRef, trainersRef } from '../../../firebase/fbRefs'
 import { auth } from '../../../firebase/firebase'
 import { selectTrainer, userLoggedIn } from '../../../redux/slices/Trainer.slice'
+import { populateMealPlan } from '../../../scripts/populateMealPlan'
 import { populateTestClients, testClients } from '../../../scripts/populateTestClientsScript'
+import { defaultWorkouts, populateWorkouts } from '../../../scripts/populateWorkoutsScript'
 import { useAppSelector } from '../../../state/storeHooks'
+import { Workout } from '../../../types/workout'
 import { DashboardTabs } from './DashboardTabs'
 
 export const Dashboard = () => {
@@ -48,7 +51,10 @@ export const Dashboard = () => {
         lastname: '',
       })
       const testTrainerClients = testClients.map((c) => ({ ...c, trainerId: id }))
+      const testWorkouts = defaultWorkouts.map((w) => ({ ...w, trainerId: id }))
+      await populateWorkouts(testWorkouts as any as Workout[])
       await populateTestClients(testTrainerClients)
+      await populateMealPlan(id)
       dispatch(
         userLoggedIn({
           id,

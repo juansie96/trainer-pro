@@ -1,9 +1,163 @@
-import { addDoc } from 'firebase/firestore'
-import { foodsRef } from '../firebase/fbRefs'
+import { addDoc, Timestamp } from 'firebase/firestore'
+import { workoutsRef } from '../firebase/fbRefs'
+import { Workout } from '../types/workout'
 
-export const defaultWorkouts = []
+export const defaultWorkouts = [
+  {
+    workoutExercises: [
+      {
+        rest: 120,
+        exerciseId: 'J1klHdkQgQCXE460xix0',
+        name: 'Press de banco plano',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=JhcjQHkjklA',
+        imgUrls: null,
+        tags: ['pectoral', 'triceps', 'deltoide anterior'],
+        sets: '4',
+        objective: '8reps al 70% del RM',
+      },
+      {
+        rest: 120,
+        exerciseId: 'nPy6vQqeM02pcrswIyU6',
+        name: 'Remo con barra',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=Rc84YlRhI60',
+        imgUrls: null,
+        tags: ['espalda', 'trapecios', 'deltoide posterior'],
+        sets: '4',
+        objective: '10reps a 8RPE',
+      },
+      {
+        rest: 120,
+        exerciseId: 'zs8FvKaQwu2u3Y4LCnte',
+        name: 'Press militar con barra',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=f3E1jQFRONs',
+        imgUrls: null,
+        tags: ['trapecio', 'hombros', 'pectoral', 'triceps'],
+        sets: '3',
+        objective: '10reps a 8RPE',
+      },
+      {
+        rest: 90,
+        exerciseId: 'N8rHVTZ0Rc6nP6VzcZB4',
+        name: 'Press inclinado con mancuernas',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=MkMf308jXww',
+        imgUrls: null,
+        tags: ['pectoral', 'triceps', 'deltoide anterior'],
+        sets: '3',
+        objective: '12reps a 7RPE',
+      },
+      {
+        rest: 90,
+        exerciseId: '8z2B0zQgxD9mrlcD0Icf',
+        name: 'Press frances con barra',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=Loxe7Gh-fwc',
+        imgUrls: null,
+        tags: ['triceps'],
+        sets: '4',
+        objective: 'Entre 12-15 Reps a 8RPE',
+      },
+      {
+        rest: 90,
+        exerciseId: '0LeRbz1iQsU6b4Yg2hEg',
+        name: 'Curl de biceps con mancuernas',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=rqy0oxx__sU',
+        imgUrls: null,
+        tags: ['biceps'],
+        sets: '4',
+        objective: '8reps con cada brazo a 8RPE',
+      },
+    ],
+    name: '[PRUEBA] Rutina de Torso - Hipertrofia',
+    description:
+      'Esta es una rutina de torso de prueba. Hace su hincapié en ejercicios compuestos como Remo con barra o Press Militar. Se compone de 6 ejercicios',
+    trainerId: '',
+    clientId: '',
+    createdAt: Timestamp.fromDate(new Date()),
+  },
+  {
+    workoutExercises: [
+      {
+        rest: 180,
+        exerciseId: '2mVKP7VkMj54lWAH8Elz',
+        name: 'Sentadilla con barra',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=qe-vI_JBtjM',
+        imgUrls: null,
+        tags: ['cuadriceps', 'gluteos', 'isquiotibiales', 'gemelo', 'soleo', 'aductores'],
+        sets: '4',
+        objective: '5reps al 80% RM',
+      },
+      {
+        rest: 120,
+        exerciseId: 'OZxuAg08ijVykQpZ9H1I',
+        name: 'Peso muerto rumano con barra',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=NIng2JWF1Rs',
+        imgUrls: null,
+        tags: ['isquiotibiales', 'gluteos', 'espalda'],
+        sets: '4',
+        objective: '10reps a 8RPE',
+      },
+      {
+        rest: 105,
+        exerciseId: 'QdeNYlRQa00XsOUkZfh0',
+        name: 'Sentadilla bulgara con mancuerna',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=IE3ZJezh-wc',
+        imgUrls: null,
+        tags: ['isquiotibiales', 'gluteos', 'aductores', 'cuadriceps', 'gemelos'],
+        sets: '4',
+        objective: '8reps por lado a 8RPE',
+      },
+      {
+        rest: 105,
+        exerciseId: 'YZu2pbIQ6qvJjSnnoFXF',
+        name: 'Elevacion de cadera con barra',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=mLy4SfCEJZk',
+        imgUrls: null,
+        tags: ['gluteos', 'abdomen', 'isquiotibiales'],
+        sets: '4',
+        objective: '8reps a 7RPE',
+      },
+      {
+        rest: 75,
+        exerciseId: 'D4S4UCoEi2lUVashyK63',
+        name: 'Maquina de abductores',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=A5Bz9bSPKUA',
+        imgUrls: null,
+        tags: ['abductores'],
+        sets: '4',
+        objective: 'Al fallo con 40kg',
+      },
+      {
+        rest: 75,
+        exerciseId: '5ItQZHhf1XeULMPkMZRg',
+        name: 'Gemelos en máquina de pie',
+        description: '',
+        videoUrl: 'https://www.youtube.com/watch?v=R9eS_1An8L0',
+        imgUrls: null,
+        tags: ['gemelos'],
+        sets: '4',
+        objective: 'Entre 15-20reps, movimiento lento',
+      },
+    ],
+    name: '[PRUEBA] Rutina de Pierna - Hipertrofia',
+    description:
+      'Esta es una rutina de pierna de prueba. Hace su hincapié en ejercicios compuestos como Sentadillas o peso muerto. Se compone de 6 ejercicios',
+    trainerId: '',
+    clientId: '',
+    createdAt: Timestamp.fromDate(new Date()),
+  },
+]
 
-// export default async function () {
-//   const promises = foods.map((food) => addDoc(foodsRef, food))
-//   Promise.all(promises).then(console.log).catch(console.error)
-// }
+export const populateWorkouts = (workouts: Workout[]) => {
+  const promises = workouts.map((w) => addDoc(workoutsRef, w))
+  return Promise.all(promises).then(console.log).catch(console.error)
+}

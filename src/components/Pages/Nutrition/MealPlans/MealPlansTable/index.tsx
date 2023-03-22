@@ -142,7 +142,7 @@ const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IP
                 >
                   <TableCell scope='row'>{mealPlan.name}</TableCell>
                   <TableCell scope='row'>{mealPlan.description}</TableCell>
-                  <TableCell scope='row'>{mealPlan.kcal} kcal</TableCell>
+                  <TableCell scope='row'>{mealPlan.kcal.toFixed(0)} kcal</TableCell>
                   <TableCell scope='row'>
                     {mealPlan.createdAt?.toDate().toLocaleDateString().split(' ')[0]}
                   </TableCell>

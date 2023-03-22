@@ -92,7 +92,7 @@ const AddWorkoutDialog = ({ open, onClose, clientId, onAssign }: AddWorkoutDialo
       }
 
       onClose()
-      Swal.fire('¡Éxito!', 'El plan alimenticio se creó correctamente!', 'success')
+      Swal.fire('¡Éxito!', 'La rutina se creó correctamente!', 'success')
     } catch (err: unknown) {
       setIsAdding(false)
     }

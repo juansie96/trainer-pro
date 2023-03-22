@@ -94,7 +94,7 @@ const PreviewMealPlanDialog = ({ onClose, data, eventData }: IProps) => {
         <Typography>{title}</Typography>
       </Stack>
       <Typography textAlign='center'>
-        {getTotalNV(nvKey as NutritionalValueKeys, mealPlan.meals)}{' '}
+        {getTotalNV(nvKey as NutritionalValueKeys, mealPlan.meals).toFixed(0)}{' '}
         {nvKey === 'kcal' ? 'kcal' : 'g'}
       </Typography>
     </Stack>
@@ -217,26 +217,28 @@ const MealSection = ({ meal }: { meal: Meal }) => (
               <Typography sx={{ pl: 0.7 }}>{food.name}</Typography>
             </JMTableCell>
             <JMTableCell>
-              <Typography sx={{ pl: 0.7 }}>{food.nutritionalValues.kcal.value} kcal</Typography>
-            </JMTableCell>
-            <JMTableCell>
-              <Typography sx={{ pl: 0.7 }} textAlign='center'>
-                {food.nutritionalValues.proteins.value} g
+              <Typography sx={{ pl: 0.7 }}>
+                {food.nutritionalValues.kcal.value.toFixed(0)} kcal
               </Typography>
             </JMTableCell>
             <JMTableCell>
               <Typography sx={{ pl: 0.7 }} textAlign='center'>
-                {food.nutritionalValues.carbs.value} g
+                {food.nutritionalValues.proteins.value.toFixed(0)} g
               </Typography>
             </JMTableCell>
             <JMTableCell>
               <Typography sx={{ pl: 0.7 }} textAlign='center'>
-                {food.nutritionalValues.fats.value} g
+                {food.nutritionalValues.carbs.value.toFixed(0)} g
               </Typography>
             </JMTableCell>
             <JMTableCell>
               <Typography sx={{ pl: 0.7 }} textAlign='center'>
-                {food.nutritionalValues.fiber.value} g
+                {food.nutritionalValues.fats.value.toFixed(0)} g
+              </Typography>
+            </JMTableCell>
+            <JMTableCell>
+              <Typography sx={{ pl: 0.7 }} textAlign='center'>
+                {food.nutritionalValues.fiber.value.toFixed(0)} g
               </Typography>
             </JMTableCell>
           </JMTableRow>
@@ -252,7 +254,7 @@ const MealSection = ({ meal }: { meal: Meal }) => (
           <Typography sx={{ pl: 0.7 }}>
             {meal.foods
               .reduce((t, c) => t + (c as Food).nutritionalValues.kcal.value, 0)
-              .toFixed(2)}{' '}
+              .toFixed(0)}{' '}
             kcal
           </Typography>
         </JMTableCell>
@@ -260,7 +262,7 @@ const MealSection = ({ meal }: { meal: Meal }) => (
           <Typography sx={{ pl: 0.7 }} textAlign='center'>
             {meal.foods
               .reduce((t, c) => t + (c as Food).nutritionalValues.proteins.value, 0)
-              .toFixed(2)}{' '}
+              .toFixed(0)}{' '}
             g
           </Typography>
         </JMTableCell>
@@ -268,7 +270,7 @@ const MealSection = ({ meal }: { meal: Meal }) => (
           <Typography sx={{ pl: 0.7 }} textAlign='center'>
             {meal.foods
               .reduce((t, c) => t + (c as Food).nutritionalValues.carbs.value, 0)
-              .toFixed(2)}{' '}
+              .toFixed(0)}{' '}
             g
           </Typography>
         </JMTableCell>
@@ -276,7 +278,7 @@ const MealSection = ({ meal }: { meal: Meal }) => (
           <Typography sx={{ pl: 0.7 }} textAlign='center'>
             {meal.foods
               .reduce((t, c) => t + (c as Food).nutritionalValues.fats.value, 0)
-              .toFixed(2)}{' '}
+              .toFixed(0)}{' '}
             g
           </Typography>
         </JMTableCell>
@@ -284,7 +286,7 @@ const MealSection = ({ meal }: { meal: Meal }) => (
           <Typography sx={{ pl: 0.7 }} textAlign='center'>
             {meal.foods
               .reduce((t, c) => t + (c as Food).nutritionalValues.fiber.value, 0)
-              .toFixed(2)}{' '}
+              .toFixed(0)}{' '}
             g
           </Typography>
         </JMTableCell>

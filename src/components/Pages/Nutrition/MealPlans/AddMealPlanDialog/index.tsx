@@ -241,7 +241,7 @@ const TotalNutritionalValue = ({
     <Box height={10} width={10} bgcolor={pointColor} borderRadius='50%' ml={0.7}></Box>
     <Typography fontWeight={700}>{label}:</Typography>
     <Typography>
-      {getTotalNV(nvKey as NutritionalValueKeys, meals).toFixed(2)}{' '}
+      {getTotalNV(nvKey as NutritionalValueKeys, meals).toFixed(0)}{' '}
       {nvKey === 'kcal' ? 'kcal' : 'g'}
     </Typography>
   </Stack>
