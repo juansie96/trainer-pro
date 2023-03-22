@@ -66,7 +66,7 @@ const PreviewMealPlanDialog = ({ onClose, data, eventData }: IProps) => {
     try {
       await updateDoc<Client>(docRef, { tasks: newTasks })
       dispatch(tasksChanged(newTasks))
-      Swal.fire('¡Éxito!', 'El evento se eliminó correctamente', 'success')
+      Swal.fire('¡Éxito!', 'La tarea se eliminó correctamente', 'success')
       onClose()
     } catch (error) {
       console.error(error)
@@ -161,7 +161,7 @@ const PreviewMealPlanDialog = ({ onClose, data, eventData }: IProps) => {
                     fontSize='large'
                     sx={{ cursor: 'pointer', color: 'white', mr: 1 }}
                   />
-                  Borrar evento
+                  Borrar tarea
                 </Button>
               </>
             )}

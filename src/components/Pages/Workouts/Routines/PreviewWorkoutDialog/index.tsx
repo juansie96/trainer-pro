@@ -57,7 +57,7 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
     try {
       await updateDoc<Client>(docRef, { tasks: newTasks })
       dispatch(tasksChanged(newTasks))
-      Swal.fire('¡Éxito!', 'El evento se eliminó correctamente', 'success')
+      Swal.fire('¡Éxito!', 'La tarea se eliminó correctamente', 'success')
       onClose()
     } catch (error) {
       console.error(error)

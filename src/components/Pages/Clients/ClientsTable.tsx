@@ -61,10 +61,6 @@ export const ClientsTable = ({ clients }: ClientsTableProps) => {
             <TableCell sx={{ fontWeight: 700, color: 'white' }}>Email</TableCell>
             <TableCell sx={{ fontWeight: 700, color: 'white' }}>Objetivo</TableCell>
             <TableCell sx={{ width: '5em' }}></TableCell>
-            {/* TODO */}
-            {/* <TableCell align='center'>Vencimiento</TableCell>
-            <TableCell align='center'>Cumplimiento semanal</TableCell>
-            <TableCell align='center'>Cumplimiento mensual</TableCell> */}
           </TableRow>
         </TableHead>
         {clients.length === 0 ? (
@@ -91,7 +87,7 @@ export const ClientsTable = ({ clients }: ClientsTableProps) => {
                   {CLIENT_OBJECTIVES[client.objective as TClientObjectives].short}
                 </TableCell>
                 <TableCell>
-                  <Tooltip title='visualizar rutina'>
+                  <Tooltip title='visualizar cliente'>
                     <VisibilityIcon
                       color='action'
                       onClick={() => {
@@ -102,7 +98,7 @@ export const ClientsTable = ({ clients }: ClientsTableProps) => {
                       sx={{ ml: 1, cursor: 'pointer' }}
                     />
                   </Tooltip>
-                  <Tooltip title='eliminar rutina'>
+                  <Tooltip title='eliminar cliente'>
                     <DeleteIcon
                       color='error'
                       sx={{ ml: 1, cursor: 'pointer' }}
@@ -110,9 +106,6 @@ export const ClientsTable = ({ clients }: ClientsTableProps) => {
                     />
                   </Tooltip>
                 </TableCell>
-                {/* <TableCell align='center'>03/11</TableCell>
-            <TableCell align='center'>50%</TableCell>
-            <TableCell align='center'>50%</TableCell> */}
               </TableRow>
             ))}
           </TableBody>

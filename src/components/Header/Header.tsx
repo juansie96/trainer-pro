@@ -9,6 +9,7 @@ import { signOut } from 'firebase/auth'
 import { auth } from '../../firebase/firebase'
 import { userLoggedOut } from '../../redux/slices/Trainer.slice'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import LogoutIcon from '@mui/icons-material/Logout'
 
 type Link = {
   label: string
@@ -31,7 +32,7 @@ export function Header() {
   if (user) {
     links = (
       <Button sx={{ color: 'white' }} onClick={onLogout}>
-        Cerrar sesión
+        <LogoutIcon sx={{ mr: 1 }} /> CERRAR SESIÓN
       </Button>
     )
   } else {

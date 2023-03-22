@@ -60,7 +60,6 @@ const Home = () => {
           title='Clientes con tareas sin completar en los últimos 7 días'
           fallbackMsg='No se encontraron clientes con tareas sin completar en los últimos 7 días'
         />
-        <h5>Useful actions</h5>
       </HomeRow>
     </>
   )

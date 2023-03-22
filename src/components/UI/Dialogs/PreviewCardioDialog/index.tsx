@@ -56,7 +56,7 @@ const PreviewCardioDialog = ({ onClose, data }: IProps) => {
       setIsDeleting(false)
       await updateDoc<Client>(docRef, { tasks: newTasks })
       dispatch(tasksChanged(newTasks))
-      Swal.fire('¡Éxito!', 'El evento se eliminó correctamente', 'success')
+      Swal.fire('¡Éxito!', 'La tarea se eliminó correctamente', 'success')
       onClose()
     } catch (error) {
       setIsDeleting(false)
