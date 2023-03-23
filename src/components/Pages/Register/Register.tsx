@@ -78,7 +78,10 @@ export const Register = () => {
           label='Contraseña'
           name='password'
           type='password'
-          validation={{ required: 'La contraseña es requerida' }}
+          validation={{
+            required: 'La contraseña es requerida',
+            minLength: { value: 6, message: 'La contraseña debe tener al menos 6 caracteres' },
+          }}
         />
         <Button variant='contained' type='submit' fullWidth disabled={signingUp}>
           {signingUp ? 'Creando cuenta' : 'Registrarse'}

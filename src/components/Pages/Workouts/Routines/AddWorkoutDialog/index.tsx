@@ -76,6 +76,8 @@ const AddWorkoutDialog = ({ open, onClose, clientId, onAssign }: AddWorkoutDialo
     const promises: Promise<DocumentReference<Workout>>[] = []
 
     try {
+      // ErrorTest
+      // throw new Error()
       promises.push(addDoc(workoutsRef, finalData))
 
       if (saveOnLibrary) {
@@ -94,6 +96,11 @@ const AddWorkoutDialog = ({ open, onClose, clientId, onAssign }: AddWorkoutDialo
       onClose()
       Swal.fire('¡Éxito!', 'La rutina se creó correctamente!', 'success')
     } catch (err: unknown) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al intentar crear la rutina, por favor intente nuevamente o comuniquese con un administrador.',
+      })
       setIsAdding(false)
     }
   }

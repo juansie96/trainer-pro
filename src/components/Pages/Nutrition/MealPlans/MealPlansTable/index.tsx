@@ -157,15 +157,7 @@ const MealPlansTable = ({ mealPlans, isClientAssignation, onAssignMealPlan }: IP
                       </Button>
                     ) : (
                       <Stack direction='row' spacing={1.5}>
-                        {!location.pathname.includes('client') ? (
-                          <Tooltip title='asignar plan'>
-                            <PersonAddAlt1Icon
-                              onClick={() => null}
-                              color='success'
-                              sx={{ cursor: 'pointer' }}
-                            />
-                          </Tooltip>
-                        ) : (
+                        {!location.pathname.includes('client') ? null : (
                           <Tooltip title='agendar plan'>
                             <CalendarMonthIcon
                               onClick={() => openScheduleMealPlanDialog(mealPlan.id as string)}

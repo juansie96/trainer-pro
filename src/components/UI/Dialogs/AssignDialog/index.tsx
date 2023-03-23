@@ -81,7 +81,9 @@ const AssignDialog = ({ onClose, data }: IProps) => {
         '¡Éxito!',
         `${
           data.type === 'workout' ? 'La rutina' : 'El plan nutricional'
-        } se asignó correctamente a ${selectedClients.length} alumnos!`,
+        } se asignó correctamente a ${selectedClients.length} ${
+          selectedClients.length === 1 ? 'alumno' : 'alumnos'
+        }`,
         'success',
       )
       onClose()
@@ -110,11 +112,12 @@ const AssignDialog = ({ onClose, data }: IProps) => {
       <DialogContent sx={{ pt: 3, pb: 4 }}>
         <Stack spacing={3}>
           <Typography>
-            Selecciona a los clientes que deseas asignarle el plan nutricional y la fecha de inicio{' '}
+            Selecciona a los clientes que deseas asignarle el plan nutricional y la fecha de
+            asignación{' '}
           </Typography>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DesktopDatePicker
-              label='Fecha de nacimiento'
+              label='Fecha de asignación'
               inputFormat='DD/MM/YYYY'
               renderInput={(params) => <TextField {...params} sx={{ width: 250 }} />}
               value={selectedDate}

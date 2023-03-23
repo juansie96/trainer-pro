@@ -100,7 +100,7 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
         </Tooltip>
       </Box>
       <DialogContent sx={{ pt: 3, pb: 4 }}>
-        <DialogContentText>{workout.description} asdasdaasd</DialogContentText>
+        <DialogContentText>{workout.description}</DialogContentText>
         <Box margin='auto' mt={2} width='fit-content'>
           {workout.workoutExercises.map((exercise) => {
             const exerciseData = exercises?.find((e) => e.id === exercise.exerciseId)
@@ -135,8 +135,13 @@ const PreviewWorkoutDialog = ({ onClose, data, eventData }: IProps) => {
                   </Typography>
                 </Box>
                 {exercise.objective && (
-                  <Box ml={3}>
-                    <Typography variant='body1' fontSize='0.9rem' color='#5a5a5a'>
+                  <Box ml={3} flex={1}>
+                    <Typography
+                      variant='body1'
+                      fontSize='0.9rem'
+                      color='#5a5a5a'
+                      textAlign={'right'}
+                    >
                       {exercise.objective}
                     </Typography>
                   </Box>

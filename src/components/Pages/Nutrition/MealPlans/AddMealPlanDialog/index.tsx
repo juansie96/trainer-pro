@@ -56,7 +56,11 @@ const AddMealPlanDialog = ({
       setIsAdding(false)
       onClose()
       if (!fromAddTask) {
-        Swal.fire('¡Éxito!', 'El plan alimenticio se creó correctamente!', 'success')
+        Swal.fire(
+          '¡Éxito!',
+          `El plan alimenticio se ${mealPlan ? 'editó' : 'creó'} correctamente!`,
+          'success',
+        )
       }
     } catch (error) {
       console.error(error)

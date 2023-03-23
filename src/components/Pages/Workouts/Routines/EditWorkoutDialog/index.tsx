@@ -16,6 +16,7 @@ import { addDoc, Timestamp, updateDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form'
+import Swal from 'sweetalert2'
 import { exercisesRef, workoutsRef } from '../../../../../firebase/fbRefs'
 
 import { Exercise, Workout } from '../../../../../types/workout'
@@ -86,11 +87,17 @@ const EditWorkoutDialog = ({
       if (onEditSuccess) {
         onEditSuccess(newWorkout as Workout)
       }
+      Swal.fire('¡Éxito!', 'La rutina se editó correctamente!', 'success')
       setIsAdding(false)
       onClose()
     } catch (err: unknown) {
       console.error(err)
       setIsAdding(false)
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al intentar editar la rutina, por favor intente nuevamente o comuniquese con un administrador.',
+      })
     }
   }
 
