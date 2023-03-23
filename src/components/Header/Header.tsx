@@ -48,9 +48,12 @@ export function Header() {
     <Box className='header'>
       <AppBar position='static' sx={{ '& .MuiTypography-root': { color: 'white' } }}>
         <Toolbar sx={{ boxShadow: '0px 3px 3px 0px rgb(0 0 0 / 10%)' }}>
-          <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-            Trainer Pro
-          </Typography>
+          <Box flexGrow={1} display='flex'>
+            <img src='/images/tp-logo.svg' width={50} />
+            <Typography variant='h6' component='div' sx={{ flexGrow: 1, ml: 2, fontWeight: 400 }}>
+              Trainer Pro
+            </Typography>
+          </Box>
           {links}
         </Toolbar>
       </AppBar>

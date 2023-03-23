@@ -16,6 +16,7 @@ import type { Client } from '../types/client'
 import type { TrainerState } from '../redux/slices/Trainer.slice'
 import type { Exercise, Workout } from '../types/workout'
 import type { Food, MealPlan } from '../types/meals'
+import { IMetrics } from '../types/metrics'
 
 // ----------------  CONVERTERS ----------------
 
@@ -114,6 +115,16 @@ const mealPlanConverter: FirestoreDataConverter<MealPlan> = {
   },
 }
 
+export const metricsConverter: FirestoreDataConverter<IMetrics> = {
+  toFirestore(metrics: WithFieldValue<IMetrics>): DocumentData {
+    return metrics
+  },
+  fromFirestore(snapshot: QueryDocumentSnapshot<IMetrics>, options: SnapshotOptions): IMetrics {
+    const data = snapshot.data(options)
+    return { ...data, id: snapshot.id }
+  },
+}
+
 // ----------------  COLLECTION REFS ----------------
 
 export const workoutsRef = collection(firestoreDB, 'workouts').withConverter(workoutConverter)
@@ -122,6 +133,7 @@ export const trainersRef = collection(firestoreDB, 'trainers').withConverter(tra
 export const foodsRef = collection(firestoreDB, 'foods').withConverter(foodConverter)
 export const mealPlansRef = collection(firestoreDB, 'mealPlans').withConverter(mealPlanConverter)
 export const clientsRef = collection(firestoreDB, 'clients').withConverter(clientConverter)
+export const metricsRef = collection(firestoreDB, 'metrics').withConverter(metricsConverter)
 
 // ----------------  QUERIES ----------------
 

@@ -7,8 +7,9 @@ import Sidebar, { MenuItem } from '../../Sidebar'
 import { useAppSelector } from '../../../state/storeHooks'
 import { selectClient } from '../../../redux/slices/Client.slice'
 import PersonIcon from '@mui/icons-material/Person'
+import AutoGraphIcon from '@mui/icons-material/AutoGraph'
 
-const validSections = ['information', 'nutrition']
+const validSections = ['information', 'nutrition', 'evolution']
 
 const ClientInfo = styled(Box)(() => ({
   position: 'absolute',
@@ -47,6 +48,13 @@ const ClientSidebar = () => {
       >
         <RestaurantIcon sx={{ p: 1 }} />
         <Typography>Nutrición</Typography>
+      </MenuItem>
+      <MenuItem
+        active={location.pathname.includes('evolution')}
+        onClick={() => navigate(`/dashboard/client/${clientId}/evolution`)}
+      >
+        <AutoGraphIcon sx={{ p: 1 }} />
+        <Typography>Evolución</Typography>
       </MenuItem>
       <ClientInfo>
         <PersonIcon />

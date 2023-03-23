@@ -19,6 +19,7 @@ import MealPlansLayout from '../Pages/Nutrition/MealPlans/MealPlansLayout'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../firebase/firebase'
 import EmailVerification from '../Pages/EmailVerification'
+import ClientEvolution from '../Pages/Client/ClientEvolution'
 
 const AppRoutes = () => {
   const [user] = useAuthState(auth)
@@ -46,6 +47,7 @@ const AppRoutes = () => {
           <Route path='' element={<ClientPlanification />} />
           <Route path='information' element={<ClientInformation />} />
           <Route path='nutrition' element={<ClientNutrition />} />
+          <Route path='evolution' element={<ClientEvolution />} />
         </Route>
       </Route>
     </Routes>
